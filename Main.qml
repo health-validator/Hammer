@@ -14,7 +14,7 @@ ApplicationWindow {
     minimumWidth: 550; minimumHeight: 300
     title: qsTr("Hammer")
 
-    Universal.theme: Universal.Light
+    Universal.theme: darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
 
     NetObject {
         id: dotnet
@@ -38,6 +38,19 @@ ApplicationWindow {
                            addResourceScrollView.state = "ENTERING_RESOURCE"
                        }
                    }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+D"
+        onActivated: if (dotnet.resourceText) {
+            addResourcesPage.state = "VALIDATED_RESOURCE"
+            dotnet.startValidation()
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+O"
+        onActivated: resourcePicker.open()
     }
 
     Page {
@@ -90,33 +103,11 @@ ApplicationWindow {
                 placeholderText: qsTr("or load it here")
                 renderType: Text.NativeRendering
                 onTextChanged: dotnet.updateText(text)
-//                onEditingFinished: dotnet.updateText(text)
                 text: dotnet.resourceText
+                // ensure the tooltip isn't monospace, only the text
                 font.family: dotnet.resourceText ? "Ubuntu Mono" : "Ubuntu"
                 selectByMouse: true
                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
-
-                // unused, was a workaround for focus loss on delete
-                function syncText() {
-                    // going from no text to some text causes a loss of focus - restore it
-                    // seems to be a ParentChange issue (or I'm doing it wrong)
-                    textArea.forceActiveFocus()
-                    reportDimensions()
-                }
-
-                function reportDimensions() {
-                    console.log(`textarea: x: ${textArea.x} y: ${textArea.y} w: ${textArea.width} h: ${textArea.height}, s: ${textArea.state}`)
-                    console.log(`scroll visible? ${addResourceScrollView.visible} x: ${addResourceScrollView.x} y: ${addResourceScrollView.y} w: ${addResourceScrollView.width} h: ${addResourceScrollView.height}, children: ${addResourceScrollView.children.length}`)
-                }
-
-                Shortcut {
-                    sequence: "Ctrl+R"
-                    onActivated: {
-                        console.log("validating via shortcut");
-                        addResourcesPage.state = "VALIDATED_RESOURCE"
-                        dotnet.startValidation()
-                    }
-                }
 
                 states: [
                     State {
@@ -125,7 +116,7 @@ ApplicationWindow {
                             target: textArea
                             parent: loadResourcesRow
                             width: 300
-                            height: loadResourceButton.height
+                            height: undefined
                         }
                     },
                     State {
@@ -207,11 +198,18 @@ ApplicationWindow {
         x: 0
         y: parent.height - height
         width: window.width
-        visible: dotnet.resourceText
+
+        Button {
+            id: settingsButton
+            text: "☰"
+
+            onClicked: addResourcesPage.state = "EDITING_SETTINGS"
+        }
 
         Button {
             id: actionButton
             text: dotnet.validateButtonText
+            visible: dotnet.resourceText || addResourcesPage.state === "EDITING_SETTINGS"
             Layout.fillWidth: true
 
             onClicked: {
@@ -225,13 +223,6 @@ ApplicationWindow {
 
             ToolTip.visible: hovered && dotnet.scopeDirectory
             ToolTip.text: qsTr(`Scope: <code>${dotnet.scopeDirectory}</code>`)
-        }
-
-        Button {
-            id: settingsButton
-            text: "☰"
-
-            onClicked: addResourcesPage.state = "EDITING_SETTINGS"
         }
     }
 
@@ -376,6 +367,7 @@ ApplicationWindow {
 
             Text {
                 text: qsTr("Scope")
+                color: Universal.foreground
                 font.pointSize: settingsPane.headerFontSize
                 font.bold: true
 
@@ -390,8 +382,7 @@ ApplicationWindow {
             }
             TextField {
                 text: dotnet.scopeDirectory
-                onCursorPositionChanged: dotnet.loadScopeDirectory(text)
-                onEditingFinished: dotnet.loadScopeDirectory(text)
+                onTextChanged: dotnet.loadScopeDirectory(text)
                 selectByMouse: true
                 placeholderText: qsTr("Current scope: none")
                 Layout.columnSpan: 2
@@ -412,10 +403,10 @@ ApplicationWindow {
 
             Text {
                 text: qsTr("Show me")
+                color: Universal.foreground
                 font.pointSize: settingsPane.headerFontSize
                 font.bold: true
-                Layout.fillWidth: true
-                Layout.columnSpan: 3
+                Layout.fillWidth: true; Layout.columnSpan: 3
                 topPadding: 10
             }
             RowLayout {
@@ -439,6 +430,22 @@ ApplicationWindow {
                     Layout.fillWidth: true
                 }
             }
+
+            Text {
+                text: qsTr("Appearance")
+                color: Universal.foreground
+                font.pointSize: settingsPane.headerFontSize
+                font.bold: true
+                Layout.fillWidth: true
+                Layout.columnSpan: 3
+                topPadding: 10
+            }
+
+            Switch {
+                id: darkAppearanceSwitch
+                text: qsTr("Dark")
+            }
+
             Item {
                 id: spanner
                 Layout.columnSpan: 3
