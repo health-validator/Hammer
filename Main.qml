@@ -411,7 +411,7 @@ ApplicationWindow {
             }
 
             Text {
-                text: qsTr("Messages to show")
+                text: qsTr("Show me")
                 font.pointSize: settingsPane.headerFontSize
                 font.bold: true
                 Layout.fillWidth: true
