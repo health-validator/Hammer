@@ -1,0 +1,73 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Hammer.csproj"
+            ],
+            "problemMatcher": "$tsc",
+            "dependsOn": ["enable-qml"]
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/Hammer.csproj"
+            ],
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "${workspaceFolder}/Hammer.csproj"
+            ],
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "disable-qml",
+            "command": "sed",
+            "type": "shell",
+            "args": [
+                "-i",
+                "'s|import test 1.1|// import test 1.1|g'",
+                "${workspaceFolder}/Main.qml"
+            ],
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "enable-qml",
+            "command": "sed",
+            "type": "shell",
+            "args": [
+                "-i",
+                "'s|// import test 1.1|import test 1.1|g'",
+                "${workspaceFolder}/Main.qml"
+            ],
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "Export build",
+            "dependsOn": [
+                "enable-qml",
+                "publish"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

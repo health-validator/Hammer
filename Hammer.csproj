@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hl7.Fhir.ElementModel" Version="1.2.1" />
+    <PackageReference Include="Hl7.Fhir.Serialization" Version="1.2.1" />
+    <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="1.2.1" />
+    <PackageReference Include="Hl7.Fhir.STU3" Version="1.2.1" />
+    <PackageReference Include="Hl7.Fhir.Support" Version="1.2.1" />
+    <PackageReference Include="Hl7.FhirPath" Version="1.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Qml.Net" Version="0.10.1" />
+    <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.10.1" />
+    <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.10.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+
+<ItemGroup>
+  <Content Include="Main.qml" CopyToPublishDirectory="Always" />
+</ItemGroup>
+
+</Project>
