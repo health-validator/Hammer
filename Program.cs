@@ -213,10 +213,10 @@ class Program
       set => this.SetProperty(ref _issues, value);
     }
 
-    public void LoadDragAndDrop(string text)
+    public void LoadResourceFile(string text)
     {
       if (text == null) {
-        Console.Error.WriteLine("LoadDragAndDrop: no text passed");
+        Console.Error.WriteLine("LoadResourceFile: no text passed");
         return;
       }
 
@@ -228,10 +228,15 @@ class Program
       }
 
       var filePath = text;
-      filePath = filePath.RemovePrefix("file://");
-      filePath = filePath.Replace("\r", "");
-      filePath = filePath.Replace("\n", "");
+      if (System.Runtime.InteropServices.RuntimeInformation
+        .IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) {
+        filePath = filePath.RemovePrefix("file:///");
+      } else {
+        filePath = filePath.RemovePrefix("file://");
+      }
+      filePath = filePath.Replace("\r", "").Replace("\n", "");
       filePath = System.Uri.UnescapeDataString(filePath);
+      Console.WriteLine($"Loading '{filePath}'...");
       ResourceText = System.IO.File.ReadAllText(filePath);
 
       ScopeDirectory = System.IO.Path.GetDirectoryName(filePath);
@@ -246,7 +251,15 @@ class Program
       }
 
       var filePath = text;
-      filePath = filePath.RemovePrefix("file://");
+      if (System.Runtime.InteropServices.RuntimeInformation
+        .IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+      {
+        filePath = filePath.RemovePrefix("file:///");
+      }
+      else
+      {
+        filePath = filePath.RemovePrefix("file://");
+      }
       filePath = filePath.Replace("\r", "").Replace("\n", "");
       filePath = System.Uri.UnescapeDataString(filePath);
       ScopeDirectory = filePath;
