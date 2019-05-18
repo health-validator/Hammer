@@ -8,6 +8,17 @@
       "name": ".NET Core Launch (console)",
       "type": "coreclr",
       "request": "launch",
+      "preLaunchTask": "enable-qml",
+      "program": "${workspaceFolder}/bin/Debug/netcoreapp2/Hammer.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "internalConsole"
+    },
+    {
+      "name": ".NET Core Compile & Launch",
+      "type": "coreclr",
+      "request": "launch",
       "preLaunchTask": "build",
       "postDebugTask": "disable-qml",
       "program": "${workspaceFolder}/bin/Debug/netcoreapp2.2/Hammer.dll",
