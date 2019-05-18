@@ -33,7 +33,7 @@ ApplicationWindow {
 
         onDropped: if (drop.hasText && drop.text) {
                        if (drop.proposedAction == Qt.MoveAction || drop.proposedAction == Qt.CopyAction) {
-                           dotnet.loadDragAndDrop(drop.text)
+                           dotnet.loadResourceFile(drop.text)
                            drop.acceptProposedAction()
                            addResourceScrollView.state = "ENTERING_RESOURCE"
                        }
@@ -94,8 +94,11 @@ ApplicationWindow {
                     id: resourcePicker
                     title: "Select a FHIR resource to validate"
                     folder: dotnet.scopeDirectory ? "file://" + dotnet.scopeDirectory : shortcuts.home
-                    onAccepted: dotnet.loadDragAndDrop(resourcePicker.fileUrl)
+                    onAccepted: dotnet.loadResourceFile(resourcePicker.fileUrl)
                 }
+
+                ToolTip.text: qsTr("Ctrl+O (open), Ctrl+D (validate)")
+                ToolTip.visible: hovered; ToolTip.delay: 1000
             }
 
             TextArea {
@@ -222,7 +225,7 @@ ApplicationWindow {
             }
 
             ToolTip.visible: hovered && dotnet.scopeDirectory
-            ToolTip.text: qsTr(`Scope: <code>${dotnet.scopeDirectory}</code>`)
+            ToolTip.text: qsTr(`Scope: ${dotnet.scopeDirectory}`)
         }
     }
 
@@ -238,8 +241,7 @@ ApplicationWindow {
             height: 130
             radius: 20
             color: "#5d8130"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.centerIn: parent
             visible: !dotnet.validating && dotnet.errorCount === 0
 
             Label {
@@ -249,8 +251,7 @@ ApplicationWindow {
                 color: "white"
                 font.pointSize: 26
                 textFormat: Text.RichText
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.centerIn: parent
             }
         }
 
