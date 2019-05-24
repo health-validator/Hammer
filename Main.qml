@@ -112,6 +112,8 @@ ApplicationWindow {
                 selectByMouse: true
                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
 
+                onParentChanged: textArea.forceActiveFocus()
+
                 states: [
                     State {
                         name: "MINIMAL"; when: !dotnet.resourceText
