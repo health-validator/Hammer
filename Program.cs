@@ -75,10 +75,28 @@ class Program
           return;
         }
 
+        // if this is the first time we're setting the resource text,
+        // then it would be the 'empty' version of the rich text
+        if (_resourceText == null) {
+          _emptyResourceText = value;
+        }
+
         _resourceText = value;
         UpdateResourceType(_resourceText);
+        LoadedResource = _resourceText != _emptyResourceText;
         this.ActivateProperty(x => x.ResourceText);
       }
+    }
+
+    // records what empty text looks like in Qt RichText, for comparison later on
+    private string _emptyResourceText;
+
+    private bool _loadedResource;
+    [NotifySignal]
+    public bool LoadedResource
+    {
+      get => _loadedResource;
+      set => this.SetProperty(ref _loadedResource, value);
     }
 
     private string _resourceFont;
@@ -216,7 +234,7 @@ class Program
     public void LoadResourceFile(string text)
     {
       if (text == null) {
-        Console.Error.WriteLine("LoadResourceFile: no text passed");
+        Console.Error.WriteLine("LoadResourceFile: no filepath passed");
         return;
       }
 

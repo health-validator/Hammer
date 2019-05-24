@@ -108,15 +108,18 @@ ApplicationWindow {
                 onTextChanged: dotnet.updateText(text)
                 text: dotnet.resourceText
                 // ensure the tooltip isn't monospace, only the text
-                font.family: dotnet.resourceText ? "Ubuntu Mono" : "Ubuntu"
+                // disabled for now as it causes different HTML to be generated
+                // font.family: dotnet.loadedResource ? "Ubuntu Mono" : "Ubuntu"
+                font.family: "Ubuntu Mono"
                 selectByMouse: true
                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
+                textFormat: Qt.RichText
 
                 onParentChanged: textArea.forceActiveFocus()
 
                 states: [
                     State {
-                        name: "MINIMAL"; when: !dotnet.resourceText
+                        name: "MINIMAL"; when: !dotnet.loadedResource
                         ParentChange {
                             target: textArea
                             parent: loadResourcesRow
@@ -125,7 +128,7 @@ ApplicationWindow {
                         }
                     },
                     State {
-                        name: "EXPANDED"; when: dotnet.resourceText
+                        name: "EXPANDED"; when: dotnet.loadedResource
                         ParentChange {
                             target: textArea
                             parent: addResourceScrollView
