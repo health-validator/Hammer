@@ -52,7 +52,7 @@ class Program
         }
 
         _scopeDirectory = value;
-        this.ActivateSignal("scopeDirectoryChanged");
+        this.ActivateProperty(x => x.ScopeDirectory);
 
         var directorySource = new CachedResolver(
           new DirectorySource(_scopeDirectory, new DirectorySourceSettings { IncludeSubDirectories = true }));
@@ -77,7 +77,7 @@ class Program
 
         _resourceText = value;
         UpdateResourceType(_resourceText);
-        this.ActivateSignal("resourceTextChanged");
+        this.ActivateProperty(x => x.ResourceText);
       }
     }
 
@@ -93,7 +93,7 @@ class Program
         }
 
         _resourceFont = value;
-        this.ActivateSignal("resourceFontChanged");
+        this.ActivateProperty(x => x.ResourceFont);
       }
     }
 
