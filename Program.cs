@@ -25,6 +25,16 @@ class Program
 {
   public class NetObject
   {
+    private static NetObject _instance;
+    public static NetObject Instance => _instance ?? (_instance = new NetObject());
+
+    public static bool HasInstance => _instance != null;
+
+    public NetObject()
+    {
+      _instance = this;
+    }
+
     private IResourceResolver CoreSource = new CachedResolver(ZipSource.CreateValidationSource());
 
     private IResourceResolver CombinedSource;
