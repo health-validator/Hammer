@@ -23,14 +23,14 @@ using System.Threading.Tasks;
 
 class Program
 {
-  public class NetObject
+  public class AppModel
   {
-    private static NetObject _instance;
-    public static NetObject Instance => _instance ?? (_instance = new NetObject());
+    private static AppModel _instance;
+    public static AppModel Instance => _instance ?? (_instance = new AppModel());
 
     public static bool HasInstance => _instance != null;
 
-    public NetObject()
+    public AppModel()
     {
       _instance = this;
     }
@@ -196,13 +196,13 @@ class Program
       Console.WriteLine(outcome.ToString());
     }
 
-    private List<NetObject.Issue> convertIssues(List<Hl7.Fhir.Model.OperationOutcome.IssueComponent> issues)
+    private List<AppModel.Issue> convertIssues(List<Hl7.Fhir.Model.OperationOutcome.IssueComponent> issues)
     {
-      List<NetObject.Issue> convertedIssues = new List<NetObject.Issue> { };
+      List<AppModel.Issue> convertedIssues = new List<AppModel.Issue> { };
 
       foreach (var issue in issues)
       {
-        convertedIssues.Add(new NetObject.Issue
+        convertedIssues.Add(new AppModel.Issue
         {
           Severity = issue.Severity.ToString().ToLower(),
           Text = issue.Details?.Text ?? "(no details)",
@@ -213,11 +213,11 @@ class Program
       return convertedIssues;
     }
 
-    private List<NetObject.Issue> _issues
-      = new List<NetObject.Issue>{};
+    private List<AppModel.Issue> _issues
+      = new List<AppModel.Issue>{};
 
     [NotifySignal]
-    public List<NetObject.Issue> Issues
+    public List<AppModel.Issue> Issues
     {
       get => _issues;
       set => this.SetProperty(ref _issues, value);
@@ -362,7 +362,7 @@ class Program
     {
       using (var engine = new QQmlApplicationEngine())
       {
-        Qml.Net.Qml.RegisterType<NetObject>("test", 1, 1);
+        Qml.Net.Qml.RegisterType<AppModel>("appmodel", 1, 0);
 
         engine.Load("Main.qml");
 

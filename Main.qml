@@ -1,6 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.5
-// import test 1.1
+// import appmodel 1.0
 import QtQuick.Controls.Material 2.0
 import QtQuick.Window 2.10
 import QtQuick.Controls.Universal 2.12
@@ -16,7 +16,7 @@ ApplicationWindow {
 
     Universal.theme: darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
 
-    NetObject {
+    AppModel {
         id: dotnet
     }
 
