@@ -228,7 +228,6 @@ class Program
         return;
       }
 
-
       // input already pruned - accept as-is
       if (!text.StartsWith("file://")) {
         ResourceText = text;
@@ -340,10 +339,61 @@ class Program
       }
     }
 
+    private string SerializeResource(string ResourceText, Hl7.Fhir.Rest.ResourceFormat InstanceFormat)
+    {
+      var fileName = $"{Path.GetTempFileName()}.{(InstanceFormat == ResourceFormat.Json ? "json" : "xml")}";
+      System.IO.File.WriteAllText(fileName, ResourceText);
+
+      return fileName;
+    }
+
+    public OperationOutcome ValidateWithJava()
+    {
+      var resourcePath = SerializeResource(ResourceText, InstanceFormat);
+      var validatorPath = "/home/vadi/.m2/repository/ca/uhn/hapi/fhir/org.hl7.fhir.validation.cli/3.7.41-SNAPSHOT/org.hl7.fhir.validation.cli-3.7.41-SNAPSHOT.jar";
+      var packagePath = "/home/vadi/Desktop/swedishnationalmedicationlist/swedishnationalmedicationlist.tgz";
+      var outputJson = $"{Path.GetTempFileName()}.json";
+      var finalArguments = $"-jar {validatorPath} -version 3.0 -ig {packagePath} -output {outputJson} {resourcePath}";
+
+      using (Process validator = new Process())
+      {
+        validator.StartInfo.FileName = "java";
+        validator.StartInfo.Arguments = finalArguments;
+        validator.StartInfo.UseShellExecute = false;
+        validator.StartInfo.RedirectStandardOutput = true;
+        validator.Start();
+
+        Console.WriteLine(validator.StandardOutput.ReadToEnd());
+
+        validator.WaitForExit();
+      }
+
+      var resultText = System.IO.File.ReadAllText(outputJson);
+
+      var parser = new FhirJsonParser();
+      OperationOutcome result;
+      try
+      {
+        result = parser.Parse<OperationOutcome>(resultText);
+      }
+      catch (FormatException fe)
+      {
+        result = new OperationOutcome();
+        result.Issue.Add(new OperationOutcome.IssueComponent
+        {
+          Severity = OperationOutcome.IssueSeverity.Error,
+          Diagnostics = fe.InnerException.InnerException.Message,
+          Code = OperationOutcome.IssueType.Exception
+        });
+      }
+
+      return result;
+    }
+
     public async void StartValidation()
     {
       Validating = true;
-      var result = await System.Threading.Tasks.Task.Run(ValidateWithDotnet);
+      var result = await System.Threading.Tasks.Task.Run(ValidateWithJava);
       setOutcome(result);
       Validating = false;
     }
