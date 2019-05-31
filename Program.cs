@@ -39,6 +39,7 @@ class Program
 
     private IResourceResolver CombinedSource;
 
+    #region QML-accessible properties
     private ResourceFormat _instanceFormat;
 
     private string _validateButtonText = "Validate";
@@ -107,13 +108,46 @@ class Program
       }
     }
 
+    private int _errorCount = 0;
+    [NotifySignal]
+    public int ErrorCount
+    {
+      get => _errorCount;
+      set => this.SetProperty(ref _errorCount, value);
+    }
+
+    private int _warningCount = 0;
+    [NotifySignal]
+    public int WarningCount
+    {
+      get => _warningCount;
+      set => this.SetProperty(ref _warningCount, value);
+    }
+
+    private bool _validating;
+    [NotifySignal]
+    public bool Validating
+    {
+      get => _validating;
+      set => this.SetProperty(ref _validating, value);
+    }
+    #endregion
+
+    private void setOutcome(OperationOutcome outcome)
+    {
+      Issues = convertIssues(outcome.Issue);
+      ErrorCount = outcome.Errors + outcome.Fatals;
+      WarningCount = outcome.Warnings;
+      Console.WriteLine(outcome.ToString());
+    }
+
     public class Issue
     {
       private string _severity;
       [NotifySignal]
       public string Severity
       {
-        get =>_severity;
+        get => _severity;
         set => this.SetProperty(ref _severity, value);
       }
 
@@ -134,7 +168,8 @@ class Program
       }
     }
 
-    public void UpdateText (string newText) {
+    public void UpdateText(string newText)
+    {
       ResourceText = newText;
     }
 
@@ -157,43 +192,6 @@ class Program
             break;
         }
       }
-    }
-
-    private int _errorCount = 0;
-
-    [NotifySignal]
-    public int ErrorCount
-    {
-      get => _errorCount;
-      set => this.SetProperty(ref _errorCount, value);
-    }
-
-    private int _warningCount = 0;
-
-    [NotifySignal]
-    public int WarningCount
-    {
-      get => _warningCount;
-      set => this.SetProperty(ref _warningCount, value);
-    }
-
-    private bool _validating;
-
-    [NotifySignal]
-    public bool Validating
-    {
-      get => _validating;
-      set => this.SetProperty(ref _validating, value);
-    }
-
-    private OperationOutcome _lastOutcome;
-    private void setOutcome(OperationOutcome outcome)
-    {
-      _lastOutcome = outcome;
-      Issues = convertIssues(outcome.Issue);
-      ErrorCount = outcome.Errors + outcome.Fatals;
-      WarningCount = outcome.Warnings;
-      Console.WriteLine(outcome.ToString());
     }
 
     private List<AppModel.Issue> convertIssues(List<Hl7.Fhir.Model.OperationOutcome.IssueComponent> issues)
@@ -350,7 +348,6 @@ class Program
       Validating = false;
     }
   }
-
   static int Main(string[] args)
   {
     RuntimeManager.DiscoverOrDownloadSuitableQtRuntime();
@@ -368,6 +365,20 @@ class Program
 
         QCoreApplication.OrganizationDomain = "domain";
         QCoreApplication.OrganizationName = "name";
+
+        // using (Process compiler = new Process())
+        // {
+        //   compiler.StartInfo.FileName = "java";
+        //   compiler.StartInfo.Arguments = "-jar /home/vadi/.m2/repository/ca/uhn/hapi/fhir/org.hl7.fhir.validation.cli/3.7.41-SNAPSHOT/org.hl7.fhir.validation.cli-3.7.41-SNAPSHOT.jar -version 3.0 -ig /home/vadi/Desktop/swedishnationalmedicationlist/swedishnationalmedicationlist.tgz -output /home/vadi/Desktop/output.json /home/vadi/Desktop/swedishnationalmedicationlist/MedicationRequest-example-bad.json";
+        //   compiler.StartInfo.UseShellExecute = false;
+        //   compiler.StartInfo.RedirectStandardOutput = true;
+        //   compiler.Start();
+
+        //   Console.WriteLine(compiler.StandardOutput.ReadToEnd());
+
+        //   compiler.WaitForExit();
+        // }
+
 
         return app.Exec();
       }
