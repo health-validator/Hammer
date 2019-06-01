@@ -244,7 +244,7 @@ ApplicationWindow {
             radius: 20
             color: "#5d8130"
             anchors.centerIn: parent
-            visible: !dotnet.validating && dotnet.errorCount === 0
+            visible: !dotnet.validating && dotnet.dotnetResult.errorCount === 0
 
             Label {
                 width: 294
@@ -261,7 +261,7 @@ ApplicationWindow {
             id: errorsColumn
             spacing: 20
             anchors.fill: parent
-            visible: !dotnet.validating && dotnet.errorCount >= 1
+            visible: !dotnet.validating && dotnet.dotnetResult.errorCount >= 1
 
             Rectangle {
                 id: errorsRectangle
@@ -350,7 +350,9 @@ ApplicationWindow {
             running: dotnet.validating
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            onRunningChanged: errorsRepeater.model = Net.toListModel(dotnet.issues)
+            onRunningChanged: {
+                errorsRepeater.model = Net.toListModel(dotnet.dotnetResult.issues)
+            }
         }
     }
 

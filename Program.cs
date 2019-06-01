@@ -108,22 +108,6 @@ class Program
       }
     }
 
-    private int _errorCount = 0;
-    [NotifySignal]
-    public int ErrorCount
-    {
-      get => _errorCount;
-      set => this.SetProperty(ref _errorCount, value);
-    }
-
-    private int _warningCount = 0;
-    [NotifySignal]
-    public int WarningCount
-    {
-      get => _warningCount;
-      set => this.SetProperty(ref _warningCount, value);
-    }
-
     private bool _validating;
     [NotifySignal]
     public bool Validating
@@ -133,14 +117,70 @@ class Program
     }
     #endregion
 
-    private void setOutcome(OperationOutcome outcome)
+    private ValidationResult _javaResult;
+    [NotifySignal]
+    public ValidationResult JavaResult
     {
-      Issues = convertIssues(outcome.Issue);
-      ErrorCount = outcome.Errors + outcome.Fatals;
-      WarningCount = outcome.Warnings;
+      get => _javaResult;
+      set => this.SetProperty(ref _javaResult, value);
+    }
+
+    private ValidationResult _dotnetResult;
+    [NotifySignal]
+    public ValidationResult DotnetResult
+    {
+      get => _dotnetResult;
+      set => this.SetProperty(ref _dotnetResult, value);
+    }
+
+    private void setOutcome(OperationOutcome outcome, ValidatorType type)
+    {
+      if (type == ValidatorType.Java) {
+        JavaResult = new ValidationResult { ValidatorType = type };
+        JavaResult.Issues = convertIssues(outcome.Issue);
+        JavaResult.ErrorCount = outcome.Errors + outcome.Fatals;
+        JavaResult.WarningCount = outcome.Warnings;
+      } else {
+        DotnetResult = new ValidationResult { ValidatorType = type };
+        DotnetResult.Issues = convertIssues(outcome.Issue);
+        DotnetResult.ErrorCount = outcome.Errors + outcome.Fatals;
+        DotnetResult.WarningCount = outcome.Warnings;
+      }
+
       Console.WriteLine(outcome.ToString());
     }
 
+    public enum ValidatorType { Dotnet = 1, Java = 2 };
+
+    public class ValidationResult {
+      private ValidatorType _validatorType;
+      [NotifySignal]
+      public ValidatorType ValidatorType
+        { get => _validatorType; set => this.SetProperty(ref _validatorType, value); }
+
+      private List<AppModel.Issue> _issues
+        = new List<AppModel.Issue> { };
+
+      [NotifySignal]
+      public List<AppModel.Issue> Issues
+      {
+        get => _issues;
+        set => this.SetProperty(ref _issues, value);
+      }
+
+      private int _errorCount = 0;
+      [NotifySignal]
+      public int ErrorCount
+        { get => _errorCount; set => this.SetProperty(ref _errorCount, value); }
+
+
+      private int _warningCount = 0;
+      [NotifySignal]
+      public int WarningCount
+        { get => _warningCount; set => this.SetProperty(ref _warningCount, value); }
+    }
+
+    // not a struct due to https://github.com/qmlnet/qmlnet/issues/135
     public class Issue
     {
       private string _severity;
@@ -209,16 +249,6 @@ class Program
       }
 
       return convertedIssues;
-    }
-
-    private List<AppModel.Issue> _issues
-      = new List<AppModel.Issue>{};
-
-    [NotifySignal]
-    public List<AppModel.Issue> Issues
-    {
-      get => _issues;
-      set => this.SetProperty(ref _issues, value);
     }
 
     public void LoadResourceFile(string text)
@@ -393,8 +423,8 @@ class Program
     public async void StartValidation()
     {
       Validating = true;
-      var result = await System.Threading.Tasks.Task.Run(ValidateWithJava);
-      setOutcome(result);
+      var result = await System.Threading.Tasks.Task.Run(ValidateWithDotnet);
+      setOutcome(result, ValidatorType.Dotnet);
       Validating = false;
     }
   }
