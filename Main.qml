@@ -257,8 +257,9 @@ ApplicationWindow {
             radius: 20
             color: "#5d8130"
             anchors.centerIn: parent
-            visible: !appmodel.validating &&
-                     appmodel.dotnetResult.errorCount === 0 && appmodel.javaResult.errorCount === 0
+//            visible: !appmodel.validating &&
+//                     appmodel.dotnetResult.errorCount === 0 && appmodel.javaResult.errorCount === 0
+            visible: false
 
             Label {
                 width: 294
@@ -275,8 +276,8 @@ ApplicationWindow {
             id: errorsColumn
             spacing: 20
             anchors.fill: parent
-            visible: !appmodel.validating &&
-                     (appmodel.dotnetResult.errorCount >= 1 || appmodel.javaResult.errorCount >= 1)
+//            visible: !appmodel.validating &&
+//                     (appmodel.dotnetResult.errorCount >= 1 || appmodel.javaResult.errorCount >= 1)
 
             Rectangle {
                 id: errorsRectangle
@@ -316,6 +317,13 @@ ApplicationWindow {
                         radius: 3
                         anchors.fill: parent
 
+                        BusyIndicator {
+                            running: appmodel.validatingDotnet
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            onRunningChanged: dotnetErrorsRepeater.model = Net.toListModel(appmodel.dotnetResult.issues)
+                        }
+
                         Label {
                             color: "#696969"
                             text: qsTr(`${appmodel.dotnetResult.errorCount} ∙ ${appmodel.dotnetResult.warningCount}`)
@@ -323,7 +331,7 @@ ApplicationWindow {
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignHCenter
                             anchors.fill: parent
-
+                            visible: !appmodel.validatingDotnet
                         }
                     }
                     Label {
@@ -349,6 +357,13 @@ ApplicationWindow {
                         radius: 3
                         anchors.fill: parent
 
+                        BusyIndicator {
+                            running: appmodel.validatingJava
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            onRunningChanged: javaErrorsRepeater.model = Net.toListModel(appmodel.javaResult.issues)
+                        }
+
                         Label {
                             color: "#696969"
                             text: qsTr(`${appmodel.javaResult.errorCount} ∙ ${appmodel.javaResult.warningCount}`)
@@ -356,6 +371,7 @@ ApplicationWindow {
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignHCenter
                             anchors.fill: parent
+                            visible: !appmodel.validatingJava
                         }
                     }
                     Label {
@@ -375,6 +391,7 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 clip: true
                 contentHeight: errorsRepeaterColumn.height
+                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
                 Column {
                     id: errorsRepeaterColumn
@@ -501,16 +518,6 @@ ApplicationWindow {
                     }
 
                 }
-            }
-        }
-
-        BusyIndicator {
-            running: appmodel.validating
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            onRunningChanged: {
-                dotnetErrorsRepeater.model = Net.toListModel(appmodel.dotnetResult.issues)
-                javaErrorsRepeater.model   = Net.toListModel(appmodel.javaResult.issues)
             }
         }
     }

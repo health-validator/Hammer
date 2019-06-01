@@ -108,12 +108,20 @@ class Program
       }
     }
 
-    private bool _validating;
+    private bool _validatingDotnet;
     [NotifySignal]
-    public bool Validating
+    public bool ValidatingDotnet
     {
-      get => _validating;
-      set => this.SetProperty(ref _validating, value);
+      get => _validatingDotnet;
+      set => this.SetProperty(ref _validatingDotnet, value);
+    }
+
+    private bool _validatingJava;
+    [NotifySignal]
+    public bool ValidatingJava
+    {
+      get => _validatingJava;
+      set => this.SetProperty(ref _validatingJava, value);
     }
     #endregion
 
@@ -321,6 +329,7 @@ class Program
 
     public OperationOutcome ValidateWithDotnet()
     {
+      Console.WriteLine("Beginning .NET validation");
       try
       {
         var settings = new ValidationSettings()
@@ -380,6 +389,7 @@ class Program
 
     public OperationOutcome ValidateWithJava()
     {
+      Console.WriteLine("Beginning Java validation");
       var resourcePath = SerializeResource(ResourceText, InstanceFormat);
       var validatorPath = "/home/vadi/.m2/repository/ca/uhn/hapi/fhir/org.hl7.fhir.validation.cli/3.7.41-SNAPSHOT/org.hl7.fhir.validation.cli-3.7.41-SNAPSHOT.jar";
       var packagePath = "/home/vadi/Desktop/swedishnationalmedicationlist/swedishnationalmedicationlist.tgz";
@@ -428,13 +438,34 @@ class Program
 
     public async void StartValidation()
     {
-      Validating = true;
+      ValidatingDotnet = true;
+      ValidatingJava = true;
       Task<OperationOutcome> validateWithJava = System.Threading.Tasks.Task.Run(ValidateWithJava);
       Task<OperationOutcome> validateWithDotnet = System.Threading.Tasks.Task.Run(ValidateWithDotnet);
-      await System.Threading.Tasks.Task.WhenAll(validateWithJava, validateWithDotnet);
-      setOutcome(validateWithDotnet.Result, ValidatorType.Dotnet);
-      setOutcome(validateWithJava.Result, ValidatorType.Java);
-      Validating = false;
+
+      var allTasks = new List<System.Threading.Tasks.Task> { validateWithJava, validateWithDotnet };
+      while (allTasks.Any())
+      {
+        var finished = await System.Threading.Tasks.Task.WhenAny(allTasks);
+        if (finished == validateWithJava)
+        {
+          allTasks.Remove(validateWithJava);
+          var result = await validateWithJava;
+          setOutcome(result, ValidatorType.Java);
+          ValidatingJava = false;
+        }
+        else if (finished == validateWithDotnet)
+        {
+          allTasks.Remove(validateWithDotnet);
+          var result = await validateWithDotnet;
+          setOutcome(result, ValidatorType.Dotnet);
+          ValidatingDotnet = false;
+        }
+        else
+        {
+          allTasks.Remove(finished);
+        }
+      }
     }
   }
 
