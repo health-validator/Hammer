@@ -141,6 +141,12 @@ class Program
       set => this.SetProperty(ref _dotnetResult, value);
     }
 
+    private void resetResults()
+    {
+      JavaResult = new ValidationResult { ValidatorType = ValidatorType.Java };
+      DotnetResult = new ValidationResult { ValidatorType = ValidatorType.Dotnet };
+    }
+
     private void setOutcome(OperationOutcome outcome, ValidatorType type)
     {
       if (type == ValidatorType.Java) {
@@ -438,6 +444,7 @@ class Program
 
     public async void StartValidation()
     {
+      resetResults();
       ValidatingDotnet = true;
       ValidatingJava = true;
       Task<OperationOutcome> validateWithJava = System.Threading.Tasks.Task.Run(ValidateWithJava);
