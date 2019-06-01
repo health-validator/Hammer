@@ -51,10 +51,7 @@ ApplicationWindow {
 
     Shortcut {
         sequence: "Ctrl+O"
-        onActivated: if (appmodel.resourceText) {
-            addResourcesPage.state = "VALIDATED_RESOURCE"
-            appmodel.startValidation()
-        }
+        onActivated: resourcePicker.open()
     }
 
     Shortcut {
