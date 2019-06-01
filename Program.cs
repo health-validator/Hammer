@@ -117,7 +117,7 @@ class Program
     }
     #endregion
 
-    private ValidationResult _javaResult;
+    private ValidationResult _javaResult = new ValidationResult();
     [NotifySignal]
     public ValidationResult JavaResult
     {
@@ -125,7 +125,7 @@ class Program
       set => this.SetProperty(ref _javaResult, value);
     }
 
-    private ValidationResult _dotnetResult;
+    private ValidationResult _dotnetResult = new ValidationResult();
     [NotifySignal]
     public ValidationResult DotnetResult
     {
@@ -172,7 +172,6 @@ class Program
       [NotifySignal]
       public int ErrorCount
         { get => _errorCount; set => this.SetProperty(ref _errorCount, value); }
-
 
       private int _warningCount = 0;
       [NotifySignal]

@@ -10,7 +10,7 @@ import QtQuick.Dialogs 1.3
 ApplicationWindow {
     id: window
     visible: true
-    width: 640; height: 480
+    width: 640; height: 650
     minimumWidth: 550; minimumHeight: 300
     title: qsTr("Hammer")
 
@@ -48,9 +48,22 @@ ApplicationWindow {
         }
     }
 
+
     Shortcut {
         sequence: "Ctrl+O"
-        onActivated: resourcePicker.open()
+        onActivated: if (dotnet.resourceText) {
+            addResourcesPage.state = "VALIDATED_RESOURCE"
+            dotnet.startValidation()
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+T"
+        onActivated: {
+            dotnet.loadResourceFile("file:///home/vadi/Desktop/swedishnationalmedicationlist/MedicationRequest-example-bad.json")
+            addResourcesPage.state = "VALIDATED_RESOURCE"
+            dotnet.startValidation()
+        }
     }
 
     Page {
@@ -244,7 +257,8 @@ ApplicationWindow {
             radius: 20
             color: "#5d8130"
             anchors.centerIn: parent
-            visible: !dotnet.validating && dotnet.dotnetResult.errorCount === 0
+            visible: !dotnet.validating &&
+                     dotnet.dotnetResult.errorCount === 0 && dotnet.javaResult.errorCount === 0
 
             Label {
                 width: 294
@@ -261,7 +275,8 @@ ApplicationWindow {
             id: errorsColumn
             spacing: 20
             anchors.fill: parent
-            visible: !dotnet.validating && dotnet.dotnetResult.errorCount >= 1
+            visible: !dotnet.validating &&
+                     (dotnet.dotnetResult.errorCount >= 1 || dotnet.javaResult.errorCount >= 1)
 
             Rectangle {
                 id: errorsRectangle
@@ -282,10 +297,83 @@ ApplicationWindow {
                 }
             }
 
+            Row {
+                id: errorCountsRow
+//                Layout.fillWidth: true
+                width: window.width
+                bottomPadding: 20
+
+                Item {
+                    id: dotnetErrorsBox
+//                    property int errors: dotnet.dotnetResult ?   dotnet.dotnetResult.errorCount   : 0
+//                    property int warnings: dotnet.dotnetResult ? dotnet.dotnetResult.warningCount : 0
+                    width: window.width/2
+                    height: 100
+
+                    Rectangle {
+                        id: dotnetErrorsRectangle
+                        border.color: "grey"
+                        radius: 3
+                        anchors.fill: parent
+
+                        Label {
+                            color: "#696969"
+                            text: qsTr(`${dotnet.dotnetResult.errorCount} ∙ ${dotnet.dotnetResult.warningCount}`)
+                            font.pointSize: 57
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                            anchors.fill: parent
+
+                        }
+                    }
+                    Label {
+                        text: ".NET"
+                        anchors.horizontalCenter: dotnetErrorsRectangle.horizontalCenter
+                        anchors.top: dotnetErrorsRectangle.bottom
+                        anchors.topMargin: 6
+                        color: "#696969"
+                        font.pointSize: 17
+                    }
+                }
+
+                Item {
+                    id: javaErrorsBox
+                    // property int errors: dotnet.javaResult? dotnet.javaResult.errorCount : 0
+                    // property int warnings: dotnet.javaResult? dotnet.javaResult.warningCount : 0
+                    width: window.width/2
+                    height: 100
+
+                    Rectangle {
+                        id: javaErrorsRectangle
+                        border.color: "grey"
+                        radius: 3
+                        anchors.fill: parent
+
+                        Label {
+                            color: "#696969"
+                            text: qsTr(`${dotnet.javaResult.errorCount} ∙ ${dotnet.javaResult.warningCount}`)
+                            font.pointSize: 57
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                            anchors.fill: parent
+                        }
+                    }
+                    Label {
+                        text: "Java"
+                        anchors.horizontalCenter: javaErrorsRectangle.horizontalCenter
+                        anchors.top: javaErrorsRectangle.bottom
+                        anchors.topMargin: 6
+                        color: "#696969"
+                        font.pointSize: 17
+                    }
+                }
+
+            }
+
             ScrollView {
-                clip: true
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                clip: true
 
                 Column {
                     anchors.left: parent.left
@@ -461,9 +549,51 @@ ApplicationWindow {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*##^## Designer {
-    D{i:32;anchors_height:130;anchors_width:300}D{i:31;anchors_height:130;anchors_width:300}
-D{i:36;anchors_height:130;anchors_width:300}D{i:35;anchors_height:130;anchors_width:300}
-D{i:37;anchors_height:130;anchors_width:300}D{i:34;anchors_height:130;anchors_width:300}
+    D{i:2;invisible:true}D{i:31;anchors_height:130;anchors_width:300}D{i:32;anchors_height:130;anchors_width:300}
+D{i:34;anchors_height:130;anchors_width:300}D{i:36;anchors_height:130;anchors_width:300}
+D{i:37;anchors_height:130;anchors_width:300}D{i:35;anchors_height:130;anchors_width:300}
+D{i:5;invisible:true}D{i:41;invisible:true}D{i:42;invisible:true}D{i:40;invisible:true}
+D{i:44;invisible:true}D{i:54;invisible:true}D{i:64;invisible:true}D{i:66;invisible:true}
+D{i:65;invisible:true}
 }
  ##^##*/
