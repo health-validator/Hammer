@@ -352,7 +352,7 @@ class Program
         }
 
         sw.Stop();
-        Console.WriteLine($"Validation performed in {sw.ElapsedMilliseconds}ms");
+        Console.WriteLine($".NET validation performed in {sw.ElapsedMilliseconds}ms");
         return result;
       }
       catch (Exception ex)
@@ -383,8 +383,11 @@ class Program
       var validatorPath = "/home/vadi/.m2/repository/ca/uhn/hapi/fhir/org.hl7.fhir.validation.cli/3.7.41-SNAPSHOT/org.hl7.fhir.validation.cli-3.7.41-SNAPSHOT.jar";
       var packagePath = "/home/vadi/Desktop/swedishnationalmedicationlist/swedishnationalmedicationlist.tgz";
       var outputJson = $"{Path.GetTempFileName()}.json";
-      var finalArguments = $"-jar {validatorPath} -version 3.0 -ig {packagePath} -output {outputJson} {resourcePath}";
+      var finalArguments = $"-jar {validatorPath} -version 3.0 -tx n/a -ig {packagePath} -output {outputJson} {resourcePath}";
 
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
       using (Process validator = new Process())
       {
         validator.StartInfo.FileName = "java";
@@ -397,6 +400,8 @@ class Program
 
         validator.WaitForExit();
       }
+      sw.Stop();
+      Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
 
       var resultText = System.IO.File.ReadAllText(outputJson);
 
@@ -423,11 +428,15 @@ class Program
     public async void StartValidation()
     {
       Validating = true;
-      var result = await System.Threading.Tasks.Task.Run(ValidateWithDotnet);
-      setOutcome(result, ValidatorType.Dotnet);
+      Task<OperationOutcome> validateWithJava = System.Threading.Tasks.Task.Run(ValidateWithJava);
+      Task<OperationOutcome> validateWithDotnet = System.Threading.Tasks.Task.Run(ValidateWithDotnet);
+      await System.Threading.Tasks.Task.WhenAll(validateWithJava, validateWithDotnet);
+      setOutcome(validateWithDotnet.Result, ValidatorType.Dotnet);
+      setOutcome(validateWithJava.Result, ValidatorType.Java);
       Validating = false;
     }
   }
+
   static int Main(string[] args)
   {
     RuntimeManager.DiscoverOrDownloadSuitableQtRuntime();
