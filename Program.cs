@@ -138,13 +138,15 @@ class Program
       if (type == ValidatorType.Java) {
         JavaResult = new ValidationResult { ValidatorType = type };
         JavaResult.Issues = convertIssues(outcome.Issue);
-        JavaResult.ErrorCount = outcome.Errors + outcome.Fatals;
+        // warnings have to be set before errors for some reason, otherwise not transferred to QML
         JavaResult.WarningCount = outcome.Warnings;
+        JavaResult.ErrorCount = outcome.Errors + outcome.Fatals;
       } else {
         DotnetResult = new ValidationResult { ValidatorType = type };
         DotnetResult.Issues = convertIssues(outcome.Issue);
-        DotnetResult.ErrorCount = outcome.Errors + outcome.Fatals;
+        // warnings have to be set before errors for some reason, otherwise not transferred to QML
         DotnetResult.WarningCount = outcome.Warnings;
+        DotnetResult.ErrorCount = outcome.Errors + outcome.Fatals;
       }
 
       Console.WriteLine(outcome.ToString());
