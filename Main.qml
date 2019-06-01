@@ -302,7 +302,7 @@ ApplicationWindow {
                 id: errorCountsRow
 //                Layout.fillWidth: true
                 width: window.width
-                bottomPadding: 30
+                bottomPadding: 10
 
                 Item {
                     id: dotnetErrorsBox
@@ -316,6 +316,7 @@ ApplicationWindow {
                         border.color: "grey"
                         radius: 3
                         anchors.fill: parent
+                        anchors.margins: 20
 
                         BusyIndicator {
                             running: appmodel.validatingDotnet
@@ -327,7 +328,7 @@ ApplicationWindow {
                         Label {
                             color: "#696969"
                             text: qsTr(`${appmodel.dotnetResult.errorCount} ∙ ${appmodel.dotnetResult.warningCount}`)
-                            font.pointSize: 57
+                            font.pointSize: 37
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignHCenter
                             anchors.fill: parent
@@ -356,6 +357,7 @@ ApplicationWindow {
                         border.color: "grey"
                         radius: 3
                         anchors.fill: parent
+                        anchors.margins: 20
 
                         BusyIndicator {
                             running: appmodel.validatingJava
@@ -367,7 +369,7 @@ ApplicationWindow {
                         Label {
                             color: "#696969"
                             text: qsTr(`${appmodel.javaResult.errorCount} ∙ ${appmodel.javaResult.warningCount}`)
-                            font.pointSize: 57
+                            font.pointSize: 37
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignHCenter
                             anchors.fill: parent
@@ -398,12 +400,16 @@ ApplicationWindow {
                     anchors.left: parent.left
                     spacing: 5
 
+                    add: Transition {
+                        NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: 1500; }
+                    }
+
                     Label {
                         text: ".NET"
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: "#696969"
                         font.pointSize: 17
-
+                        visible: !appmodel.validatingDotnet
                     }
 
                     Repeater {
@@ -463,6 +469,7 @@ ApplicationWindow {
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: "#696969"
                         font.pointSize: 17
+                        visible: !appmodel.validatingJava
                     }
 
                     Repeater {
