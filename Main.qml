@@ -17,7 +17,7 @@ ApplicationWindow {
     Universal.theme: darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
 
     AppModel {
-        id: dotnet
+        id: appmodel
     }
 
     DropArea {
@@ -33,7 +33,7 @@ ApplicationWindow {
 
         onDropped: if (drop.hasText && drop.text) {
                        if (drop.proposedAction == Qt.MoveAction || drop.proposedAction == Qt.CopyAction) {
-                           dotnet.loadResourceFile(drop.text)
+                           appmodel.loadResourceFile(drop.text)
                            drop.acceptProposedAction()
                            addResourceScrollView.state = "ENTERING_RESOURCE"
                        }
@@ -42,27 +42,27 @@ ApplicationWindow {
 
     Shortcut {
         sequence: "Ctrl+D"
-        onActivated: if (dotnet.resourceText) {
+        onActivated: if (appmodel.resourceText) {
             addResourcesPage.state = "VALIDATED_RESOURCE"
-            dotnet.startValidation()
+            appmodel.startValidation()
         }
     }
 
 
     Shortcut {
         sequence: "Ctrl+O"
-        onActivated: if (dotnet.resourceText) {
+        onActivated: if (appmodel.resourceText) {
             addResourcesPage.state = "VALIDATED_RESOURCE"
-            dotnet.startValidation()
+            appmodel.startValidation()
         }
     }
 
     Shortcut {
         sequence: "Ctrl+T"
         onActivated: {
-            dotnet.loadResourceFile("file:///home/vadi/Desktop/swedishnationalmedicationlist/MedicationRequest-example-bad.json")
+            appmodel.loadResourceFile("file:///home/vadi/Desktop/swedishnationalmedicationlist/MedicationRequest-example-bad.json")
             addResourcesPage.state = "VALIDATED_RESOURCE"
-            dotnet.startValidation()
+            appmodel.startValidation()
         }
     }
 
@@ -106,8 +106,8 @@ ApplicationWindow {
                 FileDialog {
                     id: resourcePicker
                     title: "Select a FHIR resource to validate"
-                    folder: dotnet.scopeDirectory ? "file://" + dotnet.scopeDirectory : shortcuts.home
-                    onAccepted: dotnet.loadResourceFile(resourcePicker.fileUrl)
+                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : shortcuts.home
+                    onAccepted: appmodel.loadResourceFile(resourcePicker.fileUrl)
                 }
 
                 ToolTip.text: qsTr("Ctrl+O (open), Ctrl+D (validate)")
@@ -118,10 +118,10 @@ ApplicationWindow {
                 id: textArea
                 placeholderText: qsTr("or load it here")
                 renderType: Text.NativeRendering
-                onTextChanged: dotnet.updateText(text)
-                text: dotnet.resourceText
+                onTextChanged: appmodel.updateText(text)
+                text: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
-                font.family: dotnet.resourceText ? "Ubuntu Mono" : "Ubuntu"
+                font.family: appmodel.resourceText ? "Ubuntu Mono" : "Ubuntu"
                 selectByMouse: true
                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
 
@@ -129,7 +129,7 @@ ApplicationWindow {
 
                 states: [
                     State {
-                        name: "MINIMAL"; when: !dotnet.resourceText
+                        name: "MINIMAL"; when: !appmodel.resourceText
                         ParentChange {
                             target: textArea
                             parent: loadResourcesRow
@@ -138,7 +138,7 @@ ApplicationWindow {
                         }
                     },
                     State {
-                        name: "EXPANDED"; when: dotnet.resourceText
+                        name: "EXPANDED"; when: appmodel.resourceText
                         ParentChange {
                             target: textArea
                             parent: addResourceScrollView
@@ -177,7 +177,7 @@ ApplicationWindow {
                 PropertyChanges { target: addResourcesPage; x: 0 }
                 PropertyChanges { target: resultsPane; x: resultsPane.width }
                 PropertyChanges { target: settingsPane; y: window.height }
-                PropertyChanges { target: actionButton; text: dotnet.validateButtonText}
+                PropertyChanges { target: actionButton; text: appmodel.validateButtonText}
             },
             State {
                 name: "VALIDATED_RESOURCE"
@@ -226,21 +226,21 @@ ApplicationWindow {
 
         Button {
             id: actionButton
-            text: dotnet.validateButtonText
-            visible: dotnet.resourceText || addResourcesPage.state === "EDITING_SETTINGS"
+            text: appmodel.validateButtonText
+            visible: appmodel.resourceText || addResourcesPage.state === "EDITING_SETTINGS"
             Layout.fillWidth: true
 
             onClicked: {
                 if (addResourcesPage.state === "ENTERING_RESOURCE") {
                     addResourcesPage.state = "VALIDATED_RESOURCE"
-                    dotnet.startValidation()
+                    appmodel.startValidation()
                 } else {
                     addResourcesPage.state = "ENTERING_RESOURCE"
                 }
             }
 
-            ToolTip.visible: hovered && dotnet.scopeDirectory
-            ToolTip.text: qsTr(`Scope: ${dotnet.scopeDirectory}`)
+            ToolTip.visible: hovered && appmodel.scopeDirectory
+            ToolTip.text: qsTr(`Scope: ${appmodel.scopeDirectory}`)
         }
     }
 
@@ -257,8 +257,8 @@ ApplicationWindow {
             radius: 20
             color: "#5d8130"
             anchors.centerIn: parent
-            visible: !dotnet.validating &&
-                     dotnet.dotnetResult.errorCount === 0 && dotnet.javaResult.errorCount === 0
+            visible: !appmodel.validating &&
+                     appmodel.dotnetResult.errorCount === 0 && appmodel.javaResult.errorCount === 0
 
             Label {
                 width: 294
@@ -275,8 +275,8 @@ ApplicationWindow {
             id: errorsColumn
             spacing: 20
             anchors.fill: parent
-            visible: !dotnet.validating &&
-                     (dotnet.dotnetResult.errorCount >= 1 || dotnet.javaResult.errorCount >= 1)
+            visible: !appmodel.validating &&
+                     (appmodel.dotnetResult.errorCount >= 1 || appmodel.javaResult.errorCount >= 1)
 
             Rectangle {
                 id: errorsRectangle
@@ -305,8 +305,8 @@ ApplicationWindow {
 
                 Item {
                     id: dotnetErrorsBox
-//                    property int errors: dotnet.dotnetResult ?   dotnet.dotnetResult.errorCount   : 0
-//                    property int warnings: dotnet.dotnetResult ? dotnet.dotnetResult.warningCount : 0
+//                    property int errors: appmodel.dotnetResult ?   appmodel.dotnetResult.errorCount   : 0
+//                    property int warnings: appmodel.dotnetResult ? appmodel.dotnetResult.warningCount : 0
                     width: window.width/2
                     height: 100
 
@@ -318,7 +318,7 @@ ApplicationWindow {
 
                         Label {
                             color: "#696969"
-                            text: qsTr(`${dotnet.dotnetResult.errorCount} ∙ ${dotnet.dotnetResult.warningCount}`)
+                            text: qsTr(`${appmodel.dotnetResult.errorCount} ∙ ${appmodel.dotnetResult.warningCount}`)
                             font.pointSize: 57
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignHCenter
@@ -338,8 +338,8 @@ ApplicationWindow {
 
                 Item {
                     id: javaErrorsBox
-                    // property int errors: dotnet.javaResult? dotnet.javaResult.errorCount : 0
-                    // property int warnings: dotnet.javaResult? dotnet.javaResult.warningCount : 0
+                    // property int errors: appmodel.javaResult? appmodel.javaResult.errorCount : 0
+                    // property int warnings: appmodel.javaResult? appmodel.javaResult.warningCount : 0
                     width: window.width/2
                     height: 100
 
@@ -351,7 +351,7 @@ ApplicationWindow {
 
                         Label {
                             color: "#696969"
-                            text: qsTr(`${dotnet.javaResult.errorCount} ∙ ${dotnet.javaResult.warningCount}`)
+                            text: qsTr(`${appmodel.javaResult.errorCount} ∙ ${appmodel.javaResult.warningCount}`)
                             font.pointSize: 57
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignHCenter
@@ -505,12 +505,12 @@ ApplicationWindow {
         }
 
         BusyIndicator {
-            running: dotnet.validating
+            running: appmodel.validating
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             onRunningChanged: {
-                dotnetErrorsRepeater.model = Net.toListModel(dotnet.dotnetResult.issues)
-                javaErrorsRepeater.model   = Net.toListModel(dotnet.javaResult.issues)
+                dotnetErrorsRepeater.model = Net.toListModel(appmodel.dotnetResult.issues)
+                javaErrorsRepeater.model   = Net.toListModel(appmodel.javaResult.issues)
             }
         }
     }
@@ -545,8 +545,8 @@ ApplicationWindow {
                 }
             }
             TextField {
-                text: dotnet.scopeDirectory
-                onTextChanged: dotnet.loadScopeDirectory(text)
+                text: appmodel.scopeDirectory
+                onTextChanged: appmodel.loadScopeDirectory(text)
                 selectByMouse: true
                 placeholderText: qsTr("Current scope: none")
                 Layout.columnSpan: 2
@@ -559,9 +559,9 @@ ApplicationWindow {
                 FileDialog {
                     id: scopePicker
                     title: "Folder to act as the scope (context) for validation"
-                    folder: dotnet.scopeDirectory ? "file://" + dotnet.scopeDirectory : shortcuts.home
+                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : shortcuts.home
                     selectFolder: true
-                    onAccepted: dotnet.loadScopeDirectory(scopePicker.fileUrl)
+                    onAccepted: appmodel.loadScopeDirectory(scopePicker.fileUrl)
                 }
             }
 
