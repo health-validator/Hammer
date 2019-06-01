@@ -301,7 +301,7 @@ ApplicationWindow {
                 id: errorCountsRow
 //                Layout.fillWidth: true
                 width: window.width
-                bottomPadding: 20
+                bottomPadding: 30
 
                 Item {
                     id: dotnetErrorsBox
@@ -332,7 +332,7 @@ ApplicationWindow {
                         anchors.top: dotnetErrorsRectangle.bottom
                         anchors.topMargin: 6
                         color: "#696969"
-                        font.pointSize: 17
+                        font.pointSize: 11
                     }
                 }
 
@@ -364,7 +364,7 @@ ApplicationWindow {
                         anchors.top: javaErrorsRectangle.bottom
                         anchors.topMargin: 6
                         color: "#696969"
-                        font.pointSize: 17
+                        font.pointSize: 11
                     }
                 }
 
@@ -374,13 +374,23 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 clip: true
+                contentHeight: errorsRepeaterColumn.height
 
                 Column {
+                    id: errorsRepeaterColumn
                     anchors.left: parent.left
                     spacing: 5
 
+                    Label {
+                        text: ".NET"
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: "#696969"
+                        font.pointSize: 17
+
+                    }
+
                     Repeater {
-                        id: errorsRepeater
+                        id: dotnetErrorsRepeater
 
                         Rectangle {
                             id: messageRectangle
@@ -430,6 +440,66 @@ ApplicationWindow {
                             }
                         }
                     }
+
+                    Label {
+                        text: "Java"
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: "#696969"
+                        font.pointSize: 17
+                    }
+
+                    Repeater {
+                        id: javaErrorsRepeater
+
+                        Rectangle {
+                            id: javaMessageRectangle
+                            color: "#f8fafb"
+                            border.color: "#f6f3fb"
+                            border.width: 1
+
+                            height: javaErrorText.height + 20
+                            width: resultsPane.width - leftMargin - rightMargin
+
+                            property int leftMargin: 20
+                            property int rightMargin: 15
+
+                            visible: {
+                                if (modelData.severity === "error" && showErrors.checked) {
+                                    return true
+                                } else if (modelData.severity === "warning" && showWarnings.checked) {
+                                    return true
+                                }  else if (modelData.severity === "informational" && showInfo.checked) {
+                                    return true
+                                } else {
+                                    return false
+                                }
+                            }
+
+                            Rectangle {
+                                width: 10
+                                height: javaErrorText.height + 20
+                                anchors.left: parent.left
+                                color: modelData.severity === "error" ? "#cc5555" : modelData.severity === "warning" ? "#f0ad4e" : "#007ec6"
+                            }
+
+                            Text {
+                                id: javaErrorText
+                                anchors {
+                                    left: parent.left; leftMargin: javaMessageRectangle.leftMargin
+                                    right: parent.right; rightMargin: javaMessageRectangle.rightMargin
+                                    top: parent.top; topMargin: 10
+                                }
+
+                                width: parent.width
+                                color: "#337081"
+                                text: modelData.text
+                                renderType: Text.NativeRendering
+                                textFormat: Text.PlainText
+                                wrapMode: "WrapAtWordBoundaryOrAnywhere"
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -439,7 +509,8 @@ ApplicationWindow {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             onRunningChanged: {
-                errorsRepeater.model = Net.toListModel(dotnet.dotnetResult.issues)
+                dotnetErrorsRepeater.model = Net.toListModel(dotnet.dotnetResult.issues)
+                javaErrorsRepeater.model   = Net.toListModel(dotnet.javaResult.issues)
             }
         }
     }

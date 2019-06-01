@@ -149,7 +149,7 @@ class Program
         DotnetResult.ErrorCount = outcome.Errors + outcome.Fatals;
       }
 
-      Console.WriteLine(outcome.ToString());
+      // Console.WriteLine(outcome.ToString());
     }
 
     public enum ValidatorType { Dotnet = 1, Java = 2 };
@@ -397,7 +397,7 @@ class Program
         validator.StartInfo.RedirectStandardOutput = true;
         validator.Start();
 
-        Console.WriteLine(validator.StandardOutput.ReadToEnd());
+        // Console.WriteLine(validator.StandardOutput.ReadToEnd());
 
         validator.WaitForExit();
       }
