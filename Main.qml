@@ -325,10 +325,8 @@ ApplicationWindow {
                         Label {
                             color: "#696969"
                             text: qsTr(`${appmodel.dotnetResult.errorCount} ∙ ${appmodel.dotnetResult.warningCount}`)
-                            font.pointSize: 37
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                            anchors.fill: parent
+                            font.pointSize: 35
+                            anchors.centerIn: parent
                             visible: !appmodel.validatingDotnet
                         }
                     }
@@ -366,10 +364,8 @@ ApplicationWindow {
                         Label {
                             color: "#696969"
                             text: qsTr(`${appmodel.javaResult.errorCount} ∙ ${appmodel.javaResult.warningCount}`)
-                            font.pointSize: 37
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                            anchors.fill: parent
+                            font.pointSize: 35
+                            anchors.centerIn: parent
                             visible: !appmodel.validatingJava
                         }
                     }
