@@ -279,7 +279,7 @@ ApplicationWindow {
             Rectangle {
                 id: errorsRectangle
                 width: 250; height: 90; radius: 5
-                color: "#d04746"; border.color: "#c33f3f"
+                border.color: "#c33f3f"
                 border.width: 2
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
@@ -455,7 +455,19 @@ ApplicationWindow {
                                 width: 10
                                 height: errorText.height + 20
                                 anchors.left: parent.left
-                                color: modelData.severity === "error" ? "#cc5555" : modelData.severity === "warning" ? "#f0ad4e" : "#007ec6"
+                                border.color: "#c33f3f"
+                                border.width: 1
+
+                                gradient: Gradient {
+                                    GradientStop { position: 0.0
+                                        color: modelData.severity === "error" ? "#c31432" :
+                                               modelData.severity === "warning" ? "#fe8c00" : "#007ec6"
+                                    }
+                                    GradientStop { position: 1.0
+                                        color: modelData.severity === "error" ? "#240b36" :
+                                               modelData.severity === "warning" ? "#f83600" : "#007ec6"
+                                    }
+                                }
                             }
 
                             Text {
@@ -515,7 +527,17 @@ ApplicationWindow {
                                 width: 10
                                 height: javaErrorText.height + 20
                                 anchors.left: parent.left
-                                color: modelData.severity === "error" ? "#cc5555" : modelData.severity === "warning" ? "#f0ad4e" : "#007ec6"
+
+                                gradient: Gradient {
+                                    GradientStop { position: 0.0
+                                        color: modelData.severity === "error" ? "#c31432" :
+                                               modelData.severity === "warning" ? "#fe8c00" : "#007ec6"
+                                    }
+                                    GradientStop { position: 1.0
+                                        color: modelData.severity === "error" ? "#240b36" :
+                                               modelData.severity === "warning" ? "#f83600" : "#007ec6"
+                                    }
+                                }
                             }
 
                             Text {
