@@ -398,9 +398,9 @@ class Program
       Console.WriteLine("Beginning Java validation");
       var resourcePath = SerializeResource(ResourceText, InstanceFormat);
       var validatorPath = "/home/vadi/.m2/repository/ca/uhn/hapi/fhir/org.hl7.fhir.validation.cli/3.7.41-SNAPSHOT/org.hl7.fhir.validation.cli-3.7.41-SNAPSHOT.jar";
-      var packagePath = "/home/vadi/Desktop/swedishnationalmedicationlist/swedishnationalmedicationlist.tgz";
+      var scopePath = ScopeDirectory;
       var outputJson = $"{Path.GetTempFileName()}.json";
-      var finalArguments = $"-jar {validatorPath} -version 3.0 -tx n/a -ig {packagePath} -output {outputJson} {resourcePath}";
+      var finalArguments = $"-jar {validatorPath} -version 3.0 -tx n/a -ig {scopePath} -output {outputJson} {resourcePath}";
 
 
       Stopwatch sw = new Stopwatch();
@@ -411,6 +411,7 @@ class Program
         validator.StartInfo.Arguments = finalArguments;
         validator.StartInfo.UseShellExecute = false;
         validator.StartInfo.RedirectStandardOutput = true;
+        validator.StartInfo.RedirectStandardError = true;
         validator.Start();
 
         // Console.WriteLine(validator.StandardOutput.ReadToEnd());
