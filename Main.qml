@@ -298,14 +298,14 @@ ApplicationWindow {
             Row {
                 id: errorCountsRow
 //                Layout.fillWidth: true
-                width: window.width
+                width: resultsPane.availableWidth
                 bottomPadding: 10
 
                 Item {
                     id: dotnetErrorsBox
 //                    property int errors: appmodel.dotnetResult ?   appmodel.dotnetResult.errorCount   : 0
 //                    property int warnings: appmodel.dotnetResult ? appmodel.dotnetResult.warningCount : 0
-                    width: window.width/2
+                    width: resultsPane.availableWidth/2
                     height: 100
 
                     Rectangle {
@@ -344,7 +344,7 @@ ApplicationWindow {
                     id: javaErrorsBox
                     // property int errors: appmodel.javaResult? appmodel.javaResult.errorCount : 0
                     // property int warnings: appmodel.javaResult? appmodel.javaResult.warningCount : 0
-                    width: window.width/2
+                    width: resultsPane.availableWidth/2
                     height: 100
 
                     Rectangle {
@@ -386,7 +386,6 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 clip: true
                 contentHeight: errorsRepeaterColumn.height
-                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
                 Column {
                     id: errorsRepeaterColumn
