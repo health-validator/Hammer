@@ -1,6 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.5
-import appmodel 1.0
+// import appmodel 1.0
 import QtQuick.Controls.Material 2.0
 import QtQuick.Window 2.10
 import QtQuick.Controls.Universal 2.12
@@ -328,6 +328,13 @@ ApplicationWindow {
                             font.pointSize: 35
                             anchors.centerIn: parent
                             visible: !appmodel.validatingDotnet
+
+                            ToolTip.visible: dotnetErrorsMouseArea.containsMouse
+                            ToolTip.text: qsTr("Errors ∙ Warnings")
+
+                            MouseArea {
+                                id: dotnetErrorsMouseArea; hoverEnabled: true; anchors.fill: parent
+                            }
                         }
                     }
                     Label {
@@ -367,6 +374,13 @@ ApplicationWindow {
                             font.pointSize: 35
                             anchors.centerIn: parent
                             visible: !appmodel.validatingJava
+
+                            ToolTip.visible: javaErrorsMouseArea.containsMouse
+                            ToolTip.text: qsTr("Errors ∙ Warnings")
+
+                            MouseArea {
+                                id: javaErrorsMouseArea; hoverEnabled: true; anchors.fill: parent
+                            }
                         }
                     }
                     Label {
