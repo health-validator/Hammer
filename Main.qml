@@ -1,8 +1,8 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.5
+import QtQuick 2.12
+import QtQuick.Controls 2.12
 // import appmodel 1.0
-import QtQuick.Controls.Material 2.0
-import QtQuick.Window 2.10
+import QtQuick.Controls.Material 2.12
+import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.3
@@ -282,6 +282,12 @@ ApplicationWindow {
                 color: "#d04746"; border.color: "#c33f3f"
                 border.width: 2
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: "#c31432" }
+                    GradientStop { position: 1.0; color: "#240b36" }
+                    orientation: Gradient.Vertical
+                }
 
                 Label {
                     width: 294
