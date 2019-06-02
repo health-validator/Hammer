@@ -393,7 +393,7 @@ ApplicationWindow {
                     spacing: 5
 
                     add: Transition {
-                        NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: 1500; }
+                        NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: 1000 }
                     }
 
                     Label {
