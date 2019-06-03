@@ -123,6 +123,14 @@ class Program
       get => _validatingJava;
       set => this.SetProperty(ref _validatingJava, value);
     }
+
+    private bool _javaValidationCrashed;
+    [NotifySignal]
+    public bool JavaValidationCrashed
+    {
+      get => _javaValidationCrashed;
+      set => this.SetProperty(ref _javaValidationCrashed, value);
+    }
     #endregion
 
     private ValidationResult _javaResult = new ValidationResult();
@@ -145,6 +153,7 @@ class Program
     {
       JavaResult = new ValidationResult { ValidatorType = ValidatorType.Java };
       DotnetResult = new ValidationResult { ValidatorType = ValidatorType.Dotnet };
+      JavaValidationCrashed = false;
     }
 
     private void setOutcome(OperationOutcome outcome, ValidatorType type)
@@ -393,6 +402,29 @@ class Program
       return fileName;
     }
 
+    // in case the Java validator crashes (which it can if it doesn't like something)
+    // it won't produce an OperationOutcome for us. Take what we've got and make one ourselves
+    private OperationOutcome ConvertJavaStdout(string output)
+    {
+      var result = new OperationOutcome();
+      using (var reader = new StringReader(output))
+      {
+        for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
+        {
+          result.Issue.Add(new OperationOutcome.IssueComponent
+          {
+            Severity = OperationOutcome.IssueSeverity.Error,
+            Details = new CodeableConcept() {
+              Text = line
+            },
+            Code = OperationOutcome.IssueType.Processing
+          });
+        }
+      }
+
+      return result;
+    }
+
     public OperationOutcome ValidateWithJava()
     {
       Console.WriteLine("Beginning Java validation");
@@ -405,6 +437,7 @@ class Program
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
+      string validatorOutput;
       using (Process validator = new Process())
       {
         validator.StartInfo.FileName = "java";
@@ -414,14 +447,20 @@ class Program
         validator.StartInfo.RedirectStandardError = true;
         validator.Start();
 
-        // Console.WriteLine(validator.StandardOutput.ReadToEnd());
+        validatorOutput = validator.StandardOutput.ReadToEnd();
 
         validator.WaitForExit();
       }
       sw.Stop();
       Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
 
-      var resultText = System.IO.File.ReadAllText(outputJson);
+      string resultText;
+      if (!System.IO.File.Exists(outputJson)) {
+        JavaValidationCrashed = true;
+        return ConvertJavaStdout(validatorOutput);
+      } else {
+        resultText = System.IO.File.ReadAllText(outputJson);
+      }
 
       var parser = new FhirJsonParser();
       OperationOutcome result;
@@ -449,7 +488,14 @@ class Program
       ValidatingDotnet = true;
       ValidatingJava = true;
       Task<OperationOutcome> validateWithJava = System.Threading.Tasks.Task.Run(ValidateWithJava);
+      // .ContinueWith(System.Threading.Tasks.Task <OperationOutcome> t =>
+      // {
+      //   setOutcome(t.Result, ValidatorType.Java);
+      //   ValidatingJava = false;
+      // });
+      // TaskScheduler.FromCurrentSynchronizationContext()
       Task<OperationOutcome> validateWithDotnet = System.Threading.Tasks.Task.Run(ValidateWithDotnet);
+
 
       var allTasks = new List<System.Threading.Tasks.Task> { validateWithJava, validateWithDotnet };
       while (allTasks.Any())

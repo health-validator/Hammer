@@ -222,6 +222,15 @@ ApplicationWindow {
         }
 
         Button {
+            id: copyResultsButton
+            text: "📋"
+            font.family: "Apple Color Emoji"
+            visible: addResourcesPage.state === "VALIDATED_RESOURCE"
+
+            onClicked: console.log(`Behold, I am clicked`)
+        }
+
+        Button {
             id: actionButton
             text: appmodel.validateButtonText
             visible: appmodel.resourceText || addResourcesPage.state === "EDITING_SETTINGS"
