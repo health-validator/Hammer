@@ -330,6 +330,13 @@ ApplicationWindow {
                         anchors.fill: parent
                         anchors.margins: 20
 
+                        MouseArea {
+                            hoverEnabled: true
+                            anchors.fill: parent
+                            cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            onClicked: errorsScrollView.contentItem.contentY = dotnetErrorsLabel.y
+                        }
+
                         BusyIndicator {
                             running: appmodel.validatingDotnet
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -374,7 +381,14 @@ ApplicationWindow {
                         border.color: "grey"
                         radius: 3
                         anchors.fill: parent
-                        anchors.margins: 20
+                        anchors.margins: 20                        
+
+                        MouseArea {
+                            hoverEnabled: true
+                            anchors.fill: parent
+                            cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            onClicked: errorsScrollView.contentItem.contentY = javaErrorsLabel.y
+                        }
 
                         BusyIndicator {
                             running: appmodel.validatingJava
@@ -411,6 +425,7 @@ ApplicationWindow {
             }
 
             ScrollView {
+                id: errorsScrollView
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 clip: true
@@ -426,6 +441,7 @@ ApplicationWindow {
                     }
 
                     Label {
+                        id: dotnetErrorsLabel
                         text: ".NET"
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: "#696969"
@@ -498,6 +514,7 @@ ApplicationWindow {
                     }
 
                     Label {
+                        id: javaErrorsLabel
                         text: !appmodel.javaValidationCrashed ? "Java" : "Java (validation crashed, details below)"
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: "#696969"
