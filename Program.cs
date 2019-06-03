@@ -491,6 +491,7 @@ class Program
       resetResults();
       ValidatingDotnet = true;
       ValidatingJava = true;
+      // () wrapper so older MS Build (15.9.20) works
       Task<OperationOutcome> validateWithJava = System.Threading.Tasks.Task.Run(() => ValidateWithJava());
       // .ContinueWith(System.Threading.Tasks.Task <OperationOutcome> t =>
       // {
