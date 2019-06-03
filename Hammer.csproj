@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Anemonis.Runtime.ApplicationLauncher" Version="1.1.2" />
     <PackageReference Include="Hl7.Fhir.ElementModel" Version="1.2.1" />
     <PackageReference Include="Hl7.Fhir.Serialization" Version="1.2.1" />
     <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="1.2.1" />
