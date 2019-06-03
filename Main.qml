@@ -498,7 +498,7 @@ ApplicationWindow {
                     }
 
                     Label {
-                        text: "Java"
+                        text: !appmodel.javaValidationCrashed ? "Java" : "Java (validation crashed, details below)"
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: "#696969"
                         font.pointSize: 17

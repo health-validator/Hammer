@@ -429,7 +429,7 @@ class Program
     {
       Console.WriteLine("Beginning Java validation");
       var resourcePath = SerializeResource(ResourceText, InstanceFormat);
-      var validatorPath = "/home/vadi/.m2/repository/ca/uhn/hapi/fhir/org.hl7.fhir.validation.cli/3.7.41-SNAPSHOT/org.hl7.fhir.validation.cli-3.7.41-SNAPSHOT.jar";
+      var validatorPath = "org.hl7.fhir.validator.jar";
       var scopePath = ScopeDirectory;
       var outputJson = $"{Path.GetTempFileName()}.json";
       var finalArguments = $"-jar {validatorPath} -version 3.0 -tx n/a -ig {scopePath} -output {outputJson} {resourcePath}";
@@ -456,7 +456,7 @@ class Program
 
       string resultText;
       if (!System.IO.File.Exists(outputJson)) {
-        JavaValidationCrashed = true;
+        // JavaValidationCrashed = true;
         return ConvertJavaStdout(validatorOutput);
       } else {
         resultText = System.IO.File.ReadAllText(outputJson);
