@@ -429,15 +429,17 @@ class Program
     {
       Console.WriteLine("Beginning Java validation");
       var resourcePath = SerializeResource(ResourceText, InstanceFormat);
-      var validatorPath = "org.hl7.fhir.validator.jar";
+
+      var validatorPath = Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location),
+        "org.hl7.fhir.validator.jar");
       var scopePath = ScopeDirectory;
       var outputJson = $"{Path.GetTempFileName()}.json";
       var finalArguments = $"-jar {validatorPath} -version 3.0 -tx n/a -ig {scopePath} -output {outputJson} {resourcePath}";
 
 
-      Stopwatch sw = new Stopwatch();
+      var sw = new Stopwatch();
       sw.Start();
-      string validatorOutput;
+      string validatorOutput, resultText;
       using (Process validator = new Process())
       {
         validator.StartInfo.FileName = "java";
@@ -446,20 +448,22 @@ class Program
         validator.StartInfo.RedirectStandardOutput = true;
         validator.StartInfo.RedirectStandardError = true;
         validator.Start();
-
-        validatorOutput = validator.StandardOutput.ReadToEnd();
-
         validator.WaitForExit();
-      }
-      sw.Stop();
-      Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
+        validatorOutput = validator.StandardOutput.ReadToEnd();
+        validatorOutput += validator.StandardError.ReadToEnd();
 
-      string resultText;
-      if (!System.IO.File.Exists(outputJson)) {
-        // JavaValidationCrashed = true;
-        return ConvertJavaStdout(validatorOutput);
-      } else {
-        resultText = System.IO.File.ReadAllText(outputJson);
+        sw.Stop();
+        Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
+
+        if (validator.ExitCode != 0 || !System.IO.File.Exists(outputJson))
+        {
+          // JavaValidationCrashed = true;
+          return ConvertJavaStdout(validatorOutput);
+        }
+        else
+        {
+          resultText = System.IO.File.ReadAllText(outputJson);
+        }
       }
 
       var parser = new FhirJsonParser();
@@ -487,15 +491,14 @@ class Program
       resetResults();
       ValidatingDotnet = true;
       ValidatingJava = true;
-      Task<OperationOutcome> validateWithJava = System.Threading.Tasks.Task.Run(ValidateWithJava);
+      Task<OperationOutcome> validateWithJava = System.Threading.Tasks.Task.Run(() => ValidateWithJava());
       // .ContinueWith(System.Threading.Tasks.Task <OperationOutcome> t =>
       // {
       //   setOutcome(t.Result, ValidatorType.Java);
       //   ValidatingJava = false;
       // });
       // TaskScheduler.FromCurrentSynchronizationContext()
-      Task<OperationOutcome> validateWithDotnet = System.Threading.Tasks.Task.Run(ValidateWithDotnet);
-
+      Task<OperationOutcome> validateWithDotnet = System.Threading.Tasks.Task.Run(() => ValidateWithDotnet());
 
       var allTasks = new List<System.Threading.Tasks.Task> { validateWithJava, validateWithDotnet };
       while (allTasks.Any())
