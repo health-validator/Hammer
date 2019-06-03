@@ -298,8 +298,13 @@ class Program
       filePath = filePath.Replace("\r", "").Replace("\n", "");
       filePath = System.Uri.UnescapeDataString(filePath);
       Console.WriteLine($"Loading '{filePath}'...");
-      ResourceText = System.IO.File.ReadAllText(filePath);
 
+      if (!System.IO.File.Exists(filePath)) {
+        Console.WriteLine($"File to load doesn't actually exist: {filePath}");
+        return;
+      }
+
+      ResourceText = System.IO.File.ReadAllText(filePath);
       ScopeDirectory = System.IO.Path.GetDirectoryName(filePath);
     }
 
