@@ -434,7 +434,7 @@ class Program
         "org.hl7.fhir.validator.jar");
       var scopePath = ScopeDirectory;
       var outputJson = $"{Path.GetTempFileName()}.json";
-      var finalArguments = $"-jar {validatorPath} -version 3.0 -tx n/a -ig {scopePath} -output {outputJson} {resourcePath}";
+      var finalArguments = $"-jar {validatorPath} -version 3.0 -tx n/a -ig \"{scopePath}\" -output {outputJson} {resourcePath}";
 
 
       var sw = new Stopwatch();
