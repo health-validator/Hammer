@@ -226,8 +226,11 @@ ApplicationWindow {
             text: "📋"
             font.family: "Apple Color Emoji"
             visible: addResourcesPage.state === "VALIDATED_RESOURCE"
+            enabled: !appmodel.validatingDotnet || !appmodel.validatingJava
+            onClicked: appmodel.copyValidationReport()
 
-            onClicked: console.log(`Behold, I am clicked`)
+            ToolTip.visible: hovered
+            ToolTip.text: qsTr(`Copy validation report as a CSV to clipboard`)
         }
 
         Button {
