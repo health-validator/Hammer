@@ -347,6 +347,39 @@ class Program
         InstanceFormat = ResourceFormat.Unknown;
     }
 
+    public void CopyValidationReport()
+    {
+      using (var writer = new StringWriter())
+      using (var csv = new CsvHelper.CsvWriter(writer))
+      {
+        // write fields out manually since we need to add the engine type column
+        csv.WriteField("Severity");
+        csv.WriteField("Text");
+        csv.WriteField("Location");
+        csv.WriteField("Validator engine");
+        csv.NextRecord();
+
+        foreach (var Issue in DotnetResult.Issues) {
+          csv.WriteField(Issue.Severity);
+          csv.WriteField(Issue.Text);
+          csv.WriteField(Issue.Location);
+          csv.WriteField(".NET");
+          csv.NextRecord();
+        }
+
+        foreach (var Issue in JavaResult.Issues)
+        {
+          csv.WriteField(Issue.Severity);
+          csv.WriteField(Issue.Text);
+          csv.WriteField(Issue.Location);
+          csv.WriteField("Java");
+          csv.NextRecord();
+        }
+
+        TextCopy.Clipboard.SetText(writer.ToString());
+      }
+    }
+
     public OperationOutcome ValidateWithDotnet()
     {
       Console.WriteLine("Beginning .NET validation");
