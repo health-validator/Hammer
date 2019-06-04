@@ -20,8 +20,8 @@
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
-<ItemGroup>
-  <Content Include="Main.qml" CopyToPublishDirectory="Always" />
-</ItemGroup>
+  <ItemGroup>
+    <Content Include="Main.qml" CopyToPublishDirectory="Always" />
+  </ItemGroup>
 
 </Project>
