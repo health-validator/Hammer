@@ -5,7 +5,7 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
 import QtQuick.Layouts 1.12
-import QtQuick.Dialogs 1.3
+import Qt.labs.platform 1.1
 
 ApplicationWindow {
     id: window
@@ -103,8 +103,8 @@ ApplicationWindow {
                 FileDialog {
                     id: resourcePicker
                     title: "Select a FHIR resource to validate"
-                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : shortcuts.home
-                    onAccepted: appmodel.loadResourceFile(resourcePicker.fileUrl)
+                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)
+                    onAccepted: appmodel.loadResourceFile(resourcePicker.file)
                 }
 
                 ToolTip.text: qsTr("Ctrl+O (open), Ctrl+D (validate)")
@@ -285,8 +285,6 @@ ApplicationWindow {
             id: errorsColumn
             spacing: 20
             anchors.fill: parent
-//            visible: !appmodel.validating &&
-//                     (appmodel.dotnetResult.errorCount >= 1 || appmodel.javaResult.errorCount >= 1)
 
             Rectangle {
                 id: errorsRectangle
@@ -294,6 +292,7 @@ ApplicationWindow {
                 border.color: "#c33f3f"
                 border.width: 2
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                visible: appmodel.dotnetResult.errorCount >= 1 || appmodel.javaResult.errorCount >= 1
 
                 gradient: Gradient {
                     GradientStop { position: 0.0; color: "#c31432" }
@@ -446,7 +445,8 @@ ApplicationWindow {
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: "#696969"
                         font.pointSize: 17
-                        visible: !appmodel.validatingDotnet
+                        visible: !appmodel.validatingDotnet && (appmodel.dotnetResult.errorCount >= 1
+                                                                 || appmodel.dotnetResult.warningCount >= 1)
                     }
 
                     Repeater {
@@ -535,7 +535,8 @@ ApplicationWindow {
                         anchors.horizontalCenter: parent.horizontalCenter
                         color: "#696969"
                         font.pointSize: 17
-                        visible: !appmodel.validatingJava
+                        visible: !appmodel.validatingJava && (appmodel.javaResult.errorCount >= 1
+                                    || appmodel.javaResult.warningCount >= 1)
                     }
 
                     Repeater {
@@ -662,12 +663,11 @@ ApplicationWindow {
                 text: "<center>Browse...</center>"
                 onClicked: scopePicker.open()
 
-                FileDialog {
+                FolderDialog {
                     id: scopePicker
                     title: "Folder to act as the scope (context) for validation"
-                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : shortcuts.home
-                    selectFolder: true
-                    onAccepted: appmodel.loadScopeDirectory(scopePicker.fileUrl)
+                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)
+                    onAccepted: appmodel.loadScopeDirectory(scopePicker.folder)
                 }
             }
 
