@@ -267,7 +267,7 @@ class Program
         convertedIssues.Add(new AppModel.Issue
         {
           Severity = issue.Severity.ToString().ToLower(),
-          Text = issue.Details?.Text ?? "(no details)",
+          Text = issue.Details?.Text ?? issue.Diagnostics ?? "(no details)",
           Location = String.Join(" via ", issue.Location)
         });
       }
@@ -475,6 +475,8 @@ class Program
       var finalArguments = $"-jar {validatorPath} -version 3.0 -tx n/a -ig \"{scopePath}\" -output {outputJson} {resourcePath}";
 
 
+      OperationOutcome result;
+
       var sw = new Stopwatch();
       sw.Start();
       string validatorOutput, resultText;
@@ -485,8 +487,33 @@ class Program
         validator.StartInfo.UseShellExecute = false;
         validator.StartInfo.RedirectStandardOutput = true;
         validator.StartInfo.RedirectStandardError = true;
-        validator.Start();
-        validator.WaitForExit();
+
+        try
+        {
+            validator.Start();
+            validator.WaitForExit();
+        }
+        catch (Exception ex)
+        {
+            result = new OperationOutcome();
+            if (ex.Message == "The system cannot find the file specified")
+            {
+                result.Issue.Add(new OperationOutcome.IssueComponent
+                {
+                    Severity = OperationOutcome.IssueSeverity.Error,
+                    Diagnostics = "Java could not be found. Is your Java installed and working correctly? See https://www.java.com/en/download/help/version_manual.xml",
+                    Code = OperationOutcome.IssueType.Exception
+                });
+            } else {
+                result.Issue.Add(new OperationOutcome.IssueComponent
+                {
+                    Severity = OperationOutcome.IssueSeverity.Error,
+                    Diagnostics = ex.Message,
+                    Code = OperationOutcome.IssueType.Exception
+                });
+            }
+            return result;
+        }
         validatorOutput = validator.StandardOutput.ReadToEnd();
         validatorOutput += validator.StandardError.ReadToEnd();
 
@@ -505,7 +532,6 @@ class Program
       }
 
       var parser = new FhirJsonParser();
-      OperationOutcome result;
       try
       {
         result = parser.Parse<OperationOutcome>(resultText);
