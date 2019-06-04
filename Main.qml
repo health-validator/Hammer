@@ -461,7 +461,7 @@ ApplicationWindow {
                             border.color: "#f6f3fb"
                             border.width: 1
 
-                            height: errorText.height + 20
+                            height: errorText.height + 30
                             width: resultsPane.width - leftMargin - rightMargin
 
                             property int leftMargin: 20
@@ -513,6 +513,22 @@ ApplicationWindow {
                                 textFormat: Text.PlainText
                                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
                             }
+
+                            Text {
+                                id: errorLocationText
+                                anchors {
+                                    bottom: parent.bottom
+                                }
+
+                                width: parent.width
+                                horizontalAlignment: Text.AlignRight
+                                color: "#34826b"
+                                text: modelData.location
+                                renderType: Text.NativeRendering
+                                font.pointSize: 9
+                                textFormat: Text.PlainText
+                                wrapMode: "WrapAtWordBoundaryOrAnywhere"
+                            }
                         }
                     }
 
@@ -534,7 +550,7 @@ ApplicationWindow {
                             border.color: "#f6f3fb"
                             border.width: 1
 
-                            height: javaErrorText.height + 20
+                            height: javaErrorText.height + 30
                             width: resultsPane.width - leftMargin - rightMargin
 
                             property int leftMargin: 20
@@ -581,6 +597,22 @@ ApplicationWindow {
                                 color: "#337081"
                                 text: modelData.text
                                 renderType: Text.NativeRendering
+                                textFormat: Text.PlainText
+                                wrapMode: "WrapAtWordBoundaryOrAnywhere"
+                            }
+
+                            Text {
+                                id: errorJavaLocationText
+                                anchors {
+                                    bottom: parent.bottom
+                                }
+
+                                width: parent.width
+                                horizontalAlignment: Text.AlignRight
+                                color: "#34826b"
+                                text: modelData.location
+                                renderType: Text.NativeRendering
+                                font.pointSize: 9
                                 textFormat: Text.PlainText
                                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
                             }
