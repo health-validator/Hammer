@@ -12,7 +12,7 @@ ApplicationWindow {
     visible: true
     width: 640; height: 650
     minimumWidth: 550; minimumHeight: 300
-    title: qsTr("Hammer")
+    title: qsTr("Hammer STU3 (experimental)")
 
     Universal.theme: darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
 
@@ -381,7 +381,7 @@ ApplicationWindow {
                         border.color: "grey"
                         radius: 3
                         anchors.fill: parent
-                        anchors.margins: 20                        
+                        anchors.margins: 20
 
                         MouseArea {
                             hoverEnabled: true
