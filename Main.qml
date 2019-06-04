@@ -290,7 +290,7 @@ ApplicationWindow {
 
             Rectangle {
                 id: errorsRectangle
-                width: 250; height: 90; radius: 5
+                width: 167; height: 60; radius: 3
                 border.color: "#c33f3f"
                 border.width: 2
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -302,14 +302,11 @@ ApplicationWindow {
                 }
 
                 Label {
-                    width: 294
-                    height: 45
                     color: "white"
                     text: "<center>invalid</center>"
-                    font.pointSize: 26
+                    font.pointSize: 20
                     textFormat: Text.RichText
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.centerIn: parent
                 }
             }
 
