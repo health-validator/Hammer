@@ -20,6 +20,10 @@ ApplicationWindow {
         id: appmodel
     }
 
+    ToastManager {
+        id: toast
+    }
+
     DropArea {
         id: dropArea
         anchors.fill: parent
@@ -115,7 +119,7 @@ ApplicationWindow {
                 id: textArea
                 placeholderText: qsTr("or load it here")
                 renderType: Text.NativeRendering
-                onTextChanged: appmodel.updateText(text)
+                onTextChanged: {console.log("ontextchanged to "+text); appmodel.resourceText = text}
                 text: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
                 font.family: appmodel.resourceText ? "Ubuntu Mono" : "Ubuntu"
@@ -224,10 +228,9 @@ ApplicationWindow {
         Button {
             id: copyResultsButton
             text: "📋"
-            font.family: "Apple Color Emoji"
             visible: addResourcesPage.state === "VALIDATED_RESOURCE"
             enabled: !appmodel.validatingDotnet || !appmodel.validatingJava
-            onClicked: appmodel.copyValidationReport()
+            onClicked: { appmodel.copyValidationReport(); toast.show("Copied"); }
 
             ToolTip.visible: hovered
             ToolTip.text: qsTr(`Copy validation report as a CSV to clipboard`)
@@ -343,12 +346,26 @@ ApplicationWindow {
                             onRunningChanged: dotnetErrorsRepeater.model = Net.toListModel(appmodel.dotnetResult.issues)
                         }
 
+                        Rectangle {
+                            radius: 3
+                            anchors.margins: 1
+                            anchors.fill: parent
+                            visible: !appmodel.validatingDotnet && appmodel.dotnetResult.errorCount === 0
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "#00b09b" }
+                                GradientStop { position: 1.0; color: "#96c93d" }
+                                orientation: Gradient.Vertical
+                            }
+                        }
+
                         Label {
-                            color: "#696969"
                             text: qsTr(`${appmodel.dotnetResult.errorCount} ∙ ${appmodel.dotnetResult.warningCount}`)
                             font.pointSize: 35
                             anchors.centerIn: parent
                             visible: !appmodel.validatingDotnet
+                            onVisibleChanged: console.log(`errors: ${appmodel.dotnetResult.errorCount}`)
+                            color: appmodel.dotnetResult.errorCount >= 1 ? "#696969" : "white"
+                            onColorChanged: console.log(`color changed`)
 
                             ToolTip.visible: dotnetErrorsMouseArea.containsMouse
                             ToolTip.text: qsTr("Errors ∙ Warnings")
@@ -396,12 +413,25 @@ ApplicationWindow {
                             onRunningChanged: javaErrorsRepeater.model = Net.toListModel(appmodel.javaResult.issues)
                         }
 
+                        Rectangle {
+                            radius: 3
+                            anchors.margins: 1
+                            anchors.fill: parent
+                            visible: !appmodel.validatingJava && appmodel.javaResult.errorCount === 0
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "#00b09b" }
+                                GradientStop { position: 1.0; color: "#96c93d" }
+                                orientation: Gradient.Vertical
+                            }
+                        }
+
                         Label {
-                            color: "#696969"
                             text: qsTr(`${appmodel.javaResult.errorCount} ∙ ${appmodel.javaResult.warningCount}`)
                             font.pointSize: 35
                             anchors.centerIn: parent
                             visible: !appmodel.validatingJava
+                            color: appmodel.javaResult.errorCount === 0 ? "white" : "#696969"
+
 
                             ToolTip.visible: javaErrorsMouseArea.containsMouse
                             ToolTip.text: qsTr("Errors ∙ Warnings")

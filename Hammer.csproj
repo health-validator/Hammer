@@ -24,6 +24,8 @@
 
   <ItemGroup>
     <Content Include="Main.qml" CopyToPublishDirectory="Always" />
+    <Content Include="Toast.qml" CopyToPublishDirectory="Always" />
+    <Content Include="ToastManager.qml" CopyToPublishDirectory="Always" />
   </ItemGroup>
 
 </Project>
