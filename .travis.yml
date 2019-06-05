@@ -16,4 +16,4 @@ script:
  - mv publish Hammer 
  - zip -r Hammer.zip Hammer
  - DEPLOY_URL=$(curl --upload-file ./Hammer.zip https://transfer.sh/Hammer.zip)
- - echo "Zip is available for download at: $DEPLOY_URL"
+ - echo \"Zip is available for download at: $DEPLOY_URL\"
