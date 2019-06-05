@@ -616,6 +616,8 @@ class Program
   {
     RuntimeManager.DiscoverOrDownloadSuitableQtRuntime();
 
+    Console.WriteLine($"Current working directory: {Directory.GetCurrentDirectory()}, spec: {File.Exists("specification.zip")}");
+
     QQuickStyle.SetStyle("Universal");
     QGuiApplication.SetAttribute(Qml.Net.ApplicationAttribute.EnableHighDpiScaling, true);
 
