@@ -2,6 +2,13 @@ language: csharp
 dist: xenial
 mono: none
 dotnet: 2.2
+install: make get-deps
+
+addons:
+  apt:
+    packages:
+    - tree
+
 script:
  - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
  - dotnet publish
