@@ -16,7 +16,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks.Dataflow;
 using System.Xml.Linq;
-// using Furore.Fhir.ValidationDemo.Properties;
 using Hl7.Fhir.Support;
 using Hl7.Fhir.Utility;
 using System.Threading.Tasks;
@@ -105,6 +104,23 @@ class Program
 
         _resourceFont = value;
         this.ActivateProperty(x => x.ResourceFont);
+      }
+    }
+
+    private string _terminologyService = "http://tx.fhir.org";
+    [NotifySignal]
+    public string TerminologyService
+    {
+      get => _terminologyService;
+      set
+      {
+        if (_terminologyService == value)
+        {
+          return;
+        }
+
+        _terminologyService = value;
+        this.ActivateProperty(x => x._terminologyService);
       }
     }
 
@@ -385,13 +401,18 @@ class Program
       Console.WriteLine("Beginning .NET validation");
       try
       {
+        var externalTerminology = new ExternalTerminologyService(new FhirClient(TerminologyService));
+        var localTerminology = new LocalTerminologyService(CombinedSource != null ? CombinedSource : CoreSource);
+        var combinedTerminology = new FallbackTerminologyService(localTerminology, externalTerminology);
+
         var settings = new ValidationSettings()
         {
           ResourceResolver = CombinedSource != null ? CombinedSource : CoreSource,
           GenerateSnapshot = true,
           EnableXsdValidation = true,
           Trace = false,
-          ResolveExteralReferences = true
+          ResolveExteralReferences = true,
+          TerminologyService = combinedTerminology
         };
 
         var validator = new Validator(settings);
@@ -472,7 +493,7 @@ class Program
         "org.hl7.fhir.validator.jar");
       var scopePath = ScopeDirectory;
       var outputJson = $"{Path.GetTempFileName()}.json";
-      var finalArguments = $"-jar {validatorPath} -version 3.0 -tx n/a -ig \"{scopePath}\" -output {outputJson} {resourcePath}";
+      var finalArguments = $"-jar {validatorPath} -version 3.0 -tx \"{TerminologyService}\" -ig \"{scopePath}\" -output {outputJson} {resourcePath}";
 
 
       OperationOutcome result;
