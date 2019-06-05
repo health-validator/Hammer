@@ -252,7 +252,7 @@ ApplicationWindow {
             }
 
             ToolTip.visible: hovered && appmodel.scopeDirectory
-            ToolTip.text: qsTr(`Scope: ${appmodel.scopeDirectory}`)
+            ToolTip.text: qsTr(`Scope: ${appmodel.scopeDirectory}\nTerminology: ${appmodel.terminologyService}`)
         }
     }
 
