@@ -17,4 +17,5 @@ script:
  - mv publish Hammer 
  - zip -r Hammer.zip Hammer
  - tree .
- - wget --method PUT --body-file=Hammer.zip "https://transfer.sh/Hammer.zip" -O - -q
+ - curl --upload-file ./Hammer.zip https://transfer.sh/Hammer.zip https://transfer.sh/66nb8/Hammer.zip
+# - wget --method PUT --body-file=Hammer.zip "https://transfer.sh/Hammer.zip" -O - -q
