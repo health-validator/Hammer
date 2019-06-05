@@ -33,7 +33,9 @@
   <a href="#license">License</a>
 </p>
 
-![screenshot](https://raw.githubusercontent.com/vadi2/Hammer/master/assets/hammer-demo.gif)
+<p align="center">
+  <img alt="Hammer demo" src="https://raw.githubusercontent.com/vadi2/Hammer/master/assets/hammer-demo.gif">
+</p>
 
 ## Status
 
@@ -51,15 +53,22 @@ Experimental and not ready for production. Try it out and [give feedback](https:
 * Cross platform
   - Windows, macOS and Linux ready.
 
-## How To Use
-
-1. Drag and drop, paste, or open a FHIR instance.
-1. Adjust the validation scope in settings if necessary.
-1. Click `Validate`.
-
 ## Download
 
 You can [download](https://transfer.sh/15IU6I/Hammer.zip) the latest version of Hammer for Windows, macOS and Linux.
+
+## How To Use
+
+Prerequisite:
+1. Install [.NET Core 2.2 Runtime](https://dotnet.microsoft.com/download)
+1. Launch Hammer:
+  * Windows - double-click `Hammer.exe`
+  * macOS and Linux - run `dotnet Hammer.dll`
+
+Validating:
+1. Drag and drop, paste, or open a FHIR instance.
+1. Adjust the validation scope in settings if necessary.
+1. Click `Validate`.
 
 ## Credits
 
