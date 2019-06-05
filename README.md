@@ -51,7 +51,7 @@ Experimental and not ready for production. Try it out and [give feedback](https:
 * Copy validation report as CSV
 * Open-source and Free
 * Cross platform
-  - Windows, macOS and Linux ready.
+  - Windows, macOS and Linux.
 
 ## Download
 
