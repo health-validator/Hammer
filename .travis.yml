@@ -13,6 +13,8 @@ script:
  - dotnet publish
  - wget -O bin/Debug/netcoreapp2.2/publish/org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
  - tree .
- - cd bin/Debug/netcoreapp2.2 && zip -r Hammer.zip publish
+ - cd bin/Debug/netcoreapp2.2
+ - mv publish Hammer 
+ - zip -r Hammer.zip Hammer
  - tree .
- - wget --method PUT --body-file=bin/Debug/netcoreapp2.2/publish/Hammer.zip "https://transfer.sh/Hammer.zip" -O - -q
+ - wget --method PUT --body-file=Hammer.zip "https://transfer.sh/Hammer.zip" -O - -q
