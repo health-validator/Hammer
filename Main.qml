@@ -225,12 +225,15 @@ ApplicationWindow {
             text: "☰"
 
             onClicked: addResourcesPage.state = "EDITING_SETTINGS"
+            ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
+            ToolTip.text: qsTr(`Open settings`)
         }
 
         Button {
             id: loadNewInstanceButton
             text: "📂"
-            visible: textArea.state === "EXPANDED"
+//            visible: textArea.state === "EXPANDED"
+            visible: textArea.state === "EXPANDED" && addResourcesPage.state === "ENTERING_RESOURCE"
 
             onClicked: {
                 addResourcesPage.state = "ENTERING_RESOURCE"
@@ -238,7 +241,7 @@ ApplicationWindow {
             }
 
             ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
-            ToolTip.text: qsTr(`Open new instance`)
+            ToolTip.text: qsTr(`Open new instance (Ctrl+O)`)
         }
 
         Button {
