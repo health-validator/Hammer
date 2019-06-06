@@ -618,7 +618,7 @@ class Program
   {
     RuntimeManager.DiscoverOrDownloadSuitableQtRuntime();
 
-    QQuickStyle.SetStyle("Universal");
+    QQuickStyle.SetStyle("Material");
     QGuiApplication.SetAttribute(Qml.Net.ApplicationAttribute.EnableHighDpiScaling, true);
 
     using (var app = new QGuiApplication(args))
