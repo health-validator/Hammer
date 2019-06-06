@@ -63,7 +63,7 @@ Prerequisite:
 1. Install [.NET Core 2.2 Runtime](https://dotnet.microsoft.com/download)
 1. Launch Hammer:
   * Windows - double-click `Hammer.exe`
-  * macOS and Linux - run `dotnet Hammer.dll`
+  * macOS and Linux - double-click `run-hammer.sh`
 
 Validating:
 1. Drag and drop, paste, or open a FHIR instance.
