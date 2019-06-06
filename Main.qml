@@ -15,6 +15,7 @@ ApplicationWindow {
     title: qsTr("Hammer STU3 (experimental)")
 
     Universal.theme: darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
+    Material.theme: darkAppearanceSwitch.checked ? Material.Dark : Material.Light
 
     property int tooltipDelay: 1500
 
