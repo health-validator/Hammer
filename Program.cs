@@ -626,11 +626,7 @@ class Program
       using (var engine = new QQmlApplicationEngine())
       {
         Qml.Net.Qml.RegisterType<AppModel>("appmodel", 1, 0);
-
         engine.Load("Main.qml");
-
-        QCoreApplication.OrganizationDomain = "domain";
-        QCoreApplication.OrganizationName = "name";
 
         return app.Exec();
       }
