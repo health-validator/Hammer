@@ -107,7 +107,7 @@ ApplicationWindow {
                 FileDialog {
                     id: resourcePicker
                     title: "Select a FHIR resource to validate"
-                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)
+                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
                     onAccepted: appmodel.loadResourceFile(resourcePicker.file)
                 }
 
@@ -696,7 +696,7 @@ ApplicationWindow {
                 FolderDialog {
                     id: scopePicker
                     title: "Folder to act as the scope (context) for validation"
-                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)
+                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
                     onAccepted: appmodel.loadScopeDirectory(scopePicker.folder)
                 }
             }
