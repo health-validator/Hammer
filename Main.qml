@@ -16,6 +16,8 @@ ApplicationWindow {
 
     Universal.theme: darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
 
+    property int tooltipDelay: 1500
+
     AppModel {
         id: appmodel
     }
@@ -112,7 +114,7 @@ ApplicationWindow {
                 }
 
                 ToolTip.text: qsTr("Ctrl+O (open), Ctrl+D (validate)")
-                ToolTip.visible: hovered; ToolTip.delay: 1000
+                ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             }
 
             TextArea {
@@ -223,6 +225,20 @@ ApplicationWindow {
             text: "☰"
 
             onClicked: addResourcesPage.state = "EDITING_SETTINGS"
+        }
+
+        Button {
+            id: loadNewInstanceButton
+            text: "📂"
+            visible: textArea.state === "EXPANDED"
+
+            onClicked: {
+                addResourcesPage.state = "ENTERING_RESOURCE"
+                resourcePicker.open()
+            }
+
+            ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
+            ToolTip.text: qsTr(`Open new instance`)
         }
 
         Button {
