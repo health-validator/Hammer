@@ -4,16 +4,23 @@ addons:
   - name: dotnet-sdk
     classic: true
     channel: latest/beta
+  apt:
+    packages:
+    - tree
 sudo: required
 language: csharp
 mono: none
+
 
 script:
  - sudo snap alias dotnet-sdk.dotnet dotnet
  - dotnet --version
  - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
- - dotnet publish -r win10-x64 /p:PublishSingleFile=true
+ - dotnet publish
  - wget -O bin/Debug/netcoreapp2.2/publish/org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
+ - tree .
+ - dotnet publish -r win10-x64 /p:PublishSingleFile=true
+ - tree .
  - cd bin/Debug/netcoreapp2.2
  - mv publish Hammer
  - mv Hammer/assets/run-hammer.sh Hammer/run-hammer.sh
