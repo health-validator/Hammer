@@ -41,7 +41,7 @@ ApplicationWindow {
                        if (drop.proposedAction == Qt.MoveAction || drop.proposedAction == Qt.CopyAction) {
                            appmodel.loadResourceFile(drop.text)
                            drop.acceptProposedAction()
-                           addResourceScrollView.state = "ENTERING_RESOURCE"
+                           addResourcesPage.state = "ENTERING_RESOURCE"
                        }
                    }
     }
@@ -57,7 +57,7 @@ ApplicationWindow {
 
     Shortcut {
         sequence: "Ctrl+O"
-        onActivated: resourcePicker.open()
+        onActivated: { addResourcesPage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
     }
 
     Shortcut {
