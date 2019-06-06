@@ -308,29 +308,6 @@ ApplicationWindow {
             spacing: 20
             anchors.fill: parent
 
-            Rectangle {
-                id: errorsRectangle
-                width: 167; height: 60; radius: 3
-                border.color: "#c33f3f"
-                border.width: 2
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                visible: appmodel.dotnetResult.errorCount >= 1 || appmodel.javaResult.errorCount >= 1
-
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: "#c31432" }
-                    GradientStop { position: 1.0; color: "#240b36" }
-                    orientation: Gradient.Vertical
-                }
-
-                Label {
-                    color: "white"
-                    text: "<center>invalid</center>"
-                    font.pointSize: 20
-                    textFormat: Text.RichText
-                    anchors.centerIn: parent
-                }
-            }
-
             Row {
                 id: errorCountsRow
 //                Layout.fillWidth: true
@@ -376,15 +353,24 @@ ApplicationWindow {
                                 orientation: Gradient.Vertical
                             }
                         }
+                        Rectangle {
+                            radius: 3
+                            anchors.margins: 1
+                            anchors.fill: parent
+                            visible: !appmodel.validatingDotnet && appmodel.dotnetResult.errorCount > 0
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "#c31432" }
+                                GradientStop { position: 1.0; color: "#240b36" }
+                                orientation: Gradient.Vertical
+                            }
+                        }
 
                         Label {
                             text: qsTr(`${appmodel.dotnetResult.errorCount} ∙ ${appmodel.dotnetResult.warningCount}`)
                             font.pointSize: 35
                             anchors.centerIn: parent
                             visible: !appmodel.validatingDotnet
-                            onVisibleChanged: console.log(`errors: ${appmodel.dotnetResult.errorCount}`)
-                            color: appmodel.dotnetResult.errorCount >= 1 ? "#696969" : "white"
-                            onColorChanged: console.log(`color changed`)
+                            color: "white"
 
                             ToolTip.visible: dotnetErrorsMouseArea.containsMouse
                             ToolTip.text: qsTr("Errors ∙ Warnings")
@@ -443,13 +429,24 @@ ApplicationWindow {
                                 orientation: Gradient.Vertical
                             }
                         }
+                        Rectangle {
+                            radius: 3
+                            anchors.margins: 1
+                            anchors.fill: parent
+                            visible: !appmodel.validatingJava && appmodel.javaResult.errorCount > 0
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "#c31432" }
+                                GradientStop { position: 1.0; color: "#240b36" }
+                                orientation: Gradient.Vertical
+                            }
+                        }
 
                         Label {
                             text: qsTr(`${appmodel.javaResult.errorCount} ∙ ${appmodel.javaResult.warningCount}`)
                             font.pointSize: 35
                             anchors.centerIn: parent
                             visible: !appmodel.validatingJava
-                            color: appmodel.javaResult.errorCount === 0 ? "white" : "#696969"
+                            color: "white"
 
 
                             ToolTip.visible: javaErrorsMouseArea.containsMouse
