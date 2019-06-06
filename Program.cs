@@ -321,7 +321,9 @@ class Program
       }
 
       ResourceText = System.IO.File.ReadAllText(filePath);
-      ScopeDirectory = System.IO.Path.GetDirectoryName(filePath);
+      if (ScopeDirectory == null) {
+        ScopeDirectory = System.IO.Path.GetDirectoryName(filePath);
+      }
     }
 
     public void LoadScopeDirectory(string text)
