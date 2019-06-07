@@ -55,7 +55,7 @@ Experimental and not ready for production. Try it out and [give feedback](https:
 
 ## Download
 
-You can [download](https://transfer.sh/15IU6I/Hammer.zip) the latest version of Hammer for Windows, macOS and Linux.
+You can [download](https://transfer.sh/6bfx7/Hammer.zip) the latest version of Hammer for Windows, macOS and Linux.
 
 ## How To Use
 
