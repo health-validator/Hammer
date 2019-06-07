@@ -121,7 +121,7 @@ ApplicationWindow {
                 id: textArea
                 placeholderText: qsTr("or load it here")
                 renderType: Text.NativeRendering
-                onTextChanged: {console.log("ontextchanged to "+text); appmodel.resourceText = text}
+                onTextChanged: { appmodel.resourceText = text }
                 text: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
                 font.family: appmodel.resourceText ? "Ubuntu Mono" : "Ubuntu"
