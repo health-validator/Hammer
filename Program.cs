@@ -1,24 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using Qml.Net;
-using Qml.Net.Runtimes;
-using Hl7.Fhir.ElementModel;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using CsvHelper;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
 using Hl7.Fhir.Serialization;
-using Hl7.Fhir.Specification.Navigation;
 using Hl7.Fhir.Specification.Source;
 using Hl7.Fhir.Specification.Terminology;
-using Hl7.Fhir.Validation;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks.Dataflow;
-using System.Xml.Linq;
-using Hl7.Fhir.Support;
 using Hl7.Fhir.Utility;
-using System.Threading.Tasks;
+using Hl7.Fhir.Validation;
+using Qml.Net;
+using Qml.Net.Runtimes;
+using TextCopy;
+using Task = System.Threading.Tasks.Task;
 
 class Program
 {
@@ -34,9 +33,9 @@ class Program
       _instance = this;
     }
 
-    private IResourceResolver CoreSource = new CachedResolver(ZipSource.CreateValidationSource());
+    private readonly IResourceResolver _coreSource = new CachedResolver(ZipSource.CreateValidationSource());
 
-    private IResourceResolver CombinedSource;
+    private IResourceResolver _combinedSource;
 
     #region QML-accessible properties
     private ResourceFormat _instanceFormat;
@@ -69,7 +68,7 @@ class Program
 
         // Finally, we combine both sources, so we will find profiles both from the core zip as well as from the directory.
         // By mentioning the directory source first, anything in the user directory will override what is in the core zip.
-        CombinedSource = new MultiResolver(directorySource, CoreSource);
+        _combinedSource = new MultiResolver(directorySource, _coreSource);
       }
     }
 
@@ -165,14 +164,14 @@ class Program
       set => this.SetProperty(ref _dotnetResult, value);
     }
 
-    private void resetResults()
+    private void ResetResults()
     {
       JavaResult = new ValidationResult { ValidatorType = ValidatorType.Java };
       DotnetResult = new ValidationResult { ValidatorType = ValidatorType.Dotnet };
       JavaValidationCrashed = false;
     }
 
-    private void setOutcome(OperationOutcome outcome, ValidatorType type)
+    private void SetOutcome(OperationOutcome outcome, ValidatorType type)
     {
       if (type == ValidatorType.Java) {
         JavaResult = new ValidationResult { ValidatorType = type };
@@ -191,7 +190,7 @@ class Program
       // Console.WriteLine(outcome.ToString());
     }
 
-    public enum ValidatorType { Dotnet = 1, Java = 2 };
+    public enum ValidatorType { Dotnet = 1, Java = 2 }
 
     public class ValidationResult {
       private ValidatorType _validatorType;
@@ -199,22 +198,22 @@ class Program
       public ValidatorType ValidatorType
         { get => _validatorType; set => this.SetProperty(ref _validatorType, value); }
 
-      private List<AppModel.Issue> _issues
-        = new List<AppModel.Issue> { };
+      private List<Issue> _issues
+        = new List<Issue>();
 
       [NotifySignal]
-      public List<AppModel.Issue> Issues
+      public List<Issue> Issues
       {
         get => _issues;
         set => this.SetProperty(ref _issues, value);
       }
 
-      private int _errorCount = 0;
+      private int _errorCount;
       [NotifySignal]
       public int ErrorCount
         { get => _errorCount; set => this.SetProperty(ref _errorCount, value); }
 
-      private int _warningCount = 0;
+      private int _warningCount;
       [NotifySignal]
       public int WarningCount
         { get => _warningCount; set => this.SetProperty(ref _warningCount, value); }
@@ -253,7 +252,7 @@ class Program
       ResourceText = newText;
     }
 
-    public Hl7.Fhir.Rest.ResourceFormat InstanceFormat
+    public ResourceFormat InstanceFormat
     {
       get => _instanceFormat;
       set
@@ -274,13 +273,13 @@ class Program
       }
     }
 
-    private List<AppModel.Issue> convertIssues(List<Hl7.Fhir.Model.OperationOutcome.IssueComponent> issues)
+    private List<Issue> convertIssues(List<OperationOutcome.IssueComponent> issues)
     {
-      List<AppModel.Issue> convertedIssues = new List<AppModel.Issue> { };
+      List<Issue> convertedIssues = new List<Issue>();
 
       foreach (var issue in issues)
       {
-        convertedIssues.Add(new AppModel.Issue
+        convertedIssues.Add(new Issue
         {
           Severity = issue.Severity.ToString().ToLower(),
           Text = issue.Details?.Text ?? issue.Diagnostics ?? "(no details)",
@@ -305,23 +304,21 @@ class Program
       }
 
       var filePath = text;
-      if (System.Runtime.InteropServices.RuntimeInformation
-        .IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) {
-        filePath = filePath.RemovePrefix("file:///");
-      } else {
-        filePath = filePath.RemovePrefix("file://");
-      }
+      filePath = filePath.RemovePrefix(RuntimeInformation
+        .IsOSPlatform(OSPlatform.Windows) ? "file:///" : "file://");
       filePath = filePath.Replace("\r", "").Replace("\n", "");
-      filePath = System.Uri.UnescapeDataString(filePath);
+      filePath = Uri.UnescapeDataString(filePath);
       Console.WriteLine($"Loading '{filePath}'...");
 
-      if (!System.IO.File.Exists(filePath)) {
+      if (!File.Exists(filePath)) {
         Console.WriteLine($"File to load doesn't actually exist: {filePath}");
         return;
       }
 
-      ResourceText = System.IO.File.ReadAllText(filePath);
-      ScopeDirectory = System.IO.Path.GetDirectoryName(filePath);
+      ResourceText = File.ReadAllText(filePath);
+      if (ScopeDirectory == null) {
+        ScopeDirectory = Path.GetDirectoryName(filePath);
+      }
     }
 
     public void LoadScopeDirectory(string text)
@@ -333,17 +330,10 @@ class Program
       }
 
       var filePath = text;
-      if (System.Runtime.InteropServices.RuntimeInformation
-        .IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
-      {
-        filePath = filePath.RemovePrefix("file:///");
-      }
-      else
-      {
-        filePath = filePath.RemovePrefix("file://");
-      }
+      filePath = filePath.RemovePrefix(RuntimeInformation
+        .IsOSPlatform(OSPlatform.Windows) ? "file:///" : "file://");
       filePath = filePath.Replace("\r", "").Replace("\n", "");
-      filePath = System.Uri.UnescapeDataString(filePath);
+      filePath = Uri.UnescapeDataString(filePath);
       ScopeDirectory = filePath;
     }
 
@@ -366,7 +356,7 @@ class Program
     public void CopyValidationReport()
     {
       using (var writer = new StringWriter())
-      using (var csv = new CsvHelper.CsvWriter(writer))
+      using (var csv = new CsvWriter(writer))
       {
         // write fields out manually since we need to add the engine type column
         csv.WriteField("Severity");
@@ -375,24 +365,24 @@ class Program
         csv.WriteField("Validator engine");
         csv.NextRecord();
 
-        foreach (var Issue in DotnetResult.Issues) {
-          csv.WriteField(Issue.Severity);
-          csv.WriteField(Issue.Text);
-          csv.WriteField(Issue.Location);
+        foreach (var issue in DotnetResult.Issues) {
+          csv.WriteField(issue.Severity);
+          csv.WriteField(issue.Text);
+          csv.WriteField(issue.Location);
           csv.WriteField(".NET");
           csv.NextRecord();
         }
 
-        foreach (var Issue in JavaResult.Issues)
+        foreach (var issue in JavaResult.Issues)
         {
-          csv.WriteField(Issue.Severity);
-          csv.WriteField(Issue.Text);
-          csv.WriteField(Issue.Location);
+          csv.WriteField(issue.Severity);
+          csv.WriteField(issue.Text);
+          csv.WriteField(issue.Location);
           csv.WriteField("Java");
           csv.NextRecord();
         }
 
-        TextCopy.Clipboard.SetText(writer.ToString());
+        Clipboard.SetText(writer.ToString());
       }
     }
 
@@ -402,12 +392,12 @@ class Program
       try
       {
         var externalTerminology = new ExternalTerminologyService(new FhirClient(TerminologyService));
-        var localTerminology = new LocalTerminologyService(CombinedSource != null ? CombinedSource : CoreSource);
+        var localTerminology = new LocalTerminologyService(_combinedSource ?? _coreSource);
         var combinedTerminology = new FallbackTerminologyService(localTerminology, externalTerminology);
 
-        var settings = new ValidationSettings()
+        var settings = new ValidationSettings
         {
-          ResourceResolver = CombinedSource != null ? CombinedSource : CoreSource,
+          ResourceResolver = _combinedSource ?? _coreSource,
           GenerateSnapshot = true,
           EnableXsdValidation = true,
           Trace = false,
@@ -421,7 +411,7 @@ class Program
         // In this case we use an XmlReader as input, but the validator has
         // overloads for using POCO's too
         Stopwatch sw = new Stopwatch();
-        OperationOutcome result = null;
+        OperationOutcome result;
 
         sw.Start();
         if (InstanceFormat == ResourceFormat.Xml)
@@ -453,10 +443,10 @@ class Program
       }
     }
 
-    private string SerializeResource(string ResourceText, Hl7.Fhir.Rest.ResourceFormat InstanceFormat)
+    private string SerializeResource(string resourceText, ResourceFormat instanceFormat)
     {
-      var fileName = $"{Path.GetTempFileName()}.{(InstanceFormat == ResourceFormat.Json ? "json" : "xml")}";
-      System.IO.File.WriteAllText(fileName, ResourceText);
+      var fileName = $"{Path.GetTempFileName()}.{(instanceFormat == ResourceFormat.Json ? "json" : "xml")}";
+      File.WriteAllText(fileName, resourceText);
 
       return fileName;
     }
@@ -468,12 +458,13 @@ class Program
       var result = new OperationOutcome();
       using (var reader = new StringReader(output))
       {
-        for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
+        for (var line = reader.ReadLine(); line != null; line = reader.ReadLine())
         {
           result.Issue.Add(new OperationOutcome.IssueComponent
           {
             Severity = OperationOutcome.IssueSeverity.Error,
-            Details = new CodeableConcept() {
+            Details = new CodeableConcept
+            {
               Text = line
             },
             Code = OperationOutcome.IssueType.Processing
@@ -489,7 +480,7 @@ class Program
       Console.WriteLine("Beginning Java validation");
       var resourcePath = SerializeResource(ResourceText, InstanceFormat);
 
-      var validatorPath = Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location),
+      var validatorPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
         "org.hl7.fhir.validator.jar");
       var scopePath = ScopeDirectory;
       var outputJson = $"{Path.GetTempFileName()}.json";
@@ -501,7 +492,7 @@ class Program
       var sw = new Stopwatch();
       sw.Start();
       string validatorOutput, resultText;
-      using (Process validator = new Process())
+      using (var validator = new Process())
       {
         validator.StartInfo.FileName = "java";
         validator.StartInfo.Arguments = finalArguments;
@@ -512,6 +503,8 @@ class Program
         try
         {
             validator.Start();
+            validatorOutput = validator.StandardOutput.ReadToEnd();
+            validatorOutput += validator.StandardError.ReadToEnd();
             validator.WaitForExit();
         }
         catch (Exception ex)
@@ -535,21 +528,17 @@ class Program
             }
             return result;
         }
-        validatorOutput = validator.StandardOutput.ReadToEnd();
-        validatorOutput += validator.StandardError.ReadToEnd();
 
         sw.Stop();
         Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
 
-        if (validator.ExitCode != 0 || !System.IO.File.Exists(outputJson))
+        if (validator.ExitCode != 0 || !File.Exists(outputJson))
         {
           // JavaValidationCrashed = true;
           return ConvertJavaStdout(validatorOutput);
         }
-        else
-        {
-          resultText = System.IO.File.ReadAllText(outputJson);
-        }
+
+        resultText = File.ReadAllText(outputJson);
       }
 
       var parser = new FhirJsonParser();
@@ -573,35 +562,35 @@ class Program
 
     public async void StartValidation()
     {
-      resetResults();
+      ResetResults();
       ValidatingDotnet = true;
       ValidatingJava = true;
       // () wrapper so older MS Build (15.9.20) works
-      Task<OperationOutcome> validateWithJava = System.Threading.Tasks.Task.Run(() => ValidateWithJava());
+      Task<OperationOutcome> validateWithJava = Task.Run(() => ValidateWithJava());
       // .ContinueWith(System.Threading.Tasks.Task <OperationOutcome> t =>
       // {
       //   setOutcome(t.Result, ValidatorType.Java);
       //   ValidatingJava = false;
       // });
       // TaskScheduler.FromCurrentSynchronizationContext()
-      Task<OperationOutcome> validateWithDotnet = System.Threading.Tasks.Task.Run(() => ValidateWithDotnet());
+      Task<OperationOutcome> validateWithDotnet = Task.Run(() => ValidateWithDotnet());
 
-      var allTasks = new List<System.Threading.Tasks.Task> { validateWithJava, validateWithDotnet };
+      var allTasks = new List<Task> { validateWithJava, validateWithDotnet };
       while (allTasks.Any())
       {
-        var finished = await System.Threading.Tasks.Task.WhenAny(allTasks);
+        var finished = await Task.WhenAny(allTasks);
         if (finished == validateWithJava)
         {
           allTasks.Remove(validateWithJava);
           var result = await validateWithJava;
-          setOutcome(result, ValidatorType.Java);
+          SetOutcome(result, ValidatorType.Java);
           ValidatingJava = false;
         }
         else if (finished == validateWithDotnet)
         {
           allTasks.Remove(validateWithDotnet);
           var result = await validateWithDotnet;
-          setOutcome(result, ValidatorType.Dotnet);
+          SetOutcome(result, ValidatorType.Dotnet);
           ValidatingDotnet = false;
         }
         else
@@ -617,18 +606,14 @@ class Program
     RuntimeManager.DiscoverOrDownloadSuitableQtRuntime();
 
     QQuickStyle.SetStyle("Universal");
-    QGuiApplication.SetAttribute(Qml.Net.ApplicationAttribute.EnableHighDpiScaling, true);
+    QCoreApplication.SetAttribute(ApplicationAttribute.EnableHighDpiScaling, true);
 
     using (var app = new QGuiApplication(args))
     {
       using (var engine = new QQmlApplicationEngine())
       {
-        Qml.Net.Qml.RegisterType<AppModel>("appmodel", 1, 0);
-
+        Qml.Net.Qml.RegisterType<AppModel>("appmodel");
         engine.Load("Main.qml");
-
-        QCoreApplication.OrganizationDomain = "domain";
-        QCoreApplication.OrganizationName = "name";
 
         return app.Exec();
       }

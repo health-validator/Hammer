@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--<PackageReference Include="Anemonis.Runtime.ApplicationLauncher" Version="1.1.2" />-->
     <PackageReference Include="CsvHelper" Version="12.1.2" />
     <PackageReference Include="Hl7.Fhir.ElementModel" Version="1.2.1" />
     <PackageReference Include="Hl7.Fhir.Serialization" Version="1.2.1" />
@@ -23,10 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Main.qml" CopyToPublishDirectory="Always" />
-    <Content Include="Toast.qml" CopyToPublishDirectory="Always" />
-    <Content Include="ToastManager.qml" CopyToPublishDirectory="Always" />
-    <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="Always" />
+    <Content Include="Main.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+    <Content Include="Toast.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+    <Content Include="ToastManager.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+    <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+    <Content Include="assets/run-hammer.bat" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>

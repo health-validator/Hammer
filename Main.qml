@@ -16,6 +16,8 @@ ApplicationWindow {
 
     Universal.theme: darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
 
+    property int tooltipDelay: 1500
+
     AppModel {
         id: appmodel
     }
@@ -39,7 +41,7 @@ ApplicationWindow {
                        if (drop.proposedAction == Qt.MoveAction || drop.proposedAction == Qt.CopyAction) {
                            appmodel.loadResourceFile(drop.text)
                            drop.acceptProposedAction()
-                           addResourceScrollView.state = "ENTERING_RESOURCE"
+                           addResourcesPage.state = "ENTERING_RESOURCE"
                        }
                    }
     }
@@ -55,7 +57,7 @@ ApplicationWindow {
 
     Shortcut {
         sequence: "Ctrl+O"
-        onActivated: resourcePicker.open()
+        onActivated: { addResourcesPage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
     }
 
     Shortcut {
@@ -107,19 +109,19 @@ ApplicationWindow {
                 FileDialog {
                     id: resourcePicker
                     title: "Select a FHIR resource to validate"
-                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)
+                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
                     onAccepted: appmodel.loadResourceFile(resourcePicker.file)
                 }
 
                 ToolTip.text: qsTr("Ctrl+O (open), Ctrl+D (validate)")
-                ToolTip.visible: hovered; ToolTip.delay: 1000
+                ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             }
 
             TextArea {
                 id: textArea
                 placeholderText: qsTr("or load it here")
                 renderType: Text.NativeRendering
-                onTextChanged: {console.log("ontextchanged to "+text); appmodel.resourceText = text}
+                onTextChanged: { appmodel.resourceText = text }
                 text: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
                 font.family: appmodel.resourceText ? "Ubuntu Mono" : "Ubuntu"
@@ -223,6 +225,23 @@ ApplicationWindow {
             text: "☰"
 
             onClicked: addResourcesPage.state = "EDITING_SETTINGS"
+            ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
+            ToolTip.text: qsTr(`Open settings`)
+        }
+
+        Button {
+            id: loadNewInstanceButton
+            text: "📂"
+//            visible: textArea.state === "EXPANDED"
+            visible: textArea.state === "EXPANDED" && addResourcesPage.state === "ENTERING_RESOURCE"
+
+            onClicked: {
+                addResourcesPage.state = "ENTERING_RESOURCE"
+                resourcePicker.open()
+            }
+
+            ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
+            ToolTip.text: qsTr(`Open new instance (Ctrl+O)`)
         }
 
         Button {
@@ -232,7 +251,7 @@ ApplicationWindow {
             enabled: !appmodel.validatingDotnet || !appmodel.validatingJava
             onClicked: { appmodel.copyValidationReport(); toast.show("Copied"); }
 
-            ToolTip.visible: hovered
+            ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             ToolTip.text: qsTr(`Copy validation report as a CSV to clipboard`)
         }
 
@@ -289,29 +308,6 @@ ApplicationWindow {
             spacing: 20
             anchors.fill: parent
 
-            Rectangle {
-                id: errorsRectangle
-                width: 167; height: 60; radius: 3
-                border.color: "#c33f3f"
-                border.width: 2
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                visible: appmodel.dotnetResult.errorCount >= 1 || appmodel.javaResult.errorCount >= 1
-
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: "#c31432" }
-                    GradientStop { position: 1.0; color: "#240b36" }
-                    orientation: Gradient.Vertical
-                }
-
-                Label {
-                    color: "white"
-                    text: "<center>invalid</center>"
-                    font.pointSize: 20
-                    textFormat: Text.RichText
-                    anchors.centerIn: parent
-                }
-            }
-
             Row {
                 id: errorCountsRow
 //                Layout.fillWidth: true
@@ -357,15 +353,24 @@ ApplicationWindow {
                                 orientation: Gradient.Vertical
                             }
                         }
+                        Rectangle {
+                            radius: 3
+                            anchors.margins: 1
+                            anchors.fill: parent
+                            visible: !appmodel.validatingDotnet && appmodel.dotnetResult.errorCount > 0
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "#c31432" }
+                                GradientStop { position: 1.0; color: "#240b36" }
+                                orientation: Gradient.Vertical
+                            }
+                        }
 
                         Label {
                             text: qsTr(`${appmodel.dotnetResult.errorCount} ∙ ${appmodel.dotnetResult.warningCount}`)
                             font.pointSize: 35
                             anchors.centerIn: parent
                             visible: !appmodel.validatingDotnet
-                            onVisibleChanged: console.log(`errors: ${appmodel.dotnetResult.errorCount}`)
-                            color: appmodel.dotnetResult.errorCount >= 1 ? "#696969" : "white"
-                            onColorChanged: console.log(`color changed`)
+                            color: "white"
 
                             ToolTip.visible: dotnetErrorsMouseArea.containsMouse
                             ToolTip.text: qsTr("Errors ∙ Warnings")
@@ -424,13 +429,24 @@ ApplicationWindow {
                                 orientation: Gradient.Vertical
                             }
                         }
+                        Rectangle {
+                            radius: 3
+                            anchors.margins: 1
+                            anchors.fill: parent
+                            visible: !appmodel.validatingJava && appmodel.javaResult.errorCount > 0
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "#c31432" }
+                                GradientStop { position: 1.0; color: "#240b36" }
+                                orientation: Gradient.Vertical
+                            }
+                        }
 
                         Label {
                             text: qsTr(`${appmodel.javaResult.errorCount} ∙ ${appmodel.javaResult.warningCount}`)
                             font.pointSize: 35
                             anchors.centerIn: parent
                             visible: !appmodel.validatingJava
-                            color: appmodel.javaResult.errorCount === 0 ? "white" : "#696969"
+                            color: "white"
 
 
                             ToolTip.visible: javaErrorsMouseArea.containsMouse
@@ -696,7 +712,7 @@ ApplicationWindow {
                 FolderDialog {
                     id: scopePicker
                     title: "Folder to act as the scope (context) for validation"
-                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)
+                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
                     onAccepted: appmodel.loadScopeDirectory(scopePicker.folder)
                 }
             }

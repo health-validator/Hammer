@@ -23,7 +23,10 @@ script:
  - tree .
  - cd bin/Debug/netcoreapp2.2
  - mv publish Hammer
+ - tree .
  - mv Hammer/assets/run-hammer.sh Hammer/run-hammer.sh
+ - mv Hammer/assets/run-hammer.bat Hammer/run-hammer.bat
+ - rm -rf Hammer/assets
  - zip -r Hammer.zip Hammer
  - DEPLOY_URL=$(curl --upload-file ./Hammer.zip https://transfer.sh/Hammer.zip)
  - echo -e "Zip is available for download at $DEPLOY_URL"
