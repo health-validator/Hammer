@@ -251,7 +251,7 @@ ApplicationWindow {
             enabled: !appmodel.validatingDotnet || !appmodel.validatingJava
             onClicked: { appmodel.copyValidationReport(); toast.show("Copied"); }
 
-            ToolTip.visible: hovered
+            ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             ToolTip.text: qsTr(`Copy validation report as a CSV to clipboard`)
         }
 
