@@ -502,6 +502,7 @@ class Program
 
         try
         {
+            validator.Start();
             validatorOutput = validator.StandardOutput.ReadToEnd();
             validatorOutput += validator.StandardError.ReadToEnd();
             validator.WaitForExit();
