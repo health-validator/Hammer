@@ -502,8 +502,9 @@ class Program
 
         try
         {
-            validator.Start();
-            validator.WaitForExit();
+            validatorOutput = validator.StandardOutput.ReadToEnd();
+            validatorOutput += validator.StandardError.ReadToEnd();
+            validator.WaitForExit(1000 * 60 * 5);
         }
         catch (Exception ex)
         {
@@ -526,8 +527,6 @@ class Program
             }
             return result;
         }
-        validatorOutput = validator.StandardOutput.ReadToEnd();
-        validatorOutput += validator.StandardError.ReadToEnd();
 
         sw.Stop();
         Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
