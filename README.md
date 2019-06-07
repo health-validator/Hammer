@@ -55,7 +55,7 @@ Experimental and not ready for production. Try it out and [give feedback](https:
 
 ## Download
 
-You can [download](https://transfer.sh/15IU6I/Hammer.zip) the latest version of Hammer for Windows, macOS and Linux.
+You can [download](https://transfer.sh/6bfx7/Hammer.zip) the latest version of Hammer for Windows, macOS and Linux.
 
 ## How To Use
 
@@ -69,6 +69,8 @@ Validating:
 1. Drag and drop, paste, or open a FHIR instance.
 1. Adjust the validation scope in settings if necessary.
 1. Click `Validate`.
+
+First time Hammer launches, it needs to download the necessary components to run - so it'll take a bit of time.
 
 ## Credits
 
