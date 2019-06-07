@@ -504,7 +504,7 @@ class Program
         {
             validatorOutput = validator.StandardOutput.ReadToEnd();
             validatorOutput += validator.StandardError.ReadToEnd();
-            validator.WaitForExit(1000 * 60 * 5);
+            validator.WaitForExit();
         }
         catch (Exception ex)
         {
