@@ -28,6 +28,7 @@
     <Content Include="Toast.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
     <Content Include="ToastManager.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
     <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+    <Content Include="assets/run-hammer.bat" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>
