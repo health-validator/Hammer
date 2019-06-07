@@ -314,159 +314,29 @@ ApplicationWindow {
                 width: resultsPane.availableWidth
                 bottomPadding: 10
 
-                Item {
+                StatusBox {
                     id: dotnetErrorsBox
-//                    property int errors: appmodel.dotnetResult ?   appmodel.dotnetResult.errorCount   : 0
-//                    property int warnings: appmodel.dotnetResult ? appmodel.dotnetResult.warningCount : 0
+                    label: ".NET"
                     width: resultsPane.availableWidth/2
-                    height: 100
+                    
+                    runningStatus: appmodel.validatingDotnet
+                    errorCount:    appmodel.dotnetResult.errorCount
+                    warningCount:  appmodel.dotnetResult.warningCount
 
-                    Rectangle {
-                        id: dotnetErrorsRectangle
-                        border.color: "grey"
-                        radius: 3
-                        anchors.fill: parent
-                        anchors.margins: 20
-
-                        MouseArea {
-                            hoverEnabled: true
-                            anchors.fill: parent
-                            cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-                            onClicked: errorsScrollView.contentItem.contentY = dotnetErrorsLabel.y
-                        }
-
-                        BusyIndicator {
-                            running: appmodel.validatingDotnet
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            onRunningChanged: dotnetErrorsRepeater.model = Net.toListModel(appmodel.dotnetResult.issues)
-                        }
-
-                        Rectangle {
-                            radius: 3
-                            anchors.margins: 1
-                            anchors.fill: parent
-                            visible: !appmodel.validatingDotnet && appmodel.dotnetResult.errorCount === 0
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: "#00b09b" }
-                                GradientStop { position: 1.0; color: "#96c93d" }
-                                orientation: Gradient.Vertical
-                            }
-                        }
-                        Rectangle {
-                            radius: 3
-                            anchors.margins: 1
-                            anchors.fill: parent
-                            visible: !appmodel.validatingDotnet && appmodel.dotnetResult.errorCount > 0
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: "#c31432" }
-                                GradientStop { position: 1.0; color: "#240b36" }
-                                orientation: Gradient.Vertical
-                            }
-                        }
-
-                        Label {
-                            text: qsTr(`${appmodel.dotnetResult.errorCount} ∙ ${appmodel.dotnetResult.warningCount}`)
-                            font.pointSize: 35
-                            anchors.centerIn: parent
-                            visible: !appmodel.validatingDotnet
-                            color: "white"
-
-                            ToolTip.visible: dotnetErrorsMouseArea.containsMouse
-                            ToolTip.text: qsTr("Errors ∙ Warnings")
-
-                            MouseArea {
-                                id: dotnetErrorsMouseArea; hoverEnabled: true; anchors.fill: parent
-                            }
-                        }
-                    }
-                    Label {
-                        text: ".NET"
-                        anchors.horizontalCenter: dotnetErrorsRectangle.horizontalCenter
-                        anchors.top: dotnetErrorsRectangle.bottom
-                        anchors.topMargin: 6
-                        color: "#696969"
-                        font.pointSize: 11
-                    }
+                    onClicked: errorsScrollView.contentItem.contentY = dotnetErrorList.y
                 }
 
-                Item {
+                StatusBox {
                     id: javaErrorsBox
-                    // property int errors: appmodel.javaResult? appmodel.javaResult.errorCount : 0
-                    // property int warnings: appmodel.javaResult? appmodel.javaResult.warningCount : 0
+                    label: "Java (beta)"
                     width: resultsPane.availableWidth/2
-                    height: 100
 
-                    Rectangle {
-                        id: javaErrorsRectangle
-                        border.color: "grey"
-                        radius: 3
-                        anchors.fill: parent
-                        anchors.margins: 20
+                    runningStatus: appmodel.validatingJava
+                    errorCount:    appmodel.javaResult.errorCount
+                    warningCount:  appmodel.javaResult.warningCount
 
-                        MouseArea {
-                            hoverEnabled: true
-                            anchors.fill: parent
-                            cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-                            onClicked: errorsScrollView.contentItem.contentY = javaErrorsLabel.y
-                        }
-
-                        BusyIndicator {
-                            running: appmodel.validatingJava
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            onRunningChanged: javaErrorsRepeater.model = Net.toListModel(appmodel.javaResult.issues)
-                        }
-
-                        Rectangle {
-                            radius: 3
-                            anchors.margins: 1
-                            anchors.fill: parent
-                            visible: !appmodel.validatingJava && appmodel.javaResult.errorCount === 0
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: "#00b09b" }
-                                GradientStop { position: 1.0; color: "#96c93d" }
-                                orientation: Gradient.Vertical
-                            }
-                        }
-                        Rectangle {
-                            radius: 3
-                            anchors.margins: 1
-                            anchors.fill: parent
-                            visible: !appmodel.validatingJava && appmodel.javaResult.errorCount > 0
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: "#c31432" }
-                                GradientStop { position: 1.0; color: "#240b36" }
-                                orientation: Gradient.Vertical
-                            }
-                        }
-
-                        Label {
-                            text: qsTr(`${appmodel.javaResult.errorCount} ∙ ${appmodel.javaResult.warningCount}`)
-                            font.pointSize: 35
-                            anchors.centerIn: parent
-                            visible: !appmodel.validatingJava
-                            color: "white"
-
-
-                            ToolTip.visible: javaErrorsMouseArea.containsMouse
-                            ToolTip.text: qsTr("Errors ∙ Warnings")
-
-                            MouseArea {
-                                id: javaErrorsMouseArea; hoverEnabled: true; anchors.fill: parent
-                            }
-                        }
-                    }
-                    Label {
-                        text: "Java (beta)"
-                        anchors.horizontalCenter: javaErrorsRectangle.horizontalCenter
-                        anchors.top: javaErrorsRectangle.bottom
-                        anchors.topMargin: 6
-                        color: "#696969"
-                        font.pointSize: 11
-                    }
+                    onClicked: errorsScrollView.contentItem.contentY = javaErrorList.y
                 }
-
             }
 
             ScrollView {
@@ -478,191 +348,26 @@ ApplicationWindow {
 
                 Column {
                     id: errorsRepeaterColumn
-                    anchors.left: parent.left
+                    anchors.fill: parent
                     spacing: 5
 
                     add: Transition {
                         NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: 1000 }
                     }
 
-                    Label {
-                        id: dotnetErrorsLabel
-                        text: ".NET"
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        color: "#696969"
-                        font.pointSize: 17
-                        visible: !appmodel.validatingDotnet && (appmodel.dotnetResult.errorCount >= 1
-                                                                 || appmodel.dotnetResult.warningCount >= 1)
+                    IssuesList {
+                        id: dotnetErrorList
+                        label: ".NET"
+                        labelVisible: !appmodel.validatingDotnet && (appmodel.dotnetResult.errorCount >= 1 || appmodel.dotnetResult.warningCount >= 1)
+                        dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetResult.issues)
                     }
 
-                    Repeater {
-                        id: dotnetErrorsRepeater
-
-                        Rectangle {
-                            id: messageRectangle
-                            color: "#f8fafb"
-                            border.color: "#f6f3fb"
-                            border.width: 1
-
-                            height: errorText.height + 30
-                            width: resultsPane.width - leftMargin - rightMargin
-
-                            property int leftMargin: 20
-                            property int rightMargin: 15
-
-                            visible: {
-                                if (modelData.severity === "error" && showErrors.checked) {
-                                    return true
-                                } else if (modelData.severity === "warning" && showWarnings.checked) {
-                                    return true
-                                }  else if (modelData.severity === "informational" && showInfo.checked) {
-                                    return true
-                                } else {
-                                    return false
-                                }
-                            }
-
-                            Rectangle {
-                                width: 10
-                                height: errorText.height + 20
-                                anchors.left: parent.left
-                                border.color: "#c33f3f"
-                                border.width: 1
-
-                                gradient: Gradient {
-                                    GradientStop { position: 0.0
-                                        color: modelData.severity === "error" ? "#c31432" :
-                                               modelData.severity === "warning" ? "#fe8c00" : "#007ec6"
-                                    }
-                                    GradientStop { position: 1.0
-                                        color: modelData.severity === "error" ? "#240b36" :
-                                               modelData.severity === "warning" ? "#f83600" : "#007ec6"
-                                    }
-                                }
-                            }
-
-                            Text {
-                                id: errorText
-                                anchors {
-                                    left: parent.left; leftMargin: messageRectangle.leftMargin
-                                    right: parent.right; rightMargin: messageRectangle.rightMargin
-                                    top: parent.top; topMargin: 10
-                                }
-
-                                width: parent.width
-                                color: "#337081"
-                                text: modelData.text
-                                renderType: Text.NativeRendering
-                                textFormat: Text.PlainText
-                                wrapMode: "WrapAtWordBoundaryOrAnywhere"
-                            }
-
-                            Text {
-                                id: errorLocationText
-                                anchors {
-                                    bottom: parent.bottom
-                                }
-
-                                width: parent.width
-                                horizontalAlignment: Text.AlignRight
-                                color: "#34826b"
-                                text: modelData.location
-                                renderType: Text.NativeRendering
-                                font.pointSize: 9
-                                textFormat: Text.PlainText
-                                wrapMode: "WrapAtWordBoundaryOrAnywhere"
-                            }
-                        }
+                    IssuesList {
+                        id: javaErrorList
+                        label: !appmodel.javaValidationCrashed ? "Java" : "Java (validation crashed, details below)"
+                        labelVisible: !appmodel.validatingJava && (appmodel.javaResult.errorCount >= 1 || appmodel.javaResult.warningCount >= 1)
+                        dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaResult.issues)
                     }
-
-                    Label {
-                        id: javaErrorsLabel
-                        text: !appmodel.javaValidationCrashed ? "Java" : "Java (validation crashed, details below)"
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        color: "#696969"
-                        font.pointSize: 17
-                        visible: !appmodel.validatingJava && (appmodel.javaResult.errorCount >= 1
-                                    || appmodel.javaResult.warningCount >= 1)
-                    }
-
-                    Repeater {
-                        id: javaErrorsRepeater
-
-                        Rectangle {
-                            id: javaMessageRectangle
-                            color: "#f8fafb"
-                            border.color: "#f6f3fb"
-                            border.width: 1
-
-                            height: javaErrorText.height + 30
-                            width: resultsPane.width - leftMargin - rightMargin
-
-                            property int leftMargin: 20
-                            property int rightMargin: 15
-
-                            visible: {
-                                if (modelData.severity === "error" && showErrors.checked) {
-                                    return true
-                                } else if (modelData.severity === "warning" && showWarnings.checked) {
-                                    return true
-                                }  else if (modelData.severity === "informational" && showInfo.checked) {
-                                    return true
-                                } else {
-                                    return false
-                                }
-                            }
-
-                            Rectangle {
-                                width: 10
-                                height: javaErrorText.height + 20
-                                anchors.left: parent.left
-
-                                gradient: Gradient {
-                                    GradientStop { position: 0.0
-                                        color: modelData.severity === "error" ? "#c31432" :
-                                               modelData.severity === "warning" ? "#fe8c00" : "#007ec6"
-                                    }
-                                    GradientStop { position: 1.0
-                                        color: modelData.severity === "error" ? "#240b36" :
-                                               modelData.severity === "warning" ? "#f83600" : "#007ec6"
-                                    }
-                                }
-                            }
-
-                            Text {
-                                id: javaErrorText
-                                anchors {
-                                    left: parent.left; leftMargin: javaMessageRectangle.leftMargin
-                                    right: parent.right; rightMargin: javaMessageRectangle.rightMargin
-                                    top: parent.top; topMargin: 10
-                                }
-
-                                width: parent.width
-                                color: "#337081"
-                                text: modelData.text
-                                renderType: Text.NativeRendering
-                                textFormat: Text.PlainText
-                                wrapMode: "WrapAtWordBoundaryOrAnywhere"
-                            }
-
-                            Text {
-                                id: errorJavaLocationText
-                                anchors {
-                                    bottom: parent.bottom
-                                }
-
-                                width: parent.width
-                                horizontalAlignment: Text.AlignRight
-                                color: "#34826b"
-                                text: modelData.location
-                                renderType: Text.NativeRendering
-                                font.pointSize: 9
-                                textFormat: Text.PlainText
-                                wrapMode: "WrapAtWordBoundaryOrAnywhere"
-                            }
-                        }
-                    }
-
                 }
             }
         }
