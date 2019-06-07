@@ -70,6 +70,8 @@ Validating:
 1. Adjust the validation scope in settings if necessary.
 1. Click `Validate`.
 
+First time Hammer launches, it needs to download the necessary components to run - so it'll take a bit of time.
+
 ## Credits
 
 Author: [Vadim Peretokin](https://www.linkedin.com/in/vadimperetokin). Join in, contributions are welcome!
