@@ -62,7 +62,7 @@ You can [download](https://transfer.sh/x8orl/Hammer.zip) the latest version of H
 Prerequisite:
 1. Install [.NET Core 2.2 Runtime](https://dotnet.microsoft.com/download)
 1. Launch Hammer:
-  * Windows - double-click `Hammer.exe`
+  * Windows - double-click `run-hammer.bat`
   * macOS and Linux - double-click `run-hammer.sh`
 
 Validating:
