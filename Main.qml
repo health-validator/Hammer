@@ -348,7 +348,8 @@ ApplicationWindow {
 
                 Column {
                     id: errorsRepeaterColumn
-                    anchors.fill: parent
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     spacing: 5
 
                     add: Transition {
