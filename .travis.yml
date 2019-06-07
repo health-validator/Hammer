@@ -14,6 +14,7 @@ script:
  - wget -O bin/Debug/netcoreapp2.2/publish/org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
  - cd bin/Debug/netcoreapp2.2
  - mv publish Hammer
+ - tree .
  - mv Hammer/assets/run-hammer.sh Hammer/run-hammer.sh
  - mv Hammer/assets/run-hammer.bat Hammer/run-hammer.bat
  - rm -rf Hammer/assets
