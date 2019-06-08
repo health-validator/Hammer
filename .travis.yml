@@ -31,7 +31,7 @@ deploy:
   local_dir: bin/Debug/netcoreapp2.2/deploy
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
-  keep_history: true
+  keep_history: false
   verbose: true
   on:
     branch: master
