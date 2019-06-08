@@ -21,3 +21,14 @@ script:
  - zip -r Hammer.zip Hammer
  - DEPLOY_URL=$(curl --upload-file ./Hammer.zip https://transfer.sh/Hammer.zip)
  - echo -e "Zip is available for download at $DEPLOY_URL"
+
+deploy:
+  provider: pages
+  repo: health-validator/latest
+  target_branch: master
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  verbose: true
+  on:
+    branch: master
