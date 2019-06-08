@@ -28,7 +28,7 @@ deploy:
   provider: pages
   repo: health-validator/latest
   target_branch: master
-  local_dir: cd bin/Debug/netcoreapp2.2/deploy
+  local_dir: bin/Debug/netcoreapp2.2/deploy
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   keep_history: true
