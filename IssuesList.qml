@@ -8,7 +8,8 @@ ColumnLayout {
     property bool   labelVisible /** Set this to indicate if the label should be visible */ 
     property var    dataModel    /** Set this to the datamodel from the C# side */
 
-    width: parent.width
+    anchors.left: parent.left
+    anchors.right: parent.right
 
     Label {
         text: label
@@ -76,7 +77,6 @@ ColumnLayout {
                     top: parent.top; topMargin: 10
                 }
 
-                width: parent.width
                 color: "#337081"
                 text: modelData.text
                 renderType: Text.NativeRendering

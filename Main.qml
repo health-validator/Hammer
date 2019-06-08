@@ -344,6 +344,8 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 clip: true
+                
+                contentWidth: parent.width
                 contentHeight: errorsRepeaterColumn.height
 
                 Column {
