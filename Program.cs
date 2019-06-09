@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -21,6 +22,7 @@ using Task = System.Threading.Tasks.Task;
 
 class Program
 {
+  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
   public class AppModel
   {
     private static AppModel _instance;
