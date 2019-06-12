@@ -202,16 +202,16 @@ ApplicationWindow {
         transitions: [
             Transition {
                 from: "*"; to: "VALIDATION_RESULTS"
-                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: 1000 }
+                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: appmodel.animationDuration }
             },
             Transition {
                 from: "*"; to: "ENTERING_RESOURCE"
-                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: 1000 }
-                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: 1000 }
+                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration:appmodel.animationDuration }
+                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: appmodel.animationDuration }
             },
             Transition {
                 from: "*"; to: "EDITING_SETTINGS"
-                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: 1000 }
+                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: appmodel.animationDuration }
             }
         ]
     }
@@ -483,7 +483,7 @@ ApplicationWindow {
                     spacing: 5
 
                     add: Transition {
-                        NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: 1000 }
+                        NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: appmodel.animationDuration }
                     }
 
                     Label {

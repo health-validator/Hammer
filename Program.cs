@@ -148,6 +148,15 @@ class Program
       get => _javaValidationCrashed;
       set => this.SetProperty(ref _javaValidationCrashed, value);
     }
+
+    private long _animationDuration = 1000;
+    [NotifySignal]
+    public long AnimationDuration
+    {
+      get => _animationDuration;
+      set => this.SetProperty(ref _animationDuration, value);
+    }
+
     #endregion
 
     private ValidationResult _javaResult = new ValidationResult();
@@ -164,6 +173,17 @@ class Program
     {
       get => _dotnetResult;
       set => this.SetProperty(ref _dotnetResult, value);
+    }
+
+    /// <summary>Set to false to suppress animations in QML</summary>
+    public bool DoQmlAnimate {
+      set {
+        if (value) {
+          AnimationDuration = 1000;
+        } else {
+          AnimationDuration = 0;
+        }
+      }
     }
 
     private void ResetResults()
@@ -651,6 +671,8 @@ class Program
     public void process()
     {
       cliOptions.WithParsed(result => {
+        AppModel.Instance.DoQmlAnimate = false;
+
         if (result.ScopeDir != null) {
           var scopeUri = new System.Uri(System.IO.Path.GetFullPath(result.ScopeDir));
           AppModel.Instance.LoadScopeDirectory(scopeUri.ToString());
@@ -661,6 +683,8 @@ class Program
             AppModel.Instance.StartValidation();
           }
         }
+
+        AppModel.Instance.DoQmlAnimate = true;
       });
     }
   }
