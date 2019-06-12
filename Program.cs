@@ -21,6 +21,7 @@ using Task = System.Threading.Tasks.Task;
 
 class Program
 {
+  [Signal("validationStarted")]
   public class AppModel
   {
     private static AppModel _instance;
@@ -565,6 +566,7 @@ class Program
       ResetResults();
       ValidatingDotnet = true;
       ValidatingJava = true;
+      this.ActivateSignal("validationStarted");
       // () wrapper so older MS Build (15.9.20) works
       Task<OperationOutcome> validateWithJava = Task.Run(() => ValidateWithJava());
       // .ContinueWith(System.Threading.Tasks.Task <OperationOutcome> t =>

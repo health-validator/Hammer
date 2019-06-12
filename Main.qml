@@ -49,7 +49,6 @@ ApplicationWindow {
     Shortcut {
         sequence: "Ctrl+D"
         onActivated: if (appmodel.resourceText) {
-            addResourcesPage.state = "VALIDATED_RESOURCE"
             appmodel.startValidation()
         }
     }
@@ -64,7 +63,6 @@ ApplicationWindow {
         sequence: "Ctrl+T"
         onActivated: {
             appmodel.loadResourceFile("file:///home/vadi/Desktop/swedishnationalmedicationlist/MedicationRequest-example-bad.json")
-            addResourcesPage.state = "VALIDATED_RESOURCE"
             appmodel.startValidation()
         }
     }
@@ -74,6 +72,10 @@ ApplicationWindow {
         width: window.width
         height: window.height - buttonsRow.height
 
+        Connections {
+            target: appmodel
+            onValidationStarted: addResourcesPage.state = "VALIDATION_RESULTS"
+        }
 
         ScrollView {
             id: addResourceScrollView
@@ -183,7 +185,7 @@ ApplicationWindow {
                 PropertyChanges { target: actionButton; text: appmodel.validateButtonText}
             },
             State {
-                name: "VALIDATED_RESOURCE"
+                name: "VALIDATION_RESULTS"
                 PropertyChanges { target: addResourcesPage; x: addResourcesPage.width * -1 }
                 PropertyChanges { target: resultsPane; x: 0 }
                 PropertyChanges { target: settingsPane; y: window.height }
@@ -199,7 +201,7 @@ ApplicationWindow {
 
         transitions: [
             Transition {
-                from: "*"; to: "VALIDATED_RESOURCE"
+                from: "*"; to: "VALIDATION_RESULTS"
                 NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: 1000 }
             },
             Transition {
@@ -247,7 +249,7 @@ ApplicationWindow {
         Button {
             id: copyResultsButton
             text: "📋"
-            visible: addResourcesPage.state === "VALIDATED_RESOURCE"
+            visible: addResourcesPage.state === "VALIDATION_RESULTS"
             enabled: !appmodel.validatingDotnet || !appmodel.validatingJava
             onClicked: { appmodel.copyValidationReport(); toast.show("Copied"); }
 
@@ -263,7 +265,6 @@ ApplicationWindow {
 
             onClicked: {
                 if (addResourcesPage.state === "ENTERING_RESOURCE") {
-                    addResourcesPage.state = "VALIDATED_RESOURCE"
                     appmodel.startValidation()
                 } else {
                     addResourcesPage.state = "ENTERING_RESOURCE"
