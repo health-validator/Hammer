@@ -17,6 +17,7 @@ ApplicationWindow {
     Universal.theme: darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
 
     property int tooltipDelay: 1500
+    property int animationDuration: appmodel.doQmlAnimation ? 1000 : 0
 
     AppModel {
         id: appmodel
@@ -202,16 +203,16 @@ ApplicationWindow {
         transitions: [
             Transition {
                 from: "*"; to: "VALIDATION_RESULTS"
-                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: appmodel.animationDuration }
+                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
             },
             Transition {
                 from: "*"; to: "ENTERING_RESOURCE"
                 NumberAnimation { property: "x"; easing.type: Easing.InBack; duration:appmodel.animationDuration }
-                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: appmodel.animationDuration }
+                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
             },
             Transition {
                 from: "*"; to: "EDITING_SETTINGS"
-                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: appmodel.animationDuration }
+                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
             }
         ]
     }
@@ -483,7 +484,7 @@ ApplicationWindow {
                     spacing: 5
 
                     add: Transition {
-                        NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: appmodel.animationDuration }
+                        NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: animationDuration }
                     }
 
                     Label {
