@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="https://github.com/vadi2/Hammer"><img src="https://raw.githubusercontent.com/vadi2/Hammer/master/assets/hammer-logo.png" alt="Hammer" width="200"></a>
+  <a href="https://github.com/health-validator/Hammer"><img src="https://raw.githubusercontent.com/health-validator/Hammer/master/assets/hammer-logo.png" alt="Hammer" width="200"></a>
   <br>
   Hammer
   <br>
@@ -9,18 +9,18 @@
 <h4 align="center">A modern, cross-platform validator for <a href="http://hl7.org/fhir/index.html" target="_blank">FHIR®</a>.</h4>
 
 <p align="center">
-  <a href="https://github.com/vadi2/Hammer/wiki/How-to-download-latest-development-build">
-    <img src="https://travis-ci.com/vadi2/Hammer.svg?branch=master"
+  <a href="https://github.com/health-validator/Hammer/wiki/How-to-download-latest-development-build">
+    <img src="https://travis-ci.com/health-validator/Hammer.svg?branch=master"
          alt="Build status">
   </a>
   <a href="https://chat.fhir.org/#narrow/stream/179239-tooling/topic/Hammer">
     <img src="https://img.shields.io/badge/chat-on%20zulip-green.svg">
   </a>
-  <a href="https://github.com/vadi2/Hammer/issues">
+  <a href="https://github.com/health-validator/Hammer/issues">
     <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat">
   </a>
-  <a href="https://lgtm.com/projects/g/vadi2/Hammer/alerts/">
-    <img alt="Total alerts" src="https://img.shields.io/lgtm/alerts/g/vadi2/Hammer.svg?logo=lgtm&logoWidth=18"/>
+  <a href="https://lgtm.com/projects/g/health-validator/Hammer/alerts/">
+    <img alt="Total alerts" src="https://img.shields.io/lgtm/alerts/g/health-validator/Hammer.svg?logo=lgtm&logoWidth=18"/>
   </a>
 </p>
 
@@ -34,12 +34,12 @@
 </p>
 
 <p align="center">
-  <img alt="Hammer demo" src="https://raw.githubusercontent.com/vadi2/Hammer/master/assets/hammer-demo.gif">
+  <img alt="Hammer demo" src="https://raw.githubusercontent.com/health-validator/Hammer/master/assets/hammer-demo.gif">
 </p>
 
 ## Status
 
-Experimental and not ready for production. Try it out and [give feedback](https://github.com/vadi2/Hammer/issues)!
+Experimental and not ready for production. Try it out and [give feedback](https://github.com/health-validator/Hammer/issues)!
 
 ## Key Features
 
@@ -55,14 +55,14 @@ Experimental and not ready for production. Try it out and [give feedback](https:
 
 ## Download
 
-You can [download](https://transfer.sh/x8orl/Hammer.zip) the latest version of Hammer for Windows, macOS and Linux.
+You can [download](https://health-validator.github.io/latest/Hammer.zip) the latest version of Hammer for Windows, macOS and Linux.
 
 ## How To Use
 
 Prerequisite:
 1. Install [.NET Core 2.2 Runtime](https://dotnet.microsoft.com/download)
 1. Launch Hammer:
-  * Windows - double-click `Hammer.exe`
+  * Windows - double-click `run-hammer.bat`
   * macOS and Linux - double-click `run-hammer.sh`
 
 Validating:

@@ -3,10 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <PackageId>Hammer.Validator</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Anemonis.Runtime.ApplicationLauncher" Version="1.1.2" />
+    <!--<PackageReference Include="Anemonis.Runtime.ApplicationLauncher" Version="1.1.2" />-->
     <PackageReference Include="CsvHelper" Version="12.1.2" />
     <PackageReference Include="Hl7.Fhir.ElementModel" Version="1.2.1" />
     <PackageReference Include="Hl7.Fhir.Serialization" Version="1.2.1" />
@@ -14,6 +15,8 @@
     <PackageReference Include="Hl7.Fhir.STU3" Version="1.2.1" />
     <PackageReference Include="Hl7.Fhir.Support" Version="1.2.1" />
     <PackageReference Include="Hl7.FhirPath" Version="1.2.1" />
+    <PackageReference Include="Microsoft.CodeQuality.Analyzers" Version="2.9.3" />
+    <PackageReference Include="Microsoft.NetCore.Analyzers" Version="2.9.3" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Qml.Net" Version="0.10.1" />
     <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.10.1" />
@@ -29,6 +32,7 @@
     <Content Include="Toast.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
     <Content Include="ToastManager.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
     <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+    <Content Include="assets/run-hammer.bat" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>
