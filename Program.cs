@@ -283,7 +283,7 @@ class Program
       {
         convertedIssues.Add(new Issue
         {
-          Severity = issue.Severity.ToString().ToLower(),
+          Severity = issue.Severity.ToString().ToLowerInvariant(),
           Text = issue.Details?.Text ?? issue.Diagnostics ?? "(no details)",
           Location = String.Join(" via ", issue.Location)
         });
@@ -300,7 +300,7 @@ class Program
       }
 
       // input already pruned - accept as-is
-      if (!text.StartsWith("file://")) {
+      if (!text.StartsWith("file://", StringComparison.InvariantCulture)) {
         ResourceText = text;
         return;
       }
@@ -308,7 +308,8 @@ class Program
       var filePath = text;
       filePath = filePath.RemovePrefix(RuntimeInformation
         .IsOSPlatform(OSPlatform.Windows) ? "file:///" : "file://");
-      filePath = filePath.Replace("\r", "").Replace("\n", "");
+      filePath = filePath.Replace("\r", "", StringComparison.InvariantCulture)
+        .Replace("\n", "", StringComparison.InvariantCulture);
       filePath = Uri.UnescapeDataString(filePath);
       Console.WriteLine($"Loading '{filePath}'...");
 
@@ -326,7 +327,7 @@ class Program
     public void LoadScopeDirectory(string text)
     {
       // input already pruned - accept as-is
-      if (!text.StartsWith("file://")) {
+      if (!text.StartsWith("file://", StringComparison.InvariantCulture)) {
         ScopeDirectory = text;
         return;
       }
@@ -334,7 +335,8 @@ class Program
       var filePath = text;
       filePath = filePath.RemovePrefix(RuntimeInformation
         .IsOSPlatform(OSPlatform.Windows) ? "file:///" : "file://");
-      filePath = filePath.Replace("\r", "").Replace("\n", "");
+      filePath = filePath.Replace("\r", "", StringComparison.InvariantCulture)
+        .Replace("\n", "", StringComparison.InvariantCulture);
       filePath = Uri.UnescapeDataString(filePath);
       ScopeDirectory = filePath;
     }
