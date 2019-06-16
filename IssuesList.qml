@@ -4,12 +4,15 @@ import QtQuick.Layouts 1.12
 
 /** List the error and warning messages of the validation step. */
 ColumnLayout {
+    id: rootComponent
     property string label        /** The label for the current collection of messages */
     property bool   labelVisible /** Set this to indicate if the label should be visible */ 
     property var    dataModel    /** Set this to the datamodel from the C# side */
 
     anchors.left: parent.left
     anchors.right: parent.right
+
+    signal peekIssue(string text)
 
     Label {
         text: label
@@ -98,6 +101,13 @@ ColumnLayout {
                 font.pointSize: 9
                 textFormat: Text.PlainText
                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+                onClicked: rootComponent.peekIssue(modelData.text)
             }
         }
     }

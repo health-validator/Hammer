@@ -370,6 +370,8 @@ ApplicationWindow {
                         label: !appmodel.javaValidationCrashed ? "Java" : "Java (validation crashed, details below)"
                         labelVisible: !appmodel.validatingJava && (appmodel.javaResult.errorCount >= 1 || appmodel.javaResult.warningCount >= 1)
                         dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaResult.issues)
+
+                        onPeekIssue: console.log(`peek! + ${text}`)
                     }
                 }
             }
