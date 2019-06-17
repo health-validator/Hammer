@@ -7,10 +7,9 @@ ScrollView {
     property int letterHeight: textArea.font.pixelSize
 
     clip: true
+    contentHeight: height
 
-    onMyTextChanged: console.log(`my text changed`)
-
-    // doesn't seem to find contentY at bind time
+    // doesn't seem to find contentY at creation time
 //    Behavior on contentItem.contentY {
 //        PropertyAnimation {
 //            duration: 500
@@ -22,9 +21,11 @@ ScrollView {
         id: textArea
         renderType: Text.NativeRendering
         text: myText
+        onTextChanged: { appmodel.resourceText = text; }
         font.family: "Ubuntu Mono"
         font.preferShaping: false
         selectByMouse: true
         wrapMode: "WrapAtWordBoundaryOrAnywhere"
+        height: parent.height
     }
 }
