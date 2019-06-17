@@ -17,7 +17,7 @@ ApplicationWindow {
     Universal.theme: darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
 
     property int tooltipDelay: 1500
-    property int animationDuration: appmodel.doQmlAnimation ? 1000 : 0
+    property int animationDuration: appmodel.animateQml ? 1000 : 0
 
     AppModel {
         id: appmodel

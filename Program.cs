@@ -151,12 +151,12 @@ class Program
       set => this.SetProperty(ref _javaValidationCrashed, value);
     }
 
-    private bool _doQmlAnimation = true;
+    private bool _animateQml = true;
     /// <summary>Set to false to suppress animations in QML</summary>
     [NotifySignal]
-    public bool DoQmlAnimation {
-      get => _doQmlAnimation;
-      set => this.SetProperty(ref _doQmlAnimation, value);
+    public bool AnimateQml {
+      get => _animateQml;
+      set => this.SetProperty(ref _animateQml, value);
     }
     
     #endregion
@@ -629,7 +629,7 @@ class Program
     /// </summary>
     public class CLIOptions
     {
-      [Option('s', "scope_dir", Required = false, HelpText = "Set the scope directory")]
+      [Option('s', "scopedir", Required = false, HelpText = "Set the scope directory")]
       public string ScopeDir {get; set;}
 
       [Value(0, MetaName = "resource_file", HelpText = "The resource file to validate")]
@@ -645,10 +645,7 @@ class Program
       cliOptions = Parser.Default.ParseArguments<CLIOptions>(args);
     }
 
-    /// <summary>
-    /// Truw whether the command line was succesfully parsed, false on error.
-    /// </summary>
-    public bool success {
+    public bool parsedSuccessfully {
       get {
         var success = true;            
         cliOptions.WithNotParsed(errors => success = false);
@@ -662,7 +659,7 @@ class Program
     public void process()
     {
       cliOptions.WithParsed(result => {
-        AppModel.Instance.DoQmlAnimation = false;
+        AppModel.Instance.AnimateQml = false;
 
         if (result.ScopeDir != null) {
           var scopeUri = new System.Uri(System.IO.Path.GetFullPath(result.ScopeDir));
@@ -675,7 +672,7 @@ class Program
           }
         }
 
-        AppModel.Instance.DoQmlAnimation = true;
+        AppModel.Instance.AnimateQml = true;
       });
     }
   }
@@ -698,7 +695,7 @@ class Program
         // Now we can check command line options to see if we should bail
         // out before we start rendering the interface.
         var cliParser = new CLIParser(args);
-        if (!cliParser.success) {
+        if (!cliParser.parsedSuccessfully) {
           return 1;
         }
 
