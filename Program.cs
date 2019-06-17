@@ -94,7 +94,6 @@ class Program
         this.ActivateProperty(x => x.ResourceText);
       }
     }
-    private ITypedElement _parsedResource;
 
     private string _resourceFont;
     [NotifySignal]
@@ -161,8 +160,6 @@ class Program
       set => this.SetProperty(ref _animateQml, value);
     }
     
-    #endregion
-
     private ValidationResult _javaResult = new ValidationResult();
     [NotifySignal]
     public ValidationResult JavaResult
@@ -178,10 +175,12 @@ class Program
       get => _dotnetResult;
       set => this.SetProperty(ref _dotnetResult, value);
     }
-    
     #endregion
     // ReSharper restore MemberCanBePrivate.Global
 
+    
+    private ITypedElement _parsedResource;
+    
     private void ResetResults()
     {
       JavaResult = new ValidationResult { ValidatorType = ValidatorType.Java };
@@ -243,7 +242,6 @@ class Program
         { get => _warningCount; set => this.SetProperty(ref _warningCount, value); }
     }
 
-    // not a struct due to https://github.com/qmlnet/qmlnet/issues/135
     public class Issue
     {
       private string _severity;
@@ -287,11 +285,6 @@ class Program
       }
     }
 
-    public void UpdateText(string newText)
-    {
-      ResourceText = newText;
-    }
-
     public ResourceFormat InstanceFormat
     {
       get => _instanceFormat;
@@ -327,23 +320,48 @@ class Program
         };
         convertedIssues.Add(simplifiedIssue);
 
-        // populate line number and position information if available
-        if (!issue.Location.Any()) {
-          continue;
-        }
-        var location = issue.Location.First();
-        var elementWithError = _parsedResource.Select(location);
+        var serializationDetails = GetPositionInfo(issue);
+        if (serializationDetails == null) { continue; }
         
-        if (!elementWithError.Any()) {
-          continue;
-        }
-
-        var jsonDetails = elementWithError.First().GetJsonSerializationDetails();
-        simplifiedIssue.LineNumber = jsonDetails.LineNumber;
-        simplifiedIssue.LinePosition = jsonDetails.LinePosition;
+        simplifiedIssue.LineNumber = serializationDetails.LineNumber;
+        simplifiedIssue.LinePosition = serializationDetails.LinePosition;
       }
 
       return convertedIssues;
+    }
+
+    private IPositionInfo GetPositionInfo(OperationOutcome.IssueComponent issue)
+    {
+      IPositionInfo serializationDetails;
+      
+      if (!issue.Location.Any())
+      {
+        return null;
+      }
+
+      var location = issue.Location.First();
+      var elementWithError = _parsedResource.Select(location).ToList();
+
+      if (!elementWithError.Any())
+      {
+        return null;
+      }
+
+      switch (InstanceFormat)
+      {
+        case ResourceFormat.Json:
+          serializationDetails = elementWithError.First().GetJsonSerializationDetails();
+          break;
+        case ResourceFormat.Xml:
+          serializationDetails = elementWithError.First().GetXmlSerializationDetails();
+          break;
+        case ResourceFormat.Unknown:
+          return null;
+        default:
+          return null;
+      }
+
+      return serializationDetails;
     }
 
     public bool LoadResourceFile(string text)
