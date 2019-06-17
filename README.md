@@ -29,7 +29,7 @@
   <a href="#how-to-use">How To Use</a> •
   <a href="#download">Download</a> •
   <a href="#credits">Credits</a> •
-  <a href="#related">Related</a> •
+  <a href="#roadmap">Roadmap</a> •
   <a href="#license">License</a>
 </p>
 
@@ -71,6 +71,10 @@ Validating:
 1. Click `Validate`.
 
 First time Hammer launches, it needs to download the necessary components to run - so it'll take a bit of time.
+
+## Roadmap
+
+See the [project's roadmap](https://github.com/health-validator/Hammer/blob/master/ROADMAP.md) to get an idea of where it's headed, as well as contribute!
 
 ## Credits
 
