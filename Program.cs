@@ -695,7 +695,7 @@ class Program
         // an instance that we can work on programmatically.
         Qml.Net.Qml.RegisterType<AppModel>("appmodel");
 
-        // Now first handle the command line options to check if we should bail
+        // Now we can check command line options to see if we should bail
         // out before we start rendering the interface.
         var cliParser = new CLIParser(args);
         if (!cliParser.success) {
