@@ -358,11 +358,16 @@ ApplicationWindow {
                         NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: 1000 }
                     }
 
+                    function peekIssue(lineNumber, linePosition) {
+                        console.log(`${lineNumber}:${linePosition}`);
+                    }
+
                     IssuesList {
                         id: dotnetErrorList
                         label: ".NET"
                         labelVisible: !appmodel.validatingDotnet && (appmodel.dotnetResult.errorCount >= 1 || appmodel.dotnetResult.warningCount >= 1)
                         dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetResult.issues)
+                        onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                     }
 
                     IssuesList {
@@ -370,8 +375,7 @@ ApplicationWindow {
                         label: !appmodel.javaValidationCrashed ? "Java" : "Java (validation crashed, details below)"
                         labelVisible: !appmodel.validatingJava && (appmodel.javaResult.errorCount >= 1 || appmodel.javaResult.warningCount >= 1)
                         dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaResult.issues)
-
-                        onPeekIssue: console.log(`peek! + ${text}`)
+                        onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                     }
                 }
             }
