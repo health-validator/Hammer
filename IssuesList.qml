@@ -12,7 +12,7 @@ ColumnLayout {
     anchors.left: parent.left
     anchors.right: parent.right
 
-    signal peekIssue(string text)
+    signal peekIssue(int lineNumber, int linePosition)
 
     Label {
         text: label
@@ -107,7 +107,7 @@ ColumnLayout {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-                onClicked: rootComponent.peekIssue(modelData.text)
+                onClicked: rootComponent.peekIssue(modelData.lineNumber, modelData.linePosition)
             }
         }
     }
