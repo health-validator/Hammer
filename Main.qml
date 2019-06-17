@@ -379,6 +379,12 @@ ApplicationWindow {
                     }
                 }
             }
+
+            InstanceEditor {
+                text: appmodel.resourceText
+                height: 200
+                Layout.fillWidth: true
+            }
         }
     }
 
