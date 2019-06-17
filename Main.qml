@@ -17,6 +17,7 @@ ApplicationWindow {
     Universal.theme: darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
 
     property int tooltipDelay: 1500
+    property int animationDuration: appmodel.animateQml ? 1000 : 0
 
     AppModel {
         id: appmodel
@@ -49,7 +50,6 @@ ApplicationWindow {
     Shortcut {
         sequence: "Ctrl+D"
         onActivated: if (appmodel.resourceText) {
-            addResourcesPage.state = "VALIDATED_RESOURCE"
             appmodel.startValidation()
         }
     }
@@ -64,7 +64,6 @@ ApplicationWindow {
         sequence: "Ctrl+T"
         onActivated: {
             appmodel.loadResourceFile("file:///home/vadi/Desktop/swedishnationalmedicationlist/MedicationRequest-example-bad.json")
-            addResourcesPage.state = "VALIDATED_RESOURCE"
             appmodel.startValidation()
         }
     }
@@ -74,6 +73,10 @@ ApplicationWindow {
         width: window.width
         height: window.height - buttonsRow.height
 
+        Connections {
+            target: appmodel
+            onValidationStarted: addResourcesPage.state = "VALIDATION_RESULTS"
+        }
 
         ScrollView {
             id: addResourceScrollView
@@ -183,7 +186,7 @@ ApplicationWindow {
                 PropertyChanges { target: actionButton; text: appmodel.validateButtonText}
             },
             State {
-                name: "VALIDATED_RESOURCE"
+                name: "VALIDATION_RESULTS"
                 PropertyChanges { target: addResourcesPage; x: addResourcesPage.width * -1 }
                 PropertyChanges { target: resultsPane; x: 0 }
                 PropertyChanges { target: settingsPane; y: window.height }
@@ -199,17 +202,17 @@ ApplicationWindow {
 
         transitions: [
             Transition {
-                from: "*"; to: "VALIDATED_RESOURCE"
-                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: 1000 }
+                from: "*"; to: "VALIDATION_RESULTS"
+                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
             },
             Transition {
                 from: "*"; to: "ENTERING_RESOURCE"
-                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: 1000 }
-                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: 1000 }
+                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
+                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
             },
             Transition {
                 from: "*"; to: "EDITING_SETTINGS"
-                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: 1000 }
+                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
             }
         ]
     }
@@ -247,7 +250,7 @@ ApplicationWindow {
         Button {
             id: copyResultsButton
             text: "📋"
-            visible: addResourcesPage.state === "VALIDATED_RESOURCE"
+            visible: addResourcesPage.state === "VALIDATION_RESULTS"
             enabled: !appmodel.validatingDotnet || !appmodel.validatingJava
             onClicked: { appmodel.copyValidationReport(); toast.show("Copied"); }
 
@@ -263,7 +266,6 @@ ApplicationWindow {
 
             onClicked: {
                 if (addResourcesPage.state === "ENTERING_RESOURCE") {
-                    addResourcesPage.state = "VALIDATED_RESOURCE"
                     appmodel.startValidation()
                 } else {
                     addResourcesPage.state = "ENTERING_RESOURCE"
@@ -355,7 +357,7 @@ ApplicationWindow {
                     spacing: 5
 
                     add: Transition {
-                        NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: 1000 }
+                        NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: animationDuration }
                     }
 
                     function peekIssue(lineNumber, linePosition) {

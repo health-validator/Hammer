@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using CommandLine;
 using CsvHelper;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
@@ -23,6 +24,7 @@ using Task = System.Threading.Tasks.Task;
 
 class Program
 {
+  [Signal("validationStarted")]
   public class AppModel
   {
     private static AppModel _instance;
@@ -150,7 +152,17 @@ class Program
       get => _javaValidationCrashed;
       set => this.SetProperty(ref _javaValidationCrashed, value);
     }
+
+    private bool _animateQml = true;
+    /// <summary>Set to false to suppress animations in QML</summary>
+    [NotifySignal]
+    public bool AnimateQml {
+      get => _animateQml;
+      set => this.SetProperty(ref _animateQml, value);
+    }
     
+    #endregion
+
     private ValidationResult _javaResult = new ValidationResult();
     [NotifySignal]
     public ValidationResult JavaResult
@@ -334,17 +346,17 @@ class Program
       return convertedIssues;
     }
 
-    public void LoadResourceFile(string text)
+    public bool LoadResourceFile(string text)
     {
       if (text == null) {
         Console.Error.WriteLine("LoadResourceFile: no text passed");
-        return;
+        return false;
       }
 
       // input already pruned - accept as-is
       if (!text.StartsWith("file://", StringComparison.InvariantCulture)) {
         ResourceText = text;
-        return;
+        return true;
       }
 
       var filePath = text;
@@ -357,13 +369,15 @@ class Program
 
       if (!File.Exists(filePath)) {
         Console.WriteLine($"File to load doesn't actually exist: {filePath}");
-        return;
+        return false;
       }
 
       ResourceText = File.ReadAllText(filePath);
       if (ScopeDirectory == null) {
         ScopeDirectory = Path.GetDirectoryName(filePath);
       }
+
+      return true;
     }
 
     public void LoadScopeDirectory(string text)
@@ -618,6 +632,7 @@ class Program
       ResetResults();
       ValidatingDotnet = true;
       ValidatingJava = true;
+      this.ActivateSignal("validationStarted");
       // () wrapper so older MS Build (15.9.20) works
       Task<OperationOutcome> validateWithJava = Task.Run(() => ValidateWithJava());
       // .ContinueWith(System.Threading.Tasks.Task <OperationOutcome> t =>
@@ -654,6 +669,66 @@ class Program
     }
   }
 
+  /// <summary>
+  /// Helper class to handle the CLI options and arguments.
+  /// It is based on the CommandLine library.
+  /// </summary>
+  public class CLIParser {
+    ParserResult<CLIOptions> cliOptions;
+
+    /// <summary>
+    /// Data storage class to store the command line options and arguments.
+    /// </summary>
+    public class CLIOptions
+    {
+      [Option('s', "scopedir", Required = false, HelpText = "Set the scope directory")]
+      public string ScopeDir {get; set;}
+
+      [Value(0, MetaName = "resource_file", HelpText = "The resource file to validate")]
+      public string ResourceFile { get; set; }
+    }
+
+    /// <summary>
+    /// Instantiate with the arguments from the command line.
+    /// <param name="args">The list of command line arguments as passed to the application</param>
+    /// </summary>
+    public CLIParser(string[] args)
+    {
+      cliOptions = Parser.Default.ParseArguments<CLIOptions>(args);
+    }
+
+    public bool parsedSuccessfully {
+      get {
+        var success = true;            
+        cliOptions.WithNotParsed(errors => success = false);
+        return success;
+      }
+    }
+
+    /// <summary>
+    /// Perform the actions specified by the command line.
+    /// </summary>
+    public void process()
+    {
+      cliOptions.WithParsed(result => {
+        AppModel.Instance.AnimateQml = false;
+
+        if (result.ScopeDir != null) {
+          var scopeUri = new System.Uri(System.IO.Path.GetFullPath(result.ScopeDir));
+          AppModel.Instance.LoadScopeDirectory(scopeUri.ToString());
+        }
+        if (result.ResourceFile != null) {
+          var resourceUri = new System.Uri(System.IO.Path.GetFullPath(result.ResourceFile));
+          if (AppModel.Instance.LoadResourceFile(resourceUri.ToString())) {
+            AppModel.Instance.StartValidation();
+          }
+        }
+
+        AppModel.Instance.AnimateQml = true;
+      });
+    }
+  }
+
   static int Main(string[] args)
   {
     RuntimeManager.DiscoverOrDownloadSuitableQtRuntime();
@@ -665,8 +740,23 @@ class Program
     {
       using (var engine = new QQmlApplicationEngine())
       {
+        // We first need to register the AppModel type in QML in order to have
+        // an instance that we can work on programmatically.
         Qml.Net.Qml.RegisterType<AppModel>("appmodel");
+
+        // Now we can check command line options to see if we should bail
+        // out before we start rendering the interface.
+        var cliParser = new CLIParser(args);
+        if (!cliParser.parsedSuccessfully) {
+          return 1;
+        }
+
+        // Now we can load the GUI
         engine.Load("Main.qml");
+
+        // Once the GUI is loaded, we can start working with the AppModel
+        // instance.
+        cliParser.process();
 
         return app.Exec();
       }
