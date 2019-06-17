@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-// import appmodel 1.0
+import appmodel 1.0
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
@@ -124,7 +124,13 @@ ApplicationWindow {
                 id: textArea
                 placeholderText: qsTr("or load it here")
                 renderType: Text.NativeRendering
-                onTextChanged: { appmodel.resourceText = text }
+                onTextChanged: { appmodel.resourceText = text;
+
+                    console.log(`${textArea.positionAt(1, 1)}`)
+                    console.log(`${textArea.positionAt(50, 1)}`)
+                    console.log(`${textArea.positionAt(1, 50)}`)
+
+                }
                 text: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
                 font.family: appmodel.resourceText ? "Ubuntu Mono" : "Ubuntu"
@@ -158,7 +164,7 @@ ApplicationWindow {
 
                 transitions: Transition {
                     ParentAnimation {
-                        NumberAnimation { properties: "x,y,width,height";  easing.type: Easing.InCubic; duration: 600 }
+                        NumberAnimation { properties: "x,y,width,height"; easing.type: Easing.InCubic; duration: 600 }
                     }
                 }
             }
@@ -361,7 +367,9 @@ ApplicationWindow {
                     }
 
                     function peekIssue(lineNumber, linePosition) {
-                        console.log(`${lineNumber}:${linePosition}`);
+                        console.log(`${lineNumber}:${linePosition}`)
+                        resultsPageEditor.state = "VISIBLE"
+                        resultsPageEditor.contentItem.contentY = resultsPageEditor.letterHeight * lineNumber
                     }
 
                     IssuesList {
@@ -384,14 +392,38 @@ ApplicationWindow {
         }
 
         InstanceEditor {
-            x: 0; y: window.height - 200
+            id: resultsPageEditor
             myText: appmodel.resourceText
             height: 200
             width: parent.width
-            anchors {
-//                left: parent.left; right: parent.right;
-                bottom: parent.bottom
-            }
+
+
+            states: [
+                State {
+                    name: "HIDDEN"
+                    PropertyChanges { target: resultsPageEditor; x: 0; y: window.height }
+                },
+                State {
+                    name: "VISIBLE"
+                    PropertyChanges {
+                        target: resultsPageEditor;
+                        x: 0;
+                        y: window.height - resultsPageEditor.height - buttonsRow.height - 20
+                    }
+                }
+            ]
+            state: "HIDDEN"
+
+            transitions: [
+                Transition {
+                    from: "*"; to: "VISIBLE"
+                    NumberAnimation { properties: "x,y"; easing.type: Easing.InBack; duration: animationDuration/2 }
+                },
+                Transition {
+                    from: "*"; to: "HIDDEN"
+                    NumberAnimation { properties: "x,y"; easing.type: Easing.InBack; duration: animationDuration/2 }
+                }
+            ]
         }
     }
 
