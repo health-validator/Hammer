@@ -24,7 +24,6 @@ using Task = System.Threading.Tasks.Task;
 
 class Program
 {
-  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
   public class AppModel
   {
     private static AppModel _instance;
@@ -41,6 +40,7 @@ class Program
 
     private IResourceResolver _combinedSource;
 
+    // ReSharper disable MemberCanBePrivate.Global
     #region QML-accessible properties
     private ResourceFormat _instanceFormat;
 
@@ -93,6 +93,7 @@ class Program
         this.ActivateProperty(x => x.ResourceText);
       }
     }
+    private ITypedElement _parsedResource;
 
     private string _resourceFont;
     [NotifySignal]
@@ -150,8 +151,7 @@ class Program
       get => _javaValidationCrashed;
       set => this.SetProperty(ref _javaValidationCrashed, value);
     }
-    #endregion
-
+    
     private ValidationResult _javaResult = new ValidationResult();
     [NotifySignal]
     public ValidationResult JavaResult
@@ -167,6 +167,9 @@ class Program
       get => _dotnetResult;
       set => this.SetProperty(ref _dotnetResult, value);
     }
+    
+    #endregion
+    // ReSharper restore MemberCanBePrivate.Global
 
     private void ResetResults()
     {
@@ -249,6 +252,22 @@ class Program
         get => _location;
         set => this.SetProperty(ref _location, value);
       }
+      
+      private int _lineNumber;
+      [NotifySignal]
+      public int LineNumber
+      {
+        get => _lineNumber;
+        set => this.SetProperty(ref _lineNumber, value);
+      }
+      
+      private int _linePosition;
+      [NotifySignal]
+      public int LinePosition
+      {
+        get => _linePosition;
+        set => this.SetProperty(ref _linePosition, value);
+      }
     }
 
     public void UpdateText(string newText)
@@ -283,40 +302,28 @@ class Program
 
       foreach (var issue in issues)
       {
-        convertedIssues.Add(new Issue
+        var simplifiedIssue = new Issue
         {
           Severity = issue.Severity.ToString().ToLowerInvariant(),
           Text = issue.Details?.Text ?? issue.Diagnostics ?? "(no details)",
           Location = String.Join(" via ", issue.Location)
-        });
+        };
+        convertedIssues.Add(simplifiedIssue);
 
-        var location = issue.Location.FirstOrDefault();
-        if (location == null) {
+        // populate line number and position information if available
+        if (!issue.Location.Any()) {
+          continue;
+        }
+        var location = issue.Location.First();
+        var elementWithError = _parsedResource.Select(location);
+        
+        if (!elementWithError.Any()) {
           continue;
         }
 
-        var resource = FhirJsonNode.Parse(ResourceText, settings: new FhirJsonParsingSettings { AllowJsonComments = true })
-                .ToTypedElement(new Hl7.Fhir.Specification.StructureDefinitionSummaryProvider(_combinedSource ?? _coreSource));
-        var result = resource.Select(location);
-
-        if (!result.Any()) {
-          continue;
-        }
-
-        // Console.WriteLine(result.FirstOrDefault().Annotation<IPositionInfo>().LineNumber);
-        var nav = result.FirstOrDefault();
-        Console.WriteLine($"{nav.GetJsonSerializationDetails().LineNumber}");
-        // var posInfo = (nav as IAnnotated)?.Annotation<MedicationAdministration>();
-
-        // if (posInfo != null) {
-        //   Console.WriteLine(posInfo.LineNumber);
-        // }
-        // var posInfo = (nav as IAnnotated)?.Annotation<T>();
-        // Assert.IsNotNull(posInfo);
-        // Assert.AreNotEqual(-1, posInfo.LineNumber);
-        // Assert.AreNotEqual(-1, posInfo.LinePosition);
-        // Assert.AreNotEqual(0, posInfo.LineNumber);
-        // Assert.AreNotEqual(0, posInfo.LinePosition);
+        var jsonDetails = elementWithError.First().GetJsonSerializationDetails();
+        simplifiedIssue.LineNumber = jsonDetails.LineNumber;
+        simplifiedIssue.LinePosition = jsonDetails.LinePosition;
       }
 
       return convertedIssues;
@@ -427,6 +434,7 @@ class Program
       {
         var externalTerminology = new ExternalTerminologyService(new FhirClient(TerminologyService));
         var localTerminology = new LocalTerminologyService(_combinedSource ?? _coreSource);
+        var summaryProvider = new Hl7.Fhir.Specification.StructureDefinitionSummaryProvider(_combinedSource ?? _coreSource);
         var combinedTerminology = new FallbackTerminologyService(localTerminology, externalTerminology);
 
         var settings = new ValidationSettings
@@ -450,17 +458,23 @@ class Program
         sw.Start();
         if (InstanceFormat == ResourceFormat.Xml)
         {
-          var reader = SerializationUtil.XmlReaderFromXmlText(ResourceText);
-          result = validator.Validate(reader);
+          _parsedResource = FhirXmlNode.Parse(ResourceText, new FhirXmlParsingSettings { PermissiveParsing = true })
+            .ToTypedElement(summaryProvider);
+        }
+        else if (InstanceFormat == ResourceFormat.Json)
+        {
+          _parsedResource = FhirJsonNode.Parse(ResourceText, settings: new FhirJsonParsingSettings { AllowJsonComments = true })
+            .ToTypedElement(summaryProvider);
         }
         else
         {
-          var poco = (new FhirJsonParser()).Parse<Resource>(ResourceText);
-          result = validator.Validate(poco);
+          throw new Exception("This resource format isn't recognised");
         }
-
+        
+        result = validator.Validate(_parsedResource);
         sw.Stop();
         Console.WriteLine($".NET validation performed in {sw.ElapsedMilliseconds}ms");
+        
         return result;
       }
       catch (Exception ex)
