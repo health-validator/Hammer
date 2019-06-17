@@ -380,12 +380,17 @@ ApplicationWindow {
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                     }
                 }
-            }
+            }          
+        }
 
-            InstanceEditor {
-                text: appmodel.resourceText
-                height: 200
-                Layout.fillWidth: true
+        InstanceEditor {
+            x: 0; y: window.height - 200
+            myText: appmodel.resourceText
+            height: 200
+            width: parent.width
+            anchors {
+//                left: parent.left; right: parent.right;
+                bottom: parent.bottom
             }
         }
     }
