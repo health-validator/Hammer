@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -181,17 +180,23 @@ class Program
     private void SetOutcome(OperationOutcome outcome, ValidatorType type)
     {
       if (type == ValidatorType.Java) {
-        JavaResult = new ValidationResult { ValidatorType = type };
-        JavaResult.Issues = convertIssues(outcome.Issue);
+        JavaResult = new ValidationResult
+        {
+          ValidatorType = type,
+          Issues = convertIssues(outcome.Issue),
+          WarningCount = outcome.Warnings,
+          ErrorCount = outcome.Errors + outcome.Fatals
+        };
         // warnings have to be set before errors for some reason, otherwise not transferred to QML
-        JavaResult.WarningCount = outcome.Warnings;
-        JavaResult.ErrorCount = outcome.Errors + outcome.Fatals;
       } else {
-        DotnetResult = new ValidationResult { ValidatorType = type };
-        DotnetResult.Issues = convertIssues(outcome.Issue);
+        DotnetResult = new ValidationResult
+        {
+          ValidatorType = type,
+          Issues = convertIssues(outcome.Issue),
+          WarningCount = outcome.Warnings,
+          ErrorCount = outcome.Errors + outcome.Fatals
+        };
         // warnings have to be set before errors for some reason, otherwise not transferred to QML
-        DotnetResult.WarningCount = outcome.Warnings;
-        DotnetResult.ErrorCount = outcome.Errors + outcome.Fatals;
       }
 
       // Console.WriteLine(outcome.ToString());
@@ -528,7 +533,7 @@ class Program
       Console.WriteLine("Beginning Java validation");
       var resourcePath = SerializeResource(ResourceText, InstanceFormat);
 
-      var validatorPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+      var validatorPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location),
         "org.hl7.fhir.validator.jar");
       var scopePath = ScopeDirectory;
       var outputJson = $"{Path.GetTempFileName()}.json";
