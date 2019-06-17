@@ -207,7 +207,7 @@ ApplicationWindow {
             },
             Transition {
                 from: "*"; to: "ENTERING_RESOURCE"
-                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration:appmodel.animationDuration }
+                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
                 NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
             },
             Transition {
