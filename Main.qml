@@ -124,13 +124,7 @@ ApplicationWindow {
                 id: textArea
                 placeholderText: qsTr("or load it here")
                 renderType: Text.NativeRendering
-                onTextChanged: { appmodel.resourceText = text;
-
-                    console.log(`${textArea.positionAt(1, 1)}`)
-                    console.log(`${textArea.positionAt(50, 1)}`)
-                    console.log(`${textArea.positionAt(1, 50)}`)
-
-                }
+                onTextChanged: { appmodel.resourceText = text; }
                 text: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
                 font.family: appmodel.resourceText ? "Ubuntu Mono" : "Ubuntu"
@@ -289,38 +283,15 @@ ApplicationWindow {
         height: parent.height - actionButton.height
         x: resultsPane.width
 
-        Rectangle {
-            id: noErrorsRectangle
-            width: 300
-            height: 130
-            radius: 20
-            color: "#5d8130"
-            anchors.centerIn: parent
-//            visible: !appmodel.validating &&
-//                     appmodel.dotnetResult.errorCount === 0 && appmodel.javaResult.errorCount === 0
-            visible: false
-
-            Label {
-                width: 294
-                height: 45
-                text: "<center>✓ Valid</center>"
-                color: "white"
-                font.pointSize: 26
-                textFormat: Text.RichText
-                anchors.centerIn: parent
-            }
-        }
-
         ColumnLayout {
             id: errorsColumn
-            spacing: 20
             anchors.fill: parent
 
             Row {
                 id: errorCountsRow
 //                Layout.fillWidth: true
                 width: resultsPane.availableWidth
-                bottomPadding: 10
+                bottomPadding: 30
 
                 StatusBox {
                     id: dotnetErrorsBox
@@ -367,9 +338,11 @@ ApplicationWindow {
                     }
 
                     function peekIssue(lineNumber, linePosition) {
-                        console.log(`${lineNumber}:${linePosition}`)
+                        if (lineNumber === 0 && linePosition === 0) { return; }
                         resultsPageEditor.state = "VISIBLE"
-                        resultsPageEditor.contentItem.contentY = resultsPageEditor.letterHeight * lineNumber
+                        var newY = resultsPageEditor.letterHeight * lineNumber
+                        resultsPageEditor.contentItem.contentY = newY
+                        console.log(`line ${lineNumber} col ${linePosition}, Y: ${newY}`)
                     }
 
                     IssuesList {
@@ -388,42 +361,37 @@ ApplicationWindow {
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                     }
                 }
-            }          
-        }
+            }
 
-        InstanceEditor {
-            id: resultsPageEditor
-            myText: appmodel.resourceText
-            height: 200
-            width: parent.width
+            InstanceEditor {
+                id: resultsPageEditor
+                myText: appmodel.resourceText
+                Layout.fillWidth: true
+                height: 0
 
-
-            states: [
-                State {
-                    name: "HIDDEN"
-                    PropertyChanges { target: resultsPageEditor; x: 0; y: window.height }
-                },
-                State {
-                    name: "VISIBLE"
-                    PropertyChanges {
-                        target: resultsPageEditor;
-                        x: 0;
-                        y: window.height - resultsPageEditor.height - buttonsRow.height - 20
+                states: [
+                    State {
+                        name: "HIDDEN"
+                        PropertyChanges { target: resultsPageEditor; height: 0 }
+                    },
+                    State {
+                        name: "VISIBLE"
+                        PropertyChanges { target: resultsPageEditor; height: 250 }
                     }
-                }
-            ]
-            state: "HIDDEN"
+                ]
+                state: "HIDDEN"
 
-            transitions: [
-                Transition {
-                    from: "*"; to: "VISIBLE"
-                    NumberAnimation { properties: "x,y"; easing.type: Easing.InBack; duration: animationDuration/2 }
-                },
-                Transition {
-                    from: "*"; to: "HIDDEN"
-                    NumberAnimation { properties: "x,y"; easing.type: Easing.InBack; duration: animationDuration/2 }
-                }
-            ]
+                transitions: [
+                    Transition {
+                        from: "*"; to: "VISIBLE"
+                        NumberAnimation { properties: "height"; easing.type: Easing.InBack; duration: animationDuration/2 }
+                    },
+                    Transition {
+                        from: "*"; to: "HIDDEN"
+                        NumberAnimation { properties: "height"; easing.type: Easing.InBack; duration: animationDuration/2 }
+                    }
+                ]
+            }
         }
     }
 
