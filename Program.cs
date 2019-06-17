@@ -15,8 +15,10 @@ using Hl7.Fhir.Specification.Source;
 using Hl7.Fhir.Specification.Terminology;
 using Hl7.Fhir.Utility;
 using Hl7.Fhir.Validation;
+using Hl7.Fhir.ElementModel;
 using Qml.Net;
 using Qml.Net.Runtimes;
+using Hl7.FhirPath;
 using TextCopy;
 using Task = System.Threading.Tasks.Task;
 
@@ -287,6 +289,34 @@ class Program
           Text = issue.Details?.Text ?? issue.Diagnostics ?? "(no details)",
           Location = String.Join(" via ", issue.Location)
         });
+
+        var location = issue.Location.FirstOrDefault();
+        if (location == null) {
+          continue;
+        }
+
+        var resource = FhirJsonNode.Parse(ResourceText, settings: new FhirJsonParsingSettings { AllowJsonComments = true })
+                .ToTypedElement(new Hl7.Fhir.Specification.StructureDefinitionSummaryProvider(_combinedSource ?? _coreSource));
+        var result = resource.Select(location);
+
+        if (!result.Any()) {
+          continue;
+        }
+
+        // Console.WriteLine(result.FirstOrDefault().Annotation<IPositionInfo>().LineNumber);
+        var nav = result.FirstOrDefault();
+        Console.WriteLine($"{nav.GetJsonSerializationDetails().LineNumber}");
+        // var posInfo = (nav as IAnnotated)?.Annotation<MedicationAdministration>();
+
+        // if (posInfo != null) {
+        //   Console.WriteLine(posInfo.LineNumber);
+        // }
+        // var posInfo = (nav as IAnnotated)?.Annotation<T>();
+        // Assert.IsNotNull(posInfo);
+        // Assert.AreNotEqual(-1, posInfo.LineNumber);
+        // Assert.AreNotEqual(-1, posInfo.LinePosition);
+        // Assert.AreNotEqual(0, posInfo.LineNumber);
+        // Assert.AreNotEqual(0, posInfo.LinePosition);
       }
 
       return convertedIssues;
