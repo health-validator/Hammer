@@ -28,13 +28,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Main.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="Toast.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="ToastManager.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="StatusBox.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="IssuesList.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="assets/run-hammer.bat" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+    <Content Include="Main.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Toast.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="ToastManager.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="StatusBox.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="IssuesList.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="assets/run-hammer.bat" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
