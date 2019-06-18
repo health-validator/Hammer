@@ -51,8 +51,8 @@ ScrollView {
                                 openContextMenu(mouse)
                             }
 
-
             function openContextMenu(mouse) {
+                // keep selection when context menu is opened
                 selectStart = textArea.selectionStart
                 selectEnd = textArea.selectionEnd
                 curPos = textArea.cursorPosition
