@@ -4,6 +4,19 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <PackageId>Hammer.Validator</PackageId>
+    <IsPackable>false</IsPackable>
+    <PackageVersion>0.0.1</PackageVersion>
+    <Authors>Vadim Peretokin</Authors>
+    <Description>A modern, cross-platform validator for FHIR®.</Description>
+    <PackageProjectUrl>https://github.com/health-validator/Hammer</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/health-validator/Hammer/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://github.com/health-validator/Hammer/raw/master/assets/hammer-logo.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/health-validator/Hammer</RepositoryUrl>
+    <PackageTags>validator, fhir, xml, json, crossplatform</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,13 +41,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Main.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="Toast.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="ToastManager.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="StatusBox.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="IssuesList.qml" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <Content Include="assets/run-hammer.bat" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+    <Content Include="Main.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Toast.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="ToastManager.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="StatusBox.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="IssuesList.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="assets/run-hammer.bat" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
