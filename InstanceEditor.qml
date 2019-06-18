@@ -38,7 +38,13 @@ ScrollView {
             anchors.fill: parent
             acceptedButtons: Qt.RightButton
             hoverEnabled: true
-            onClicked: {
+            onClicked: openContextMenu(mouse)
+            onPressAndHold: if (mouse.source === Qt.MouseEventNotSynthesized) {
+                                openContextMenu(mouse)
+                            }
+
+
+            function openContextMenu(mouse) {
                 selectStart = textArea.selectionStart
                 selectEnd = textArea.selectionEnd
                 curPos = textArea.cursorPosition
@@ -48,35 +54,23 @@ ScrollView {
                 textArea.cursorPosition = curPos
                 textArea.select(selectStart, selectEnd)
             }
-            onPressAndHold: {
-                if (mouse.source === Qt.MouseEventNotSynthesized) {
-                    selectStart = textArea.selectionStart
-                    selectEnd = textArea.selectionEnd
-                    curPos = textArea.cursorPosition
-                    contextMenu.x = mouse.x
-                    contextMenu.y = mouse.y
-                    contextMenu.open()
-                    textArea.cursorPosition = curPos
-                    textArea.select(selectStart, selectEnd)
-                }
-            }
 
             Menu {
                 id: contextMenu
                 MenuItem {
-                    text: "Cut"
+                    text: qsTr("Cut")
                     onTriggered: {
                         textArea.cut()
                     }
                 }
                 MenuItem {
-                    text: "Copy"
+                    text: qsTr("Copy")
                     onTriggered: {
                         textArea.copy()
                     }
                 }
                 MenuItem {
-                    text: "Paste"
+                    text: qsTr("Paste")
                     onTriggered: {
                         textArea.paste()
                     }
