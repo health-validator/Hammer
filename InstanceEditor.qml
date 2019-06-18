@@ -31,7 +31,6 @@ ScrollView {
         font.preferShaping: false
         selectByMouse: true
         wrapMode: "WrapAtWordBoundaryOrAnywhere"
-        height: parent.height
 
         background: Rectangle {
             anchors.fill: parent
@@ -46,6 +45,8 @@ ScrollView {
             anchors.fill: parent
             acceptedButtons: Qt.RightButton
             hoverEnabled: true
+            propagateComposedEvents: true
+            cursorShape: containsMouse ? Qt.IBeamCursor : Qt.ArrowCursor
             onClicked: openContextMenu(mouse)
             onPressAndHold: if (mouse.source === Qt.MouseEventNotSynthesized) {
                                 openContextMenu(mouse)
