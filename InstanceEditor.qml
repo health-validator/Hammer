@@ -33,6 +33,14 @@ ScrollView {
         wrapMode: "WrapAtWordBoundaryOrAnywhere"
         height: parent.height
 
+        background: Rectangle {
+            anchors.fill: parent
+            color: "#F7F9FA"
+            radius: 3
+            border.width: 1
+            border.color: "#E3E7FD"
+        }
+
         // credit: https://stackoverflow.com/a/49875950/72944
         MouseArea {
             anchors.fill: parent
