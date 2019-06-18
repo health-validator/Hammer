@@ -260,12 +260,15 @@ ApplicationWindow {
 
         Button {
             id: actionButton
+            // this should be set declaratively
             text: appmodel.validateButtonText
             visible: appmodel.resourceText || addResourcesPage.state === "EDITING_SETTINGS"
             Layout.fillWidth: true
 
             onClicked: {
-                if (addResourcesPage.state === "ENTERING_RESOURCE") {
+                if (addResourcesPage.state === "ENTERING_RESOURCE"
+                        || (addResourcesPage.state === "VALIDATION_RESULTS"
+                            && resultsPageEditor.state === "VISIBLE")) {
                     appmodel.startValidation()
                 } else {
                     addResourcesPage.state = "ENTERING_RESOURCE"
@@ -382,6 +385,7 @@ ApplicationWindow {
                     State {
                         name: "VISIBLE"
                         PropertyChanges { target: resultsPageEditor; height: 250 }
+                        PropertyChanges { target: actionButton; text: qsTr("Re-validate")}
                     }
                 ]
                 state: "HIDDEN"
