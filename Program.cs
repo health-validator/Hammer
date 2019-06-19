@@ -337,23 +337,13 @@ class Program
     {
       IPositionInfo serializationDetails;
       
-      if (!issue.Location.Any())
-      {
-        return null;
-      }
+      if (!issue.Location.Any()) { return null; }
+      var location = SanitizeLocation(issue.Location.First());
+      if (location == null) { return null; }
 
-      var location = issue.Location.First();
-      // trim Java FHIRpath of its position information, which isn't always correct
-      var matches = cleanFhirPath.Matches(location);
-      location = matches.First().Groups[0].ToString().Trim();
-      
       var elementWithError = _parsedResource.Select(location).ToList();
-
-      if (!elementWithError.Any())
-      {
-        return null;
-      }
-
+      if (!elementWithError.Any()) { return null; }
+      
       switch (InstanceFormat)
       {
         case ResourceFormat.Json:
@@ -369,6 +359,16 @@ class Program
       }
 
       return serializationDetails;
+    }
+
+    // trim Java FHIRpath of its position information, which isn't always correct
+    // we have to compute it ourselves for .NET, might as well do it for Java
+    private string SanitizeLocation(string rawLocation)
+    {
+      var matches = cleanFhirPath.Matches(rawLocation);
+      if (!matches.Any()) { return null; }
+      var location = matches.First().Groups[0].ToString().Trim();
+      return location;
     }
 
     public bool LoadResourceFile(string text)
