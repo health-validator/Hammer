@@ -12,8 +12,8 @@ ScrollView {
 
 
     clip: true
-    contentHeight: height
     ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+    onImplicitHeightChanged: textArea.update()
 
     // doesn't seem to find contentY at creation time
     //    Behavior on contentItem.contentY {

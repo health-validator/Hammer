@@ -375,16 +375,16 @@ ApplicationWindow {
                 id: resultsPageEditor
                 myText: appmodel.resourceText
                 Layout.fillWidth: true
-                height: 0
+                Layout.alignment: Qt.AlignBottom
 
                 states: [
                     State {
                         name: "HIDDEN"
-                        PropertyChanges { target: resultsPageEditor; height: 0 }
+                        PropertyChanges { target: resultsPageEditor; implicitHeight: 0 }
                     },
                     State {
                         name: "VISIBLE"
-                        PropertyChanges { target: resultsPageEditor; height: 250 }
+                        PropertyChanges { target: resultsPageEditor; implicitHeight: 250 }
                         PropertyChanges { target: actionButton; text: qsTr("Re-validate")}
                     }
                 ]
@@ -393,11 +393,11 @@ ApplicationWindow {
                 transitions: [
                     Transition {
                         from: "*"; to: "VISIBLE"
-                        NumberAnimation { properties: "height"; easing.type: Easing.InBack; duration: animationDuration/2 }
+                        NumberAnimation { properties: "implicitHeight"; easing.type: Easing.InBack; duration: animationDuration/2 }
                     },
                     Transition {
                         from: "*"; to: "HIDDEN"
-                        NumberAnimation { properties: "height"; easing.type: Easing.InBack; duration: animationDuration/2 }
+                        NumberAnimation { properties: "implicitHeight"; easing.type: Easing.InBack; duration: animationDuration/2 }
                     }
                 ]
             }
