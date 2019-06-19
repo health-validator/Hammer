@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommandLine;
 using CsvHelper;
@@ -40,6 +41,8 @@ class Program
     private readonly IResourceResolver _coreSource = new CachedResolver(ZipSource.CreateValidationSource());
 
     private IResourceResolver _combinedSource;
+    
+    Regex cleanFhirPath = new Regex(@"([^\(]+)", RegexOptions.Compiled);
 
     // ReSharper disable MemberCanBePrivate.Global
     #region QML-accessible properties
@@ -340,6 +343,10 @@ class Program
       }
 
       var location = issue.Location.First();
+      // trim Java FHIRpath of its position information, which isn't always correct
+      var matches = cleanFhirPath.Matches(location);
+      location = matches.First().Groups[0].ToString().Trim();
+      
       var elementWithError = _parsedResource.Select(location).ToList();
 
       if (!elementWithError.Any())
