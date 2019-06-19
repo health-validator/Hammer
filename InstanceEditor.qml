@@ -13,6 +13,7 @@ ScrollView {
 
     clip: true
     contentHeight: height
+    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
     // doesn't seem to find contentY at creation time
     //    Behavior on contentItem.contentY {
@@ -24,13 +25,13 @@ ScrollView {
 
     TextArea {
         id: textArea
-        renderType: Text.NativeRendering
         text: myText
         onTextChanged: { appmodel.resourceText = text }
         font.family: "Ubuntu Mono"
         font.preferShaping: false
         selectByMouse: true
         wrapMode: "WrapAtWordBoundaryOrAnywhere"
+        renderType: Text.NativeRendering
 
         background: Rectangle {
             anchors.fill: parent
