@@ -114,7 +114,7 @@ ColumnLayout {
                 horizontalAlignment: Text.AlignLeft
                 color: "#34826b"
                 visible: modelData.lineNumber !== 0
-                text: `line ${modelData.lineNumber}, col ${modelData.linePosition}`
+                text: `line ${modelData.lineNumber}:${modelData.linePosition}`
                 renderType: Text.NativeRendering
                 font.pointSize: 9
                 textFormat: Text.PlainText
