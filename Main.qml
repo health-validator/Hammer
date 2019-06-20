@@ -27,6 +27,8 @@ ApplicationWindow {
         id: toast
     }
 
+    FontLoader { id: monospaceFont; source: "RobotoMono-Regular.ttf" }
+
     DropArea {
         id: dropArea
         anchors.fill: parent
@@ -127,7 +129,7 @@ ApplicationWindow {
                 onTextChanged: { appmodel.resourceText = text; }
                 text: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
-                font.family: appmodel.resourceText ? "Ubuntu Mono" : "Ubuntu"
+                font.family: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
                 selectByMouse: true
                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
 
