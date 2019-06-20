@@ -275,9 +275,14 @@ ApplicationWindow {
                 } else {
                     if (addResourcesPage.state === "VALIDATION_RESULTS") {
 <<<<<<< HEAD
+<<<<<<< HEAD
                         appmodel.cancelValidation()
                     }
 =======
+>>>>>>> Implement validator cancelation
+=======
+                        appmodel.cancelValidation()
+                    }
 >>>>>>> Implement validator cancelation
                     addResourcesPage.state = "ENTERING_RESOURCE"
                 }
