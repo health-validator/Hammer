@@ -1,20 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 using System.Text.RegularExpressions;
-=======
->>>>>>> Implement validator cancelation
-=======
->>>>>>> Implement validator cancelation
-=======
->>>>>>> Implement validator cancelation
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
@@ -234,6 +225,10 @@ class Program
     
     private ITypedElement _parsedResource;
     
+
+    private CancellationTokenSource validatorCancellationSource = null;
+    
+    private List<Process> validatorProcesses = new List<Process>();
 
     private CancellationTokenSource validatorCancellationSource = null;
     
@@ -802,6 +797,9 @@ class Program
           // task. We don't need to handle the exception itself.
 		    }
       }
+
+      ValidatingDotnet = false;
+      ValidatingJava   = false;
     }
 
     public void CancelValidation()
