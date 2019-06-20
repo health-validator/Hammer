@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,7 +7,10 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 using System.Text.RegularExpressions;
+=======
+>>>>>>> Implement validator cancelation
 =======
 >>>>>>> Implement validator cancelation
 =======
@@ -231,6 +234,10 @@ class Program
     
     private ITypedElement _parsedResource;
     
+
+    private CancellationTokenSource validatorCancellationSource = null;
+    
+    private List<Process> validatorProcesses = new List<Process>();
 
     private CancellationTokenSource validatorCancellationSource = null;
     
