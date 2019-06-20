@@ -374,6 +374,12 @@ class Program
     // we have to compute it ourselves for .NET, might as well do it for Java
     private string SanitizeLocation(string rawLocation)
     {
+      // heuristic for the Java validator
+      if (rawLocation == "(document)")
+      {
+        return _parsedResource.Name;
+      }
+      
       var matches = cleanFhirPath.Matches(rawLocation);
       if (!matches.Any()) { return null; }
       var location = matches.First().Groups[0].ToString().Trim();
