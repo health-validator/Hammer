@@ -341,8 +341,17 @@ class Program
       var location = SanitizeLocation(issue.Location.First());
       if (location == null) { return null; }
 
-      var elementWithError = _parsedResource.Select(location).ToList();
-      if (!elementWithError.Any()) { return null; }
+      List<ITypedElement> elementWithError = null;
+      try
+      {
+        elementWithError = _parsedResource.Select(location).ToList();
+      }
+      catch (FormatException)
+      {
+        // if the FHIRPath is invalid, don't return position info for it
+      }
+
+      if (elementWithError == null || !elementWithError.Any()) { return null; }
       
       switch (InstanceFormat)
       {
