@@ -589,9 +589,9 @@ class Program
 
       var validatorPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location),
         "org.hl7.fhir.validator.jar");
-      var scopePath = ScopeDirectory;
+      var scopeArgument = string.IsNullOrEmpty(ScopeDirectory) ? "" :  $" -ig \"{ScopeDirectory}\"";
       var outputJson = $"{Path.GetTempFileName()}.json";
-      var finalArguments = $"-jar {validatorPath} -version 3.0 -tx \"{TerminologyService}\" -ig \"{scopePath}\" -output {outputJson} {resourcePath}";
+      var finalArguments = $"-jar {validatorPath} -version 3.0 -tx \"{TerminologyService}\"{scopeArgument} -output {outputJson} {resourcePath}";
 
 
       OperationOutcome result;
@@ -633,6 +633,9 @@ class Program
                     Code = OperationOutcome.IssueType.Exception
                 });
             }
+
+            sw.Stop();
+            Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
             return result;
         }
 
