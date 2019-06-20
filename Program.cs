@@ -543,6 +543,9 @@ class Program
                     Code = OperationOutcome.IssueType.Exception
                 });
             }
+
+            sw.Stop();
+            Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
             return result;
         }
 
