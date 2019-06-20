@@ -5,7 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+<<<<<<< HEAD
 using System.Text.RegularExpressions;
+=======
+>>>>>>> Implement validator cancelation
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
@@ -225,6 +228,10 @@ class Program
     
     private ITypedElement _parsedResource;
     
+
+    private CancellationTokenSource validatorCancellationSource = null;
+    
+    private List<Process> validatorProcesses = new List<Process>();
 
     private CancellationTokenSource validatorCancellationSource = null;
     
@@ -749,37 +756,37 @@ class Program
       while (allTasks.Any())
       {
         try {
-        var finished = await Task.WhenAny(allTasks);
-        if (finished == validateWithJava)
-        {
-          allTasks.Remove(validateWithJava);
-          var result = await validateWithJava;
-          JavaErrorCount   = result.Errors + result.Fatals;
-          JavaWarningCount = result.Warnings;
-          JavaIssues       = convertIssues(result.Issue);
-          ValidatingJava = false;
-        }
-        else if (finished == validateWithDotnet)
-        {
-          allTasks.Remove(validateWithDotnet);
-          var result = await validateWithDotnet;
-          DotnetErrorCount   = result.Errors + result.Fatals;
-          DotnetWarningCount = result.Warnings;
-          DotnetIssues       = convertIssues(result.Issue);
-          ValidatingDotnet = false;
-        }
-        else
-        {
-          allTasks.Remove(finished);
-        }
+          var finished = await Task.WhenAny(allTasks);
+          if (finished == validateWithJava)
+          {
+            allTasks.Remove(validateWithJava);
+            var result = await validateWithJava;
+            JavaErrorCount   = result.Errors + result.Fatals;
+            JavaWarningCount = result.Warnings;
+            JavaIssues       = convertIssues(result.Issue);
+            ValidatingJava = false;
+          }
+          else if (finished == validateWithDotnet)
+          {
+            allTasks.Remove(validateWithDotnet);
+            var result = await validateWithDotnet;
+            DotnetErrorCount   = result.Errors + result.Fatals;
+            DotnetWarningCount = result.Warnings;
+            DotnetIssues       = convertIssues(result.Issue);
+            ValidatingDotnet = false;
+          }
+          else
+          {
+            allTasks.Remove(finished);
+          }
         } catch (OperationCanceledException ex) {
           // When we signalled to cancel the validation, the
           // OperationCanceledException is thrown whenever we await the task.
           // This prevents processing the results, effectively decoupling the
           // task. We don't need to handle the exception itself.
+        }
       }
     }
-  }
 
     public void CancelValidation()
     {
