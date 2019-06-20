@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -628,14 +628,35 @@ class Program
           else
           {
             allTasks.Remove(finished);
-          }
+		  }
         } catch (OperationCanceledException ex) {
           // When we signalled to cancel the validation, the
           // OperationCanceledException is thrown whenever we await the task.
           // This prevents processing the results, effectively decoupling the
           // task. We don't need to handle the exception itself.
-        }
+		}
       }
+    }
+  }
+
+    public void CancelValidation()
+    {
+      // Signal the CancellationToken in the tasks that we want to cancel.
+      if (validatorCancellationSource != null) {
+        validatorCancellationSource.Cancel();
+        validatorCancellationSource.Dispose();
+      }
+      validatorCancellationSource = null;
+      
+      // We can actively kill the Java validator as this is an external
+      // process. The .NET validator needs to run its course until completion,
+      // we'll just ignore the results.
+      foreach (Process process in validatorProcesses) {
+        process.Kill();
+      }
+
+      ValidatingDotnet = false;
+      ValidatingJava   = false;
     }
 
     public void CancelValidation()
