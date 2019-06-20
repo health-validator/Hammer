@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-// import appmodel 1.0
+import appmodel 1.0
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
@@ -26,6 +26,8 @@ ApplicationWindow {
     ToastManager {
         id: toast
     }
+
+    FontLoader { id: monospaceFont; source: "RobotoMono-Regular.ttf" }
 
     DropArea {
         id: dropArea
@@ -127,7 +129,7 @@ ApplicationWindow {
                 onTextChanged: { appmodel.resourceText = text }
                 text: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
-                font.family: appmodel.resourceText ? "Ubuntu Mono" : "Ubuntu"
+                font.family: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
                 selectByMouse: true
                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
 
