@@ -613,33 +613,34 @@ class Program
       while (allTasks.Any())
       {
         try {
-        var finished = await Task.WhenAny(allTasks);
-        if (finished == validateWithJava)
-        {
-          allTasks.Remove(validateWithJava);
-          var result = await validateWithJava;
-          SetOutcome(result, ValidatorType.Java);
-          ValidatingJava = false;
-        }
-        else if (finished == validateWithDotnet)
-        {
-          allTasks.Remove(validateWithDotnet);
-          var result = await validateWithDotnet;
-          SetOutcome(result, ValidatorType.Dotnet);
-          ValidatingDotnet = false;
-        }
-        else
-        {
-          allTasks.Remove(finished);
-        }
+          var finished = await Task.WhenAny(allTasks);
+          if (finished == validateWithJava)
+          {
+            allTasks.Remove(validateWithJava);
+            var result = await validateWithJava;
+            SetOutcome(result, ValidatorType.Java);
+            ValidatingJava = false;
+          }
+          else if (finished == validateWithDotnet)
+          {
+            allTasks.Remove(validateWithDotnet);
+            var result = await validateWithDotnet;
+            SetOutcome(result, ValidatorType.Dotnet);
+            ValidatingDotnet = false;
+          }
+          else
+          {
+            allTasks.Remove(finished);
+          }
         } catch (OperationCanceledException ex) {
           // When we signalled to cancel the validation, the
           // OperationCanceledException is thrown whenever we await the task.
           // This prevents processing the results, effectively decoupling the
           // task. We don't need to handle the exception itself.
+        }
       }
     }
-  }
+
 
     public void CancelValidation()
     {
