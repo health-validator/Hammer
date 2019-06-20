@@ -268,6 +268,7 @@ ApplicationWindow {
                 if (addResourcesPage.state === "ENTERING_RESOURCE") {
                     appmodel.startValidation()
                 } else {
+                    if (addResourcesPage.state === "VALIDATION_RESULTS") {
                     addResourcesPage.state = "ENTERING_RESOURCE"
                 }
             }
