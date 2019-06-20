@@ -639,6 +639,9 @@ class Program
           // task. We don't need to handle the exception itself.
 		    }
       }
+
+      ValidatingDotnet = false;
+      ValidatingJava   = false;
     }
 
     public void CancelValidation()
