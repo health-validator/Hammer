@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -771,6 +771,7 @@ class Program
             JavaErrorCount   = result.Errors + result.Fatals;
             JavaWarningCount = result.Warnings;
             JavaIssues       = convertIssues(result.Issue);
+            SetOutcome(result, ValidatorType.Java);
             ValidatingJava = false;
           }
           else if (finished == validateWithDotnet)
@@ -780,6 +781,7 @@ class Program
             DotnetErrorCount   = result.Errors + result.Fatals;
             DotnetWarningCount = result.Warnings;
             DotnetIssues       = convertIssues(result.Issue);
+            SetOutcome(result, ValidatorType.Dotnet);
             ValidatingDotnet = false;
           }
           else
