@@ -685,6 +685,9 @@ class Program
 
     QQuickStyle.SetStyle("Universal");
     QCoreApplication.SetAttribute(ApplicationAttribute.EnableHighDpiScaling, true);
+    
+    Qt.PutEnv("QT_OPENGL", "angle");
+    Qt.PutEnv("QT_ANGLE_PLATFORM", "warp");
 
     using (var app = new QGuiApplication(args))
     {
