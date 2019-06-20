@@ -4,7 +4,8 @@ import QtQuick.Controls 2.5
 // Component to edit/fixup FHIR instances as easily as possible
 ScrollView {
     property string myText
-    property int letterHeight: textArea.font.pixelSize
+    property string fontName
+    property int letterHeight: fontMetrics.height
 
     property int selectStart
     property int selectEnd
@@ -21,13 +22,15 @@ ScrollView {
     //            duration: 500
     //            easing.type: Easing.InOutQuad
     //        }
-    //    }
+    //    }    
+
+    FontMetrics { id: fontMetrics; font.family: fontName }
 
     TextArea {
         id: textArea
         text: myText
         onTextChanged: { appmodel.resourceText = text }
-        font.family: "Ubuntu Mono"
+        font.family: fontName
         font.preferShaping: false
         selectByMouse: true
         wrapMode: "WrapAtWordBoundaryOrAnywhere"

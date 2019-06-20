@@ -376,6 +376,7 @@ ApplicationWindow {
             InstanceEditor {
                 id: resultsPageEditor
                 myText: appmodel.resourceText
+                fontName: monospaceFont.name
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignBottom
 
