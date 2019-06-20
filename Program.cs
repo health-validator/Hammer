@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -255,6 +255,10 @@ class Program
     private CancellationTokenSource _validatorCancellationSource;
     
     private List<Process> _validatorProcesses = new List<Process>();
+
+    private CancellationTokenSource validatorCancellationSource = null;
+    
+    private List<Process> validatorProcesses = new List<Process>();
 
     private void ResetResults()
     {
