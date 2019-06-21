@@ -609,7 +609,7 @@ class Program
         
         return result;
       }
-      catch (OperationCanceledException ex) {
+      catch (OperationCanceledException) {
         throw;
       }
       catch (Exception ex)
