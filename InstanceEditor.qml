@@ -5,31 +5,37 @@ import QtQuick.Controls 2.5
 ScrollView {
     property string myText
     property string fontName
-    property int letterHeight: fontMetrics.height
+
+    /** Scroll the text to the specified line number
+      * @param lineNumber the line number, with counting started at 1
+      */
+    function scrollToLine(lineNumber) {
+        // We can't calculate the y position directly because a logical and
+        // displayed line might differ in height due to line wrapping. QML's
+        // positionToRectangle() function can tell us what we need, but for
+        // that we have to calculate the position in the text string of the
+        // line.
+        var position = 0
+        var lines = textArea.text.split("\n")
+        for (var currentLine = 0; currentLine < lineNumber - 1; currentLine++) {
+            position += lines[currentLine].length + 1 // include newline char
+        }
+        contentItem.contentY = textArea.positionToRectangle(position).y
+    }
 
     property int selectStart
     property int selectEnd
     property int curPos
 
-
     clip: true
     ScrollBar.vertical.policy: ScrollBar.AlwaysOn
     onImplicitHeightChanged: textArea.update()
 
-    // doesn't seem to find contentY at creation time
-    //    Behavior on contentItem.contentY {
-    //        PropertyAnimation {
-    //            duration: 500
-    //            easing.type: Easing.InOutQuad
-    //        }
-    //    }    
-
-    FontMetrics { id: fontMetrics; font.family: fontName }
-
     TextArea {
         id: textArea
         text: myText
-        onTextChanged: { appmodel.resourceText = text }
+
+        onTextChanged: appmodel.resourceText = text
         font.family: fontName
         font.preferShaping: false
         selectByMouse: true

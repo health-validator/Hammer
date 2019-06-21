@@ -345,9 +345,7 @@ ApplicationWindow {
                     function peekIssue(lineNumber, linePosition) {
                         if (lineNumber === 0 && linePosition === 0) { return; }
                         resultsPageEditor.state = "VISIBLE"
-                        const newY = lineNumberToY(lineNumber)
-                        resultsPageEditor.contentItem.contentY = newY
-                        console.log(`line ${lineNumber} col ${linePosition}, Y: ${newY}`)
+                        resultsPageEditor.scrollToLine(lineNumber)
                     }
 
                     // this should be done better with findBlockByLineNumber from QTextDocument(), requires C#
