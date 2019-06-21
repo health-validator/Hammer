@@ -43,7 +43,7 @@ ColumnLayout {
                     return true
                 } else if (modelData.severity === "warning" && showWarnings.checked) {
                     return true
-                }  else if (modelData.severity === "informational" && showInfo.checked) {
+                }  else if (modelData.severity === "information" && showInfo.checked) {
                     return true
                 } else {
                     return false
