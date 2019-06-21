@@ -453,7 +453,7 @@ class Program
         return result;
       }
       catch (OperationCanceledException ex) {
-        throw ex;
+        throw;
       }
       catch (Exception ex)
       {
@@ -632,7 +632,7 @@ class Program
           {
             allTasks.Remove(finished);
           }
-        } catch (OperationCanceledException ex) {
+        } catch (OperationCanceledException) {
           // When we signalled to cancel the validation, the
           // OperationCanceledException is thrown whenever we await the task.
           // This prevents processing the results, effectively decoupling the
