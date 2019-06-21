@@ -143,6 +143,48 @@ class Program
       set => this.SetProperty(ref _validatingJava, value);
     }
 
+    private int _javaErrorCount;
+    [NotifySignal]
+    public int JavaErrorCount {
+      get => _javaErrorCount;
+      set => this.SetProperty(ref _javaErrorCount, value);
+    }
+
+    private int _javaWarningCount;
+    [NotifySignal]
+    public int JavaWarningCount {
+      get => _javaWarningCount;
+      set => this.SetProperty(ref _javaWarningCount, value);
+    }
+
+    private List<Issue> _javaIssues = new List<Issue>();
+    [NotifySignal]
+    public List<Issue> JavaIssues {
+      get => _javaIssues;
+      set => this.SetProperty(ref _javaIssues, value);
+    }
+
+    private int _dotnetErrorCount;
+    [NotifySignal]
+    public int DotnetErrorCount {
+      get => _dotnetErrorCount;
+      set => this.SetProperty(ref _dotnetErrorCount, value);
+    }
+
+    private int _dotnetWarningCount;
+    [NotifySignal]
+    public int DotnetWarningCount {
+      get => _dotnetWarningCount;
+      set => this.SetProperty(ref _dotnetWarningCount, value);
+    }
+    
+    private List<Issue> _dotnetIssues = new List<Issue>();
+    [NotifySignal]
+    public List<Issue> DotnetIssues {
+      get => _dotnetIssues;
+      set => this.SetProperty(ref _dotnetIssues, value);
+    }
+
     private bool _javaValidationCrashed;
     [NotifySignal]
     public bool JavaValidationCrashed
@@ -158,78 +200,18 @@ class Program
       get => _animateQml;
       set => this.SetProperty(ref _animateQml, value);
     }
-    
+
     #endregion
-
-    private ValidationResult _javaResult = new ValidationResult();
-    [NotifySignal]
-    public ValidationResult JavaResult
-    {
-      get => _javaResult;
-      set => this.SetProperty(ref _javaResult, value);
-    }
-
-    private ValidationResult _dotnetResult = new ValidationResult();
-    [NotifySignal]
-    public ValidationResult DotnetResult
-    {
-      get => _dotnetResult;
-      set => this.SetProperty(ref _dotnetResult, value);
-    }
 
     private void ResetResults()
     {
-      JavaResult = new ValidationResult { ValidatorType = ValidatorType.Java };
-      DotnetResult = new ValidationResult { ValidatorType = ValidatorType.Dotnet };
+      JavaErrorCount     = 0;
+      JavaWarningCount   = 0;
+      JavaIssues         = new List<Issue>();
+      DotnetErrorCount   = 0;
+      DotnetWarningCount = 0;
+      DotnetIssues       = new List<Issue>();
       JavaValidationCrashed = false;
-    }
-
-    private void SetOutcome(OperationOutcome outcome, ValidatorType type)
-    {
-      if (type == ValidatorType.Java) {
-        JavaResult = new ValidationResult { ValidatorType = type };
-        JavaResult.Issues = convertIssues(outcome.Issue);
-        // warnings have to be set before errors for some reason, otherwise not transferred to QML
-        JavaResult.WarningCount = outcome.Warnings;
-        JavaResult.ErrorCount = outcome.Errors + outcome.Fatals;
-      } else {
-        DotnetResult = new ValidationResult { ValidatorType = type };
-        DotnetResult.Issues = convertIssues(outcome.Issue);
-        // warnings have to be set before errors for some reason, otherwise not transferred to QML
-        DotnetResult.WarningCount = outcome.Warnings;
-        DotnetResult.ErrorCount = outcome.Errors + outcome.Fatals;
-      }
-
-      // Console.WriteLine(outcome.ToString());
-    }
-
-    public enum ValidatorType { Dotnet = 1, Java = 2 }
-
-    public class ValidationResult {
-      private ValidatorType _validatorType;
-      [NotifySignal]
-      public ValidatorType ValidatorType
-        { get => _validatorType; set => this.SetProperty(ref _validatorType, value); }
-
-      private List<Issue> _issues
-        = new List<Issue>();
-
-      [NotifySignal]
-      public List<Issue> Issues
-      {
-        get => _issues;
-        set => this.SetProperty(ref _issues, value);
-      }
-
-      private int _errorCount;
-      [NotifySignal]
-      public int ErrorCount
-        { get => _errorCount; set => this.SetProperty(ref _errorCount, value); }
-
-      private int _warningCount;
-      [NotifySignal]
-      public int WarningCount
-        { get => _warningCount; set => this.SetProperty(ref _warningCount, value); }
     }
 
     // not a struct due to https://github.com/qmlnet/qmlnet/issues/135
@@ -382,7 +364,7 @@ class Program
         csv.WriteField("Validator engine");
         csv.NextRecord();
 
-        foreach (var issue in DotnetResult.Issues) {
+        foreach (var issue in DotnetIssues) {
           csv.WriteField(issue.Severity);
           csv.WriteField(issue.Text);
           csv.WriteField(issue.Location);
@@ -390,7 +372,7 @@ class Program
           csv.NextRecord();
         }
 
-        foreach (var issue in JavaResult.Issues)
+        foreach (var issue in JavaIssues)
         {
           csv.WriteField(issue.Severity);
           csv.WriteField(issue.Text);
@@ -604,14 +586,18 @@ class Program
         {
           allTasks.Remove(validateWithJava);
           var result = await validateWithJava;
-          SetOutcome(result, ValidatorType.Java);
+          JavaErrorCount   = result.Errors + result.Fatals;
+          JavaWarningCount = result.Warnings;
+          JavaIssues       = convertIssues(result.Issue);
           ValidatingJava = false;
         }
         else if (finished == validateWithDotnet)
         {
           allTasks.Remove(validateWithDotnet);
           var result = await validateWithDotnet;
-          SetOutcome(result, ValidatorType.Dotnet);
+          DotnetErrorCount   = result.Errors + result.Fatals;
+          DotnetWarningCount = result.Warnings;
+          DotnetIssues       = convertIssues(result.Issue);
           ValidatingDotnet = false;
         }
         else
