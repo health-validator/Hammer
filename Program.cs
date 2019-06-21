@@ -452,7 +452,7 @@ class Program
         Console.WriteLine($".NET validation performed in {sw.ElapsedMilliseconds}ms");
         return result;
       }
-      catch (OperationCanceledException ex) {
+      catch (OperationCanceledException) {
         throw;
       }
       catch (Exception ex)
