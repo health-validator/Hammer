@@ -3,7 +3,7 @@ import QtQuick.Controls 2.5
 
 // Component to edit/fixup FHIR instances as easily as possible
 ScrollView {
-    property string myText
+    property string instanceText
     property string fontName
 
     /** Scroll the text to the specified line number
@@ -23,17 +23,13 @@ ScrollView {
         contentItem.contentY = textArea.positionToRectangle(position).y
     }
 
-    property int selectStart
-    property int selectEnd
-    property int curPos
-
     clip: true
     ScrollBar.vertical.policy: ScrollBar.AlwaysOn
     onImplicitHeightChanged: textArea.update()
 
     TextArea {
         id: textArea
-        text: myText
+        text: instanceText
 
         onTextChanged: appmodel.resourceText = text
         font.family: fontName
@@ -64,9 +60,9 @@ ScrollView {
 
             function openContextMenu(mouse) {
                 // keep selection when context menu is opened
-                selectStart = textArea.selectionStart
-                selectEnd = textArea.selectionEnd
-                curPos = textArea.cursorPosition
+                const selectStart = textArea.selectionStart
+                const selectEnd = textArea.selectionEnd
+                const curPos = textArea.cursorPosition
                 contextMenu.x = mouse.x
                 contextMenu.y = mouse.y
                 contextMenu.open()

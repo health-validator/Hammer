@@ -126,7 +126,7 @@ ApplicationWindow {
                 id: textArea
                 placeholderText: qsTr("or load it here")
                 renderType: Text.NativeRendering
-                onTextChanged: { appmodel.resourceText = text; }
+                onTextChanged: appmodel.resourceText = text
                 text: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
                 font.family: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
@@ -185,7 +185,7 @@ ApplicationWindow {
                 PropertyChanges { target: addResourcesPage; x: 0 }
                 PropertyChanges { target: resultsPane; x: resultsPane.width }
                 PropertyChanges { target: settingsPane; y: window.height }
-                PropertyChanges { target: actionButton; text: appmodel.validateButtonText}
+                PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
             },
             State {
                 name: "VALIDATION_RESULTS"
@@ -348,11 +348,6 @@ ApplicationWindow {
                         resultsPageEditor.scrollToLine(lineNumber)
                     }
 
-                    // this should be done better with findBlockByLineNumber from QTextDocument(), requires C#
-                    function lineNumberToY(lineNumber) {
-                        return resultsPageEditor.letterHeight * lineNumber;
-                    }
-
                     IssuesList {
                         id: dotnetErrorList
                         label: ".NET"
@@ -373,7 +368,7 @@ ApplicationWindow {
 
             InstanceEditor {
                 id: resultsPageEditor
-                myText: appmodel.resourceText
+                instanceText: appmodel.resourceText
                 fontName: monospaceFont.name
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignBottom
