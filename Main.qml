@@ -304,8 +304,8 @@ ApplicationWindow {
                     width: resultsPane.availableWidth/2
                     
                     runningStatus: appmodel.validatingDotnet
-                    errorCount:    appmodel.dotnetResult.errorCount
-                    warningCount:  appmodel.dotnetResult.warningCount
+                    errorCount:    appmodel.dotnetErrorCount
+                    warningCount:  appmodel.dotnetWarningCount
 
                     onClicked: errorsScrollView.contentItem.contentY = dotnetErrorList.y
                 }
@@ -316,8 +316,8 @@ ApplicationWindow {
                     width: resultsPane.availableWidth/2
 
                     runningStatus: appmodel.validatingJava
-                    errorCount:    appmodel.javaResult.errorCount
-                    warningCount:  appmodel.javaResult.warningCount
+                    errorCount:    appmodel.javaErrorCount
+                    warningCount:  appmodel.javaWarningCount
 
                     onClicked: errorsScrollView.contentItem.contentY = javaErrorList.y
                 }
@@ -351,16 +351,16 @@ ApplicationWindow {
                     IssuesList {
                         id: dotnetErrorList
                         label: ".NET"
-                        labelVisible: !appmodel.validatingDotnet && (appmodel.dotnetResult.errorCount >= 1 || appmodel.dotnetResult.warningCount >= 1)
-                        dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetResult.issues)
+                        labelVisible: !appmodel.validatingDotnet && (appmodel.dotnetErrorCount >= 1 || appmodel.dotnetWarningCount >= 1)
+                        dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                     }
 
                     IssuesList {
                         id: javaErrorList
                         label: !appmodel.javaValidationCrashed ? "Java" : "Java (validation crashed, details below)"
-                        labelVisible: !appmodel.validatingJava && (appmodel.javaResult.errorCount >= 1 || appmodel.javaResult.warningCount >= 1)
-                        dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaResult.issues)
+                        labelVisible: !appmodel.validatingJava && (appmodel.javaErrorCount >= 1 || appmodel.javaWarningCount >= 1)
+                        dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                     }
                 }
