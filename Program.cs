@@ -260,6 +260,10 @@ class Program
     
     private List<Process> _validatorProcesses = new List<Process>();
 
+    private CancellationTokenSource _validatorCancellationSource;
+    
+    private List<Process> _validatorProcesses = new List<Process>();
+
     private void ResetResults()
     {
       JavaErrorCount     = 0;
