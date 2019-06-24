@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommandLine;
 using CsvHelper;
@@ -16,15 +16,16 @@ using Hl7.Fhir.Specification.Source;
 using Hl7.Fhir.Specification.Terminology;
 using Hl7.Fhir.Utility;
 using Hl7.Fhir.Validation;
+using Hl7.Fhir.ElementModel;
 using Qml.Net;
 using Qml.Net.Runtimes;
+using Hl7.FhirPath;
 using TextCopy;
 using Task = System.Threading.Tasks.Task;
 
 class Program
 {
   [Signal("validationStarted")]
-  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
   public class AppModel
   {
     private static AppModel _instance;
@@ -40,7 +41,10 @@ class Program
     private readonly IResourceResolver _coreSource = new CachedResolver(ZipSource.CreateValidationSource());
 
     private IResourceResolver _combinedSource;
+    
+    Regex cleanFhirPath = new Regex(@"([^\(]+)", RegexOptions.Compiled);
 
+    // ReSharper disable MemberCanBePrivate.Global
     #region QML-accessible properties
     private ResourceFormat _instanceFormat;
 
@@ -143,6 +147,48 @@ class Program
       set => this.SetProperty(ref _validatingJava, value);
     }
 
+    private int _javaErrorCount;
+    [NotifySignal]
+    public int JavaErrorCount {
+      get => _javaErrorCount;
+      set => this.SetProperty(ref _javaErrorCount, value);
+    }
+
+    private int _javaWarningCount;
+    [NotifySignal]
+    public int JavaWarningCount {
+      get => _javaWarningCount;
+      set => this.SetProperty(ref _javaWarningCount, value);
+    }
+
+    private List<Issue> _javaIssues = new List<Issue>();
+    [NotifySignal]
+    public List<Issue> JavaIssues {
+      get => _javaIssues;
+      set => this.SetProperty(ref _javaIssues, value);
+    }
+
+    private int _dotnetErrorCount;
+    [NotifySignal]
+    public int DotnetErrorCount {
+      get => _dotnetErrorCount;
+      set => this.SetProperty(ref _dotnetErrorCount, value);
+    }
+
+    private int _dotnetWarningCount;
+    [NotifySignal]
+    public int DotnetWarningCount {
+      get => _dotnetWarningCount;
+      set => this.SetProperty(ref _dotnetWarningCount, value);
+    }
+    
+    private List<Issue> _dotnetIssues = new List<Issue>();
+    [NotifySignal]
+    public List<Issue> DotnetIssues {
+      get => _dotnetIssues;
+      set => this.SetProperty(ref _dotnetIssues, value);
+    }
+
     private bool _javaValidationCrashed;
     [NotifySignal]
     public bool JavaValidationCrashed
@@ -158,8 +204,6 @@ class Program
       get => _animateQml;
       set => this.SetProperty(ref _animateQml, value);
     }
-    
-    #endregion
 
     private ValidationResult _javaResult = new ValidationResult();
     [NotifySignal]
@@ -176,28 +220,41 @@ class Program
       get => _dotnetResult;
       set => this.SetProperty(ref _dotnetResult, value);
     }
-
+    #endregion
+    
+    private ITypedElement _parsedResource;
+    
     private void ResetResults()
     {
-      JavaResult = new ValidationResult { ValidatorType = ValidatorType.Java };
-      DotnetResult = new ValidationResult { ValidatorType = ValidatorType.Dotnet };
+      JavaErrorCount     = 0;
+      JavaWarningCount   = 0;
+      JavaIssues         = new List<Issue>();
+      DotnetErrorCount   = 0;
+      DotnetWarningCount = 0;
+      DotnetIssues       = new List<Issue>();
       JavaValidationCrashed = false;
     }
 
     private void SetOutcome(OperationOutcome outcome, ValidatorType type)
     {
       if (type == ValidatorType.Java) {
-        JavaResult = new ValidationResult { ValidatorType = type };
-        JavaResult.Issues = convertIssues(outcome.Issue);
+        JavaResult = new ValidationResult
+        {
+          ValidatorType = type,
+          Issues = convertIssues(outcome.Issue),
+          WarningCount = outcome.Warnings,
+          ErrorCount = outcome.Errors + outcome.Fatals
+        };
         // warnings have to be set before errors for some reason, otherwise not transferred to QML
-        JavaResult.WarningCount = outcome.Warnings;
-        JavaResult.ErrorCount = outcome.Errors + outcome.Fatals;
       } else {
-        DotnetResult = new ValidationResult { ValidatorType = type };
-        DotnetResult.Issues = convertIssues(outcome.Issue);
+        DotnetResult = new ValidationResult
+        {
+          ValidatorType = type,
+          Issues = convertIssues(outcome.Issue),
+          WarningCount = outcome.Warnings,
+          ErrorCount = outcome.Errors + outcome.Fatals
+        };
         // warnings have to be set before errors for some reason, otherwise not transferred to QML
-        DotnetResult.WarningCount = outcome.Warnings;
-        DotnetResult.ErrorCount = outcome.Errors + outcome.Fatals;
       }
 
       // Console.WriteLine(outcome.ToString());
@@ -258,11 +315,22 @@ class Program
         get => _location;
         set => this.SetProperty(ref _location, value);
       }
-    }
-
-    public void UpdateText(string newText)
-    {
-      ResourceText = newText;
+      
+      private int _lineNumber;
+      [NotifySignal]
+      public int LineNumber
+      {
+        get => _lineNumber;
+        set => this.SetProperty(ref _lineNumber, value);
+      }
+      
+      private int _linePosition;
+      [NotifySignal]
+      public int LinePosition
+      {
+        get => _linePosition;
+        set => this.SetProperty(ref _linePosition, value);
+      }
     }
 
     public ResourceFormat InstanceFormat
@@ -292,15 +360,75 @@ class Program
 
       foreach (var issue in issues)
       {
-        convertedIssues.Add(new Issue
+        var simplifiedIssue = new Issue
         {
           Severity = issue.Severity.ToString().ToLowerInvariant(),
           Text = issue.Details?.Text ?? issue.Diagnostics ?? "(no details)",
           Location = String.Join(" via ", issue.Location)
-        });
+        };
+        convertedIssues.Add(simplifiedIssue);
+
+        var serializationDetails = GetPositionInfo(issue);
+        if (serializationDetails == null) { continue; }
+        
+        simplifiedIssue.LineNumber = serializationDetails.LineNumber;
+        simplifiedIssue.LinePosition = serializationDetails.LinePosition;
       }
 
       return convertedIssues;
+    }
+
+    private IPositionInfo GetPositionInfo(OperationOutcome.IssueComponent issue)
+    {
+      IPositionInfo serializationDetails;
+      
+      if (!issue.Location.Any()) { return null; }
+      var location = SanitizeLocation(issue.Location.First());
+      if (location == null) { return null; }
+
+      List<ITypedElement> elementWithError = null;
+      try
+      {
+        elementWithError = _parsedResource.Select(location).ToList();
+      }
+      catch (FormatException)
+      {
+        // if the FHIRPath is invalid, don't return position info for it
+      }
+
+      if (elementWithError == null || !elementWithError.Any()) { return null; }
+      
+      switch (InstanceFormat)
+      {
+        case ResourceFormat.Json:
+          serializationDetails = elementWithError.First().GetJsonSerializationDetails();
+          break;
+        case ResourceFormat.Xml:
+          serializationDetails = elementWithError.First().GetXmlSerializationDetails();
+          break;
+        case ResourceFormat.Unknown:
+          return null;
+        default:
+          return null;
+      }
+
+      return serializationDetails;
+    }
+
+    // trim Java FHIRpath of its position information, which isn't always correct
+    // we have to compute it ourselves for .NET, might as well do it for Java
+    private string SanitizeLocation(string rawLocation)
+    {
+      // heuristic for the Java validator
+      if (rawLocation == "(document)")
+      {
+        return _parsedResource.Name;
+      }
+      
+      var matches = cleanFhirPath.Matches(rawLocation);
+      if (!matches.Any()) { return null; }
+      var location = matches.First().Groups[0].ToString().Trim();
+      return location;
     }
 
     public bool LoadResourceFile(string text)
@@ -382,7 +510,7 @@ class Program
         csv.WriteField("Validator engine");
         csv.NextRecord();
 
-        foreach (var issue in DotnetResult.Issues) {
+        foreach (var issue in DotnetIssues) {
           csv.WriteField(issue.Severity);
           csv.WriteField(issue.Text);
           csv.WriteField(issue.Location);
@@ -390,7 +518,7 @@ class Program
           csv.NextRecord();
         }
 
-        foreach (var issue in JavaResult.Issues)
+        foreach (var issue in JavaIssues)
         {
           csv.WriteField(issue.Severity);
           csv.WriteField(issue.Text);
@@ -410,6 +538,7 @@ class Program
       {
         var externalTerminology = new ExternalTerminologyService(new FhirClient(TerminologyService));
         var localTerminology = new LocalTerminologyService(_combinedSource ?? _coreSource);
+        var summaryProvider = new Hl7.Fhir.Specification.StructureDefinitionSummaryProvider(_combinedSource ?? _coreSource);
         var combinedTerminology = new FallbackTerminologyService(localTerminology, externalTerminology);
 
         var settings = new ValidationSettings
@@ -433,17 +562,23 @@ class Program
         sw.Start();
         if (InstanceFormat == ResourceFormat.Xml)
         {
-          var reader = SerializationUtil.XmlReaderFromXmlText(ResourceText);
-          result = validator.Validate(reader);
+          _parsedResource = FhirXmlNode.Parse(ResourceText, new FhirXmlParsingSettings { PermissiveParsing = true })
+            .ToTypedElement(summaryProvider);
+        }
+        else if (InstanceFormat == ResourceFormat.Json)
+        {
+          _parsedResource = FhirJsonNode.Parse(ResourceText, settings: new FhirJsonParsingSettings { AllowJsonComments = true })
+            .ToTypedElement(summaryProvider);
         }
         else
         {
-          var poco = (new FhirJsonParser()).Parse<Resource>(ResourceText);
-          result = validator.Validate(poco);
+          throw new Exception("This resource format isn't recognised");
         }
-
+        
+        result = validator.Validate(_parsedResource);
         sw.Stop();
         Console.WriteLine($".NET validation performed in {sw.ElapsedMilliseconds}ms");
+        
         return result;
       }
       catch (Exception ex)
@@ -497,7 +632,7 @@ class Program
       Console.WriteLine("Beginning Java validation");
       var resourcePath = SerializeResource(ResourceText, InstanceFormat);
 
-      var validatorPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+      var validatorPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location),
         "org.hl7.fhir.validator.jar");
       var scopeArgument = string.IsNullOrEmpty(ScopeDirectory) ? "" :  $" -ig \"{ScopeDirectory}\"";
       var outputJson = $"{Path.GetTempFileName()}.json";
@@ -604,14 +739,18 @@ class Program
         {
           allTasks.Remove(validateWithJava);
           var result = await validateWithJava;
-          SetOutcome(result, ValidatorType.Java);
+          JavaErrorCount   = result.Errors + result.Fatals;
+          JavaWarningCount = result.Warnings;
+          JavaIssues       = convertIssues(result.Issue);
           ValidatingJava = false;
         }
         else if (finished == validateWithDotnet)
         {
           allTasks.Remove(validateWithDotnet);
           var result = await validateWithDotnet;
-          SetOutcome(result, ValidatorType.Dotnet);
+          DotnetErrorCount   = result.Errors + result.Fatals;
+          DotnetWarningCount = result.Warnings;
+          DotnetIssues       = convertIssues(result.Issue);
           ValidatingDotnet = false;
         }
         else
