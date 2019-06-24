@@ -4,12 +4,15 @@ import QtQuick.Layouts 1.12
 
 /** List the error and warning messages of the validation step. */
 ColumnLayout {
+    id: rootComponent
     property string label        /** The label for the current collection of messages */
-    property bool   labelVisible /** Set this to indicate if the label should be visible */ 
+    property bool   labelVisible /** Set this to indicate if the label should be visible */
     property var    dataModel    /** Set this to the datamodel from the C# side */
 
     anchors.left: parent.left
     anchors.right: parent.right
+
+    signal peekIssue(int lineNumber, int linePosition)
 
     Label {
         text: label
@@ -30,9 +33,9 @@ ColumnLayout {
             border.color: "#f6f3fb"
             border.width: 1
 
-            height: errorText.height + 30
+            height: errorText.height + 40
             width: parent.width - leftMargin - rightMargin
-            implicitHeight: errorText.height + 30
+            implicitHeight: errorText.height + 40
             implicitWidth: parent.width - leftMargin - rightMargin
 
             property int leftMargin: 20
@@ -53,7 +56,7 @@ ColumnLayout {
             // Color indicator for the type of message
             Rectangle {
                 width: 10
-                height: errorText.height + 30
+                height: errorText.height + 40
                 anchors.left: parent.left
 
                 gradient: Gradient {
@@ -84,7 +87,7 @@ ColumnLayout {
                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
             }
 
-            // The error message location
+            // The error message location (as fhirpath)
             Text {
                 anchors {
                     bottom: parent.bottom
@@ -98,6 +101,31 @@ ColumnLayout {
                 font.pointSize: 9
                 textFormat: Text.PlainText
                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
+            }
+
+            // The error message location (as line:column)
+            Text {
+                anchors {
+                    bottom: parent.bottom
+                    left: parent.left; leftMargin: messageRectangle.leftMargin
+                }
+
+                width: parent.width
+                horizontalAlignment: Text.AlignLeft
+                color: "#34826b"
+                visible: modelData.lineNumber !== 0
+                text: `line ${modelData.lineNumber}:${modelData.linePosition}`
+                renderType: Text.NativeRendering
+                font.pointSize: 9
+                textFormat: Text.PlainText
+                wrapMode: "WrapAtWordBoundaryOrAnywhere"
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
+                onClicked: rootComponent.peekIssue(modelData.lineNumber, modelData.linePosition)
             }
         }
     }

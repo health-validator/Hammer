@@ -126,7 +126,7 @@ ApplicationWindow {
                 id: textArea
                 placeholderText: qsTr("or load it here")
                 renderType: Text.NativeRendering
-                onTextChanged: { appmodel.resourceText = text }
+                onTextChanged: appmodel.resourceText = text
                 text: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
                 font.family: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
@@ -160,7 +160,7 @@ ApplicationWindow {
 
                 transitions: Transition {
                     ParentAnimation {
-                        NumberAnimation { properties: "x,y,width,height";  easing.type: Easing.InCubic; duration: 600 }
+                        NumberAnimation { properties: "x,y,width,height"; easing.type: Easing.InCubic; duration: 600 }
                     }
                 }
             }
@@ -185,7 +185,7 @@ ApplicationWindow {
                 PropertyChanges { target: addResourcesPage; x: 0 }
                 PropertyChanges { target: resultsPane; x: resultsPane.width }
                 PropertyChanges { target: settingsPane; y: window.height }
-                PropertyChanges { target: actionButton; text: appmodel.validateButtonText}
+                PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
             },
             State {
                 name: "VALIDATION_RESULTS"
@@ -247,12 +247,15 @@ ApplicationWindow {
 
         Button {
             id: actionButton
+            // this should be set declaratively
             text: appmodel.validateButtonText
             visible: appmodel.resourceText || addResourcesPage.state === "EDITING_SETTINGS"
             Layout.fillWidth: true
 
             onClicked: {
-                if (addResourcesPage.state === "ENTERING_RESOURCE") {
+                if (addResourcesPage.state === "ENTERING_RESOURCE"
+                        || (addResourcesPage.state === "VALIDATION_RESULTS"
+                            && resultsPageEditor.state === "VISIBLE")) {
                     appmodel.startValidation()
                 } else {
                     addResourcesPage.state = "ENTERING_RESOURCE"
@@ -270,28 +273,6 @@ ApplicationWindow {
         height: parent.height - actionButton.height
         x: resultsPane.width
 
-        Rectangle {
-            id: noErrorsRectangle
-            width: 300
-            height: 130
-            radius: 20
-            color: "#5d8130"
-            anchors.centerIn: parent
-//            visible: !appmodel.validating &&
-//                     appmodel.dotnetResult.errorCount === 0 && appmodel.javaResult.errorCount === 0
-            visible: false
-
-            Label {
-                width: 294
-                height: 45
-                text: "<center>✓ Valid</center>"
-                color: "white"
-                font.pointSize: 26
-                textFormat: Text.RichText
-                anchors.centerIn: parent
-            }
-        }
-
         Menu {
             id: contextMenu
             MenuItem {
@@ -306,14 +287,13 @@ ApplicationWindow {
 
         ColumnLayout {
             id: errorsColumn
-            spacing: 20
             anchors.fill: parent
 
             Row {
                 id: errorCountsRow
 //                Layout.fillWidth: true
                 width: resultsPane.availableWidth
-                bottomPadding: 10
+                bottomPadding: 30
 
                 StatusBox {
                     id: dotnetErrorsBox
@@ -361,11 +341,18 @@ ApplicationWindow {
                         NumberAnimation { properties: "x,y"; easing.type: Easing.OutBounce; duration: animationDuration }
                     }
 
+                    function peekIssue(lineNumber, linePosition) {
+                        if (lineNumber === 0 && linePosition === 0) { return; }
+                        resultsPageEditor.state = "VISIBLE"
+                        resultsPageEditor.scrollToLine(lineNumber)
+                    }
+
                     IssuesList {
                         id: dotnetErrorList
                         label: ".NET"
                         labelVisible: !appmodel.validatingDotnet && (appmodel.dotnetResult.errorCount >= 1 || appmodel.dotnetResult.warningCount >= 1)
                         dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetResult.issues)
+                        onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                     }
 
                     IssuesList {
@@ -373,8 +360,41 @@ ApplicationWindow {
                         label: !appmodel.javaValidationCrashed ? "Java" : "Java (validation crashed, details below)"
                         labelVisible: !appmodel.validatingJava && (appmodel.javaResult.errorCount >= 1 || appmodel.javaResult.warningCount >= 1)
                         dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaResult.issues)
+                        onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                     }
                 }
+            }
+
+            InstanceEditor {
+                id: resultsPageEditor
+                instanceText: appmodel.resourceText
+                fontName: monospaceFont.name
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignBottom
+
+                states: [
+                    State {
+                        name: "HIDDEN"
+                        PropertyChanges { target: resultsPageEditor; implicitHeight: 0 }
+                    },
+                    State {
+                        name: "VISIBLE"
+                        PropertyChanges { target: resultsPageEditor; implicitHeight: 250 }
+                        PropertyChanges { target: actionButton; text: qsTr("Re-validate")}
+                    }
+                ]
+                state: "HIDDEN"
+
+                transitions: [
+                    Transition {
+                        from: "*"; to: "VISIBLE"
+                        NumberAnimation { properties: "implicitHeight"; easing.type: Easing.InBack; duration: animationDuration/2 }
+                    },
+                    Transition {
+                        from: "*"; to: "HIDDEN"
+                        NumberAnimation { properties: "implicitHeight"; easing.type: Easing.InBack; duration: animationDuration/2 }
+                    }
+                ]
             }
         }
     }
