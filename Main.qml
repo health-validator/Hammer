@@ -345,7 +345,7 @@ ApplicationWindow {
                     function peekIssue(lineNumber, linePosition) {
                         if (lineNumber === 0 && linePosition === 0) { return; }
                         resultsPageEditor.state = "VISIBLE"
-                        resultsPageEditor.scrollToLine(lineNumber)
+                        resultsPageEditor.openError(lineNumber, linePosition)
                     }
 
                     IssuesList {
