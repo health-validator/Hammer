@@ -256,9 +256,9 @@ class Program
     
     private List<Process> _validatorProcesses = new List<Process>();
 
-    private CancellationTokenSource validatorCancellationSource = null;
+    private CancellationTokenSource _validatorCancellationSource;
     
-    private List<Process> validatorProcesses = new List<Process>();
+    private List<Process> _validatorProcesses = new List<Process>();
 
     private void ResetResults()
     {
