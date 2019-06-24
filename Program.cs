@@ -26,7 +26,7 @@ class Program
 {
   [Signal("validationStarted")]
   [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-  public class AppModel
+  public class AppModel : IDisposable
   {
     private static AppModel _instance;
     public static AppModel Instance => _instance ?? (_instance = new AppModel());
@@ -36,6 +36,15 @@ class Program
     public AppModel()
     {
       _instance = this;
+    }
+
+    public void Dispose()
+    {
+      if (_validatorCancellationSource != null) {
+        _validatorCancellationSource.Dispose();
+        _validatorCancellationSource = null;
+        GC.SuppressFinalize(this);
+      }
     }
 
     private readonly IResourceResolver _coreSource = new CachedResolver(ZipSource.CreateValidationSource());
@@ -178,9 +187,9 @@ class Program
       set => this.SetProperty(ref _dotnetResult, value);
     }
 
-    private CancellationTokenSource validatorCancellationSource = null;
+    private CancellationTokenSource _validatorCancellationSource;
     
-    private List<Process> validatorProcesses = new List<Process>();
+    private List<Process> _validatorProcesses = new List<Process>();
 
     private void ResetResults()
     {
@@ -520,7 +529,7 @@ class Program
       string validatorOutput, resultText;
       using (var validator = new Process())
       {
-        validatorProcesses.Add(validator);
+        _validatorProcesses.Add(validator);
 
         validator.StartInfo.FileName = "java";
         validator.StartInfo.Arguments = finalArguments;
@@ -561,7 +570,7 @@ class Program
         }
 
         sw.Stop();
-        validatorProcesses.Remove(validator);
+        _validatorProcesses.Remove(validator);
         token.ThrowIfCancellationRequested();
         Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
 
@@ -603,8 +612,8 @@ class Program
 
       // Create a new CancellationTokenSource that can be used to signal to the
       // tasks that we want to cancel them.
-      validatorCancellationSource = new CancellationTokenSource();
-      CancellationToken token = validatorCancellationSource.Token;
+      _validatorCancellationSource = new CancellationTokenSource();
+      CancellationToken token = _validatorCancellationSource.Token;
       // () wrapper so older MS Build (15.9.20) works
       Task<OperationOutcome> validateWithJava = Task.Run(() => ValidateWithJava(token), token);
       Task<OperationOutcome> validateWithDotnet = Task.Run(() => ValidateWithDotnet(token), token);
@@ -647,36 +656,16 @@ class Program
     public void CancelValidation()
     {
       // Signal the CancellationToken in the tasks that we want to cancel.
-      if (validatorCancellationSource != null) {
-        validatorCancellationSource.Cancel();
-        validatorCancellationSource.Dispose();
+      if (_validatorCancellationSource != null) {
+        _validatorCancellationSource.Cancel();
+        _validatorCancellationSource.Dispose();
       }
-      validatorCancellationSource = null;
+      _validatorCancellationSource = null;
       
       // We can actively kill the Java validator as this is an external
       // process. The .NET validator needs to run its course until completion,
       // we'll just ignore the results.
-      foreach (Process process in validatorProcesses) {
-        process.Kill();
-      }
-
-      ValidatingDotnet = false;
-      ValidatingJava   = false;
-    }
-
-    public void CancelValidation()
-    {
-      // Signal the CancellationToken in the tasks that we want to cancel.
-      if (validatorCancellationSource != null) {
-        validatorCancellationSource.Cancel();
-        validatorCancellationSource.Dispose();
-      }
-      validatorCancellationSource = null;
-      
-      // We can actively kill the Java validator as this is an external
-      // process. The .NET validator needs to run its course until completion,
-      // we'll just ignore the results.
-      foreach (Process process in validatorProcesses) {
+      foreach (Process process in _validatorProcesses) {
         process.Kill();
       }
 
