@@ -486,6 +486,18 @@ class Program
       }
     }
 
+    public void CopyValidationReportMarkdown()
+    {
+      var list = new[]
+      {
+        new { Username = "Falcore", Score = 1293, },
+        new { Username = "Dunsby", Score = 2342, },
+        new { Username = "Habisham", Score = 5234, },
+      };
+
+      Clipboard.SetText(list.ToMarkdownTable());
+    }
+    
     public OperationOutcome ValidateWithDotnet()
     {
       Console.WriteLine("Beginning .NET validation");
