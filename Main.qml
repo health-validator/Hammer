@@ -273,6 +273,7 @@ ApplicationWindow {
                             && resultsPageEditor.state === "VISIBLE")) {
                     appmodel.startValidation()
                 } else {
+                    if (addResourcesPage.state === "VALIDATION_RESULTS") {
                     addResourcesPage.state = "ENTERING_RESOURCE"
                 }
             }
