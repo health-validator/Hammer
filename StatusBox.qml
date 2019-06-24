@@ -30,7 +30,6 @@ Item {
                            parent.parent.rightClicked()
                        } else {
                            parent.parent.clicked()
-
                        }
         }
 

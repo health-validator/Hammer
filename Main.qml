@@ -353,6 +353,7 @@ ApplicationWindow {
                         labelVisible: !appmodel.validatingDotnet && (appmodel.dotnetResult.errorCount >= 1 || appmodel.dotnetResult.warningCount >= 1)
                         dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetResult.issues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
+                        onRightClicked: resultsPane.openContextMenu()
                     }
 
                     IssuesList {
@@ -361,6 +362,7 @@ ApplicationWindow {
                         labelVisible: !appmodel.validatingJava && (appmodel.javaResult.errorCount >= 1 || appmodel.javaResult.warningCount >= 1)
                         dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaResult.issues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
+                        onRightClicked: resultsPane.openContextMenu()
                     }
                 }
             }
