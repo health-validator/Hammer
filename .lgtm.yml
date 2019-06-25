@@ -3,3 +3,5 @@ extraction:
     index:
       dotnet:
         version: 3.0.100-preview6-012264
+      msbuild:
+        arguments: /p:PublishSingleFile=false /p:PublishTrimmed=false /p:PublishReadyToRun=false
