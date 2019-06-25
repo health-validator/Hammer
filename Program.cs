@@ -41,7 +41,7 @@ class Program
     private readonly IResourceResolver _coreSource = new CachedResolver(ZipSource.CreateValidationSource());
 
     private IResourceResolver _combinedSource;
-    
+
     Regex cleanFhirPath = new Regex(@"([^\(]+)", RegexOptions.Compiled);
 
     // ReSharper disable MemberCanBePrivate.Global
@@ -181,7 +181,7 @@ class Program
       get => _dotnetWarningCount;
       set => this.SetProperty(ref _dotnetWarningCount, value);
     }
-    
+
     private List<Issue> _dotnetIssues = new List<Issue>();
     [NotifySignal]
     public List<Issue> DotnetIssues {
@@ -221,9 +221,9 @@ class Program
       set => this.SetProperty(ref _dotnetResult, value);
     }
     #endregion
-    
+
     private ITypedElement _parsedResource;
-    
+
     private void ResetResults()
     {
       JavaErrorCount     = 0;
@@ -315,7 +315,7 @@ class Program
         get => _location;
         set => this.SetProperty(ref _location, value);
       }
-      
+
       private int _lineNumber;
       [NotifySignal]
       public int LineNumber
@@ -323,7 +323,7 @@ class Program
         get => _lineNumber;
         set => this.SetProperty(ref _lineNumber, value);
       }
-      
+
       private int _linePosition;
       [NotifySignal]
       public int LinePosition
@@ -370,7 +370,7 @@ class Program
 
         var serializationDetails = GetPositionInfo(issue);
         if (serializationDetails == null) { continue; }
-        
+
         simplifiedIssue.LineNumber = serializationDetails.LineNumber;
         simplifiedIssue.LinePosition = serializationDetails.LinePosition;
       }
@@ -381,7 +381,7 @@ class Program
     private IPositionInfo GetPositionInfo(OperationOutcome.IssueComponent issue)
     {
       IPositionInfo serializationDetails;
-      
+
       if (!issue.Location.Any()) { return null; }
       var location = SanitizeLocation(issue.Location.First());
       if (location == null) { return null; }
@@ -397,7 +397,7 @@ class Program
       }
 
       if (elementWithError == null || !elementWithError.Any()) { return null; }
-      
+
       switch (InstanceFormat)
       {
         case ResourceFormat.Json:
@@ -424,7 +424,7 @@ class Program
       {
         return _parsedResource.Name;
       }
-      
+
       var matches = cleanFhirPath.Matches(rawLocation);
       if (!matches.Any()) { return null; }
       var location = matches.First().Groups[0].ToString().Trim();
@@ -574,11 +574,11 @@ class Program
         {
           throw new Exception("This resource format isn't recognised");
         }
-        
+
         result = validator.Validate(_parsedResource);
         sw.Stop();
         Console.WriteLine($".NET validation performed in {sw.ElapsedMilliseconds}ms");
-        
+
         return result;
       }
       catch (Exception ex)
@@ -791,7 +791,7 @@ class Program
 
     public bool parsedSuccessfully {
       get {
-        var success = true;            
+        var success = true;
         cliOptions.WithNotParsed(errors => success = false);
         return success;
       }
@@ -844,7 +844,7 @@ class Program
         }
 
         // Now we can load the GUI
-        engine.Load("Main.qml");
+        engine.Load(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location), "Main.qml"));
 
         // Once the GUI is loaded, we can start working with the AppModel
         // instance.
