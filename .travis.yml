@@ -18,7 +18,7 @@ script:
  - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
  - dotnet --version
  - wget --quiet -O org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
- - dotnet publish --configuration Release /p:PublishSingleFile=false
+ - dotnet publish --configuration Release /p:PublishSingleFile=false /p:PublishTrimmed=false /p:PublishReadyToRun=false
  - cd bin/Debug/netcoreapp2.2
  - mv publish Hammer
  - tree .
