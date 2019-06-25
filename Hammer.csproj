@@ -47,19 +47,16 @@
     <LatestValidatorUrl>https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar</LatestValidatorUrl>
   </PropertyGroup>
 
-  <Target Name="DownloadContentFiles" BeforeTargets="BeforePublish">
+  <!-- how to copy downloaded file to publish directory? -->
+  <!-- <Target Name="DownloadContentFiles" BeforeTargets="BeforePublish">
     <DownloadFile SourceUrl="$(LatestValidatorUrl)" DestinationFolder="$(MSBuildProjectDirectory)">
       <Output TaskParameter="DownloadedFile" ItemName="ValidatorJar" />
     </DownloadFile>
-  </Target>
-
-<Target Name="adfaf" BeforeTargets="BeforePublish">
-  <Copy SourceFiles="@(ValidatorJar)" DestinationFolder="$(BuildOutput)" SkipUnchangedFiles="true"/>
-</Target>
+  </Target> -->
 
   <ItemGroup>
     <Content Include="Main.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
-    <!-- <Content Include="org.hl7.fhir.validator.jar" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" /> -->
+    <Content Include="org.hl7.fhir.validator.jar" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Toast.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="ToastManager.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="StatusBox.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
