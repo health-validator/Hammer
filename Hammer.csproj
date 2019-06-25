@@ -3,7 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <PublishReadyToRun>true</PublishReadyToRun>
+    <!-- not sure if it gives a speed boost but it
+    certainly throws a lot of warnings at compile time -->
+    <!-- <PublishReadyToRun>true</PublishReadyToRun> -->
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <PackageId>Hammer.Validator</PackageId>
