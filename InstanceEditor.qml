@@ -9,18 +9,20 @@ ScrollView {
     /** Scroll the text to the specified line number
       * @param lineNumber the line number, with counting started at 1
       */
-    function scrollToLine(lineNumber) {
+    function openError(lineNumber, linePosition) {
         // We can't calculate the y position directly because a logical and
         // displayed line might differ in height due to line wrapping. QML's
         // positionToRectangle() function can tell us what we need, but for
         // that we have to calculate the position in the text string of the
         // line.
         var position = 0
-        var lines = textArea.text.split("\n")
+        const lines = textArea.text.split("\n")
         for (var currentLine = 0; currentLine < lineNumber - 1; currentLine++) {
             position += lines[currentLine].length + 1 // include newline char
         }
         contentItem.contentY = textArea.positionToRectangle(position).y
+        textArea.forceActiveFocus()
+        textArea.cursorPosition = position + linePosition - 1 // don't include last newline char
     }
 
     clip: true
