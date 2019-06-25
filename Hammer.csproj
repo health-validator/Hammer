@@ -51,8 +51,11 @@
     <DownloadFile SourceUrl="$(LatestValidatorUrl)" DestinationFolder="$(MSBuildProjectDirectory)">
       <Output TaskParameter="DownloadedFile" ItemName="ValidatorJar" />
     </DownloadFile>
-    <Copy SourceFiles="@(ValidatorJar)" DestinationFolder="$(BuildOutput)" SkipUnchangedFiles="true"/>
   </Target>
+
+<Target Name="adfaf" BeforeTargets="BeforePublish">
+  <Copy SourceFiles="@(ValidatorJar)" DestinationFolder="$(BuildOutput)" SkipUnchangedFiles="true"/>
+</Target>
 
   <ItemGroup>
     <Content Include="Main.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
