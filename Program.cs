@@ -787,11 +787,11 @@ class Program
           // OperationCanceledException is thrown whenever we await the task.
           // This prevents processing the results, effectively decoupling the
           // task. We don't need to handle the exception itself.
-		    }
+		    } catch (Exception) {
+          ValidatingJava = false;
+          ValidatingDotnet = false;
+        }
       }
-
-      ValidatingDotnet = false;
-      ValidatingJava   = false;
     }
 
     public void CancelValidation()
