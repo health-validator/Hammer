@@ -1,0 +1,33 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+configuration: Release
+clone_depth: 1
+install:
+- pwsh: >-
+    $urlCurrent = "https://download.visualstudio.microsoft.com/download/pr/4e73514f-0646-4600-bdc2-38c90fc207b6/22ad70cbe1a254177e6d7b7f7e7425f8/dotnet-sdk-3.0.100-preview6-012264-win-x64.zip"
+
+    $env:DOTNET_INSTALL_DIR = "$env:LocalAppData\.dotnetsdk"
+
+    mkdir $env:DOTNET_INSTALL_DIR -Force | Out-Null
+
+    $tempFileCurrent = [System.IO.Path]::GetTempFileName()
+
+    (New-Object System.Net.WebClient).DownloadFile($urlCurrent, $tempFileCurrent)
+
+    Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory($tempFileCurrent, $env:DOTNET_INSTALL_DIR)
+
+    $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
+cache: '%LocalAppData%\NuGet\v3-cache'
+build_script:
+- cmd: >-
+    @powershell -Command "get-content Main.qml | %{$_ -replace \"// import appmodel 1.0\", \"import appmodel 1.0\"}"
+
+    appveyor DownloadFile https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar -FileName org.hl7.fhir.validator.jar
+
+    set PATH=%LocalAppData%\.dotnetsdk;%PATH%
+
+    dotnet --version
+
+    dotnet publish --configuration Release --self-contained --runtime win-x64
+artifacts:
+- path: bin\Release\netcoreapp3.0\win-x64\publish\Hammer.exe
