@@ -47,15 +47,15 @@
     <LatestValidatorUrl>https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar</LatestValidatorUrl>
   </PropertyGroup>
 
-  <Target Name="DownloadValidator" BeforeTargets="Publish">
-    <DownloadFile SourceUrl="$(LatestValidatorUrl)" DestinationFolder="$(PublishUrl)">
+  <Target Name="DownloadContentFiles" BeforeTargets="BeforePublish">
+    <DownloadFile SourceUrl="$(LatestValidatorUrl)" DestinationFolder="$(MSBuildProjectDirectory)">
       <Output TaskParameter="DownloadedFile" ItemName="Content" />
     </DownloadFile>
   </Target>
 
   <ItemGroup>
     <Content Include="Main.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
-    <!-- <Content Include="org.hl7.fhir.validator.jar" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" /> -->
+    <Content Include="org.hl7.fhir.validator.jar" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Toast.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="ToastManager.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="StatusBox.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
