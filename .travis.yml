@@ -13,6 +13,12 @@ addons:
     confinement: classic
     channel: latest/beta
 
+matrix:
+  include:
+  - os: osx
+    osx_image: xcode9.2
+  - os: linux
+
 script:
  - sudo snap alias dotnet-sdk.dotnet dotnet
  - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
