@@ -50,7 +50,7 @@
   <!-- how to copy downloaded file to publish directory? -->
   <!-- <Target Name="DownloadContentFiles" BeforeTargets="BeforePublish">
     <DownloadFile SourceUrl="$(LatestValidatorUrl)" DestinationFolder="$(MSBuildProjectDirectory)">
-      <Output TaskParameter="DownloadedFile" ItemName="ValidatorJar" />
+      <Output TaskParameter="DownloadedFile" ItemName="Content" />
     </DownloadFile>
   </Target> -->
 
