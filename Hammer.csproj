@@ -3,9 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <!-- not sure if it gives a speed boost but it
-    certainly throws a lot of warnings at compile time -->
-    <!-- <PublishReadyToRun>true</PublishReadyToRun> -->
+    <PublishReadyToRun>true</PublishReadyToRun>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <PackageId>Hammer.Validator</PackageId>
@@ -45,8 +43,19 @@
     <PackageReference Include="CommandLineParser" Version="2.5.0" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <LatestValidatorUrl>https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar</LatestValidatorUrl>
+  </PropertyGroup>
+
+  <Target Name="DownloadContentFiles" BeforeTargets="Publish">
+    <DownloadFile SourceUrl="$(LatestValidatorUrl)" DestinationFolder="$(MSBuildProjectDirectory)">
+      <Output TaskParameter="DownloadedFile" ItemName="Content" />
+    </DownloadFile>
+  </Target>
+
   <ItemGroup>
     <Content Include="Main.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="org.hl7.fhir.validator.jar" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Toast.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="ToastManager.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="StatusBox.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
