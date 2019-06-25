@@ -854,7 +854,7 @@ class Program
     /// <summary>
     /// Perform the actions specified by the command line.
     /// </summary>
-    public void process()
+    public void Process()
     {
       cliOptions.WithParsed(result => {
         AppModel.Instance.AnimateQml = false;
@@ -902,7 +902,7 @@ class Program
 
         // Once the GUI is loaded, we can start working with the AppModel
         // instance.
-        cliParser.process();
+        cliParser.Process();
 
         return app.Exec();
       }
