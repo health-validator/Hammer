@@ -30,7 +30,7 @@ script:
  # - mkdir deploy/
  # - cp Hammer.zip deploy/
  - tree .
- - DEPLOY_URL=$(curl --upload-file bin/Release/netcoreapp3.0/publish/Hammer https://transfer.sh/Hammer)
+ - DEPLOY_URL=$(curl --upload-file bin/Release/netcoreapp3.0/linux-x64/publish/Hammer https://transfer.sh/Hammer)
  - echo -e "Zip is available for download at $DEPLOY_URL"
 
 deploy:
