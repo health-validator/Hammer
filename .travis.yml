@@ -19,7 +19,7 @@ script:
  - dotnet --version
  - wget --quiet -O org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
  - dotnet publish --configuration Release /p:PublishSingleFile=false /p:PublishTrimmed=false /p:PublishReadyToRun=false
- - cd bin/Debug/netcoreapp2.2
+ - cd bin/Debug/netcoreapp3.0
  - mv publish Hammer
  - tree .
  - mv Hammer/assets/run-hammer.sh Hammer/run-hammer.sh
@@ -35,7 +35,7 @@ deploy:
   provider: pages
   repo: health-validator/latest
   target_branch: master
-  local_dir: bin/Debug/netcoreapp2.2/deploy
+  local_dir: bin/Debug/netcoreapp3.0/deploy
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   keep_history: false
