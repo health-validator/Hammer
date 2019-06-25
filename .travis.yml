@@ -16,11 +16,11 @@ addons:
 matrix:
   include:
   - os: osx
-    osx_image: xcode9.2
   - os: linux
 
 script:
- - sudo snap alias dotnet-sdk.dotnet dotnet
+ - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then sudo snap alias dotnet-sdk.dotnet dotnet; fi
+ - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew install dotnet-preview; fi
  - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
  - dotnet --version
  - wget --quiet -O org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
