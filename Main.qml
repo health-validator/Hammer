@@ -274,21 +274,8 @@ ApplicationWindow {
                     appmodel.startValidation()
                 } else {
                     if (addResourcesPage.state === "VALIDATION_RESULTS") {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                         appmodel.cancelValidation()
                     }
-=======
->>>>>>> Implement validator cancelation
-=======
-                        appmodel.cancelValidation()
-                    }
->>>>>>> Implement validator cancelation
-=======
-                        appmodel.cancelValidation()
-                    }
->>>>>>> 15a26ad6d0aafb3a73e542c2c4f837caa83c7201
                     addResourcesPage.state = "ENTERING_RESOURCE"
                 }
             }
