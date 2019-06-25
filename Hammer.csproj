@@ -47,8 +47,8 @@
     <LatestValidatorUrl>https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar</LatestValidatorUrl>
   </PropertyGroup>
 
-  <Target Name="DownloadContentFiles" BeforeTargets="Publish">
-    <DownloadFile SourceUrl="$(LatestValidatorUrl)" DestinationFolder="$(MSBuildProjectDirectory)">
+  <Target Name="DownloadValidator" BeforeTargets="Publish">
+    <DownloadFile SourceUrl="$(LatestValidatorUrl)" DestinationFolder="$(PublishUrl)">
       <Output TaskParameter="DownloadedFile" ItemName="Content" />
     </DownloadFile>
   </Target>
