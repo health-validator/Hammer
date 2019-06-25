@@ -27,7 +27,6 @@ using Task = System.Threading.Tasks.Task;
 class Program
 {
   [Signal("validationStarted")]
-  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
   public class AppModel : IDisposable
   {
     private static AppModel _instance;
