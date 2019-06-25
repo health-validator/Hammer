@@ -49,9 +49,9 @@
 
   <Target Name="DownloadContentFiles" BeforeTargets="BeforePublish">
     <DownloadFile SourceUrl="$(LatestValidatorUrl)" DestinationFolder="$(MSBuildProjectDirectory)">
-      <!-- <Output TaskParameter="DownloadedFile" ItemName="Content" /> -->
+      <Output TaskParameter="DownloadedFile" ItemName="ValidatorJar" />
     </DownloadFile>
-    <Copy SourceFiles="DownloadedFile" DestinationFolder="$(BuildOutput)" SkipUnchangedFiles="true"/>
+    <Copy SourceFiles="@(ValidatorJar)" DestinationFolder="$(BuildOutput)" SkipUnchangedFiles="true"/>
   </Target>
 
   <ItemGroup>
