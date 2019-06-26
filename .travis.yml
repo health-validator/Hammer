@@ -27,12 +27,10 @@ script:
  - dotnet --version
  - wget --quiet -O org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then dotnet publish --configuration Release --self-contained --runtime linux-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true; fi
- - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then dotnet publish --configuration Release --self-contained --runtime osx-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true; fi
+ - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then dotnet publish --configuration Release --self-contained --runtime osx-x64 /p:PublishTrimmed=true /p:PublishReadyToRun=true; fi
  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then DEPLOY_URL=$(curl --upload-file bin/Release/netcoreapp3.0/linux-x64/publish/Hammer https://transfer.sh/Hammer); fi
- # - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then zip --output-file Hammer.zip --include bin/Release/netcoreapp3.0/linux-x64/publish/Hammer; fi
- # - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then zip Hammer.zip bin/Release/netcoreapp3.0/linux-x64/publish/Hammer; fi
- - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then zip -r Hammer.zip bin/Release/netcoreapp3.0/linux-x64/publish; fi
- - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then DEPLOY_URL=$(curl --upload-file Hammer.zip https://transfer.sh/Hammer); fi
+ - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then zip --output-file Hammer.zip --include bin/Release/netcoreapp3.0/osx-x64/publish; fi
+ - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then DEPLOY_URL=$(curl --upload-file Hammer.zip https://transfer.sh/Hammer.zip); fi
  - echo -e "Hammer is available for download at $DEPLOY_URL"
 
 deploy:
