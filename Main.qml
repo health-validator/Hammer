@@ -122,16 +122,12 @@ ApplicationWindow {
                 ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             }
 
-            TextArea {
+            InstanceEditor {
                 id: textArea
-                placeholderText: qsTr("or load it here")
-                renderType: Text.NativeRendering
-                onTextChanged: appmodel.resourceText = text
-                text: appmodel.resourceText
+                instancePlaceholder: qsTr("or load it here")
+                instanceText: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
-                font.family: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
-                selectByMouse: true
-                wrapMode: "WrapAtWordBoundaryOrAnywhere"
+                fontName: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
 
                 onParentChanged: textArea.forceActiveFocus()
 
@@ -157,6 +153,8 @@ ApplicationWindow {
                     }
                 ]
                 state: "MINIMAL"
+                // textfield does not gain correct height on start, setting/unsetting text 'fixes' it
+                Component.onCompleted: { appmodel.resourceText = "_"; appmodel.resourceText = "" }
 
                 transitions: Transition {
                     ParentAnimation {
