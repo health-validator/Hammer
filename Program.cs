@@ -36,6 +36,12 @@ class Program
 
     public AppModel()
     {
+      _zipSource = new ZipSource(Path.Combine(DirectorySource.SpecificationDirectory, "specification.zip"));
+      _zipSource.Prepare();
+
+      ValidateExtractedSpecification(_zipSource.ExtractPath);
+      
+      _coreSource = new CachedResolver(_zipSource);
       _instance = this;
     }
 
@@ -48,7 +54,17 @@ class Program
       GC.SuppressFinalize(this);
     }
 
-    private readonly IResourceResolver _coreSource = new CachedResolver(ZipSource.CreateValidationSource());
+    /// <summary>
+    /// Run heuristics on the extracted zip to ensure all files are present
+    /// It's possible that AV has interfered with extraction
+    /// </summary>
+    private bool ValidateExtractedSpecification(string extractPath)
+    {
+      
+    }
+
+    private readonly ZipSource _zipSource;
+    private readonly IResourceResolver _coreSource;
 
     private IResourceResolver _combinedSource;
     
