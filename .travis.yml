@@ -29,7 +29,7 @@ script:
  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then dotnet publish --configuration Release --self-contained --runtime linux-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true; fi
  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then dotnet publish --configuration Release --self-contained --runtime osx-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true; fi
  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then DEPLOY_URL=$(curl --upload-file bin/Release/netcoreapp3.0/linux-x64/publish/Hammer https://transfer.sh/Hammer); fi
- - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then zip -r Hammer.zip . -i bin/Release/netcoreapp3.0/linux-x64/publish/Hammer; fi
+ - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then zip --output-file Hammer.zip --include bin/Release/netcoreapp3.0/linux-x64/publish/Hammer; fi
  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then DEPLOY_URL=$(curl --upload-file Hammer.zip https://transfer.sh/Hammer); fi
  - echo -e "Hammer is available for download at $DEPLOY_URL"
 
