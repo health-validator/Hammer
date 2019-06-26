@@ -26,8 +26,8 @@ script:
  - export PATH=$PATH:$(pwd)/.dotnetsdk
  - dotnet --version
  - wget --quiet -O org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
- - if [ "${TRAVIS_OS_NAME}" = "linux" ]; dotnet publish --configuration Release --self-contained --runtime linux-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true; fi
- - if [ "${TRAVIS_OS_NAME}" = "osx" ]; dotnet publish --configuration Release --self-contained --runtime osx-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true; fi
+ - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then dotnet publish --configuration Release --self-contained --runtime linux-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true; fi
+ - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then dotnet publish --configuration Release --self-contained --runtime osx-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true; fi
  # - cd bin/Release/netcoreapp3.0
  # - rm -f Hammer
  # - mv publish Hammer
