@@ -28,6 +28,6 @@ build_script:
 
     dotnet --version
 
-    dotnet publish --configuration Release --self-contained --runtime win-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true
+    dotnet publish --configuration Release --self-contained --runtime win-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true /p:OutputType=WinExe
 artifacts:
 - path: bin\Release\netcoreapp3.0\win-x64\publish\Hammer.exe
