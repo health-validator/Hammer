@@ -1,14 +1,14 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 
-/** A 'dashboard' display box for reporting an overview of the failure or succes of a validation step. */ 
+/** A 'dashboard' display box for reporting an overview of the failure or succes of a validation step. */
 Item {
     property string label          /** Label to show underneath the box */
     property bool   runningStatus  /** Set this to indicate if the validation is running */
     property int    errorCount     /** Set this to the number of errors during validation */
     property int    warningCount   /** Set this to the number of warnings during valudation */
 
-    /** Activated whenever the box is clicked. */ 
+    /** Activated whenever the box is clicked. */
     signal clicked()
     signal rightClicked()
 
@@ -66,7 +66,7 @@ Item {
             text: qsTr(`${errorCount} ∙ ${warningCount}`)
             font.pointSize: 35
             anchors.centerIn: parent
-            visible: !appmodel.validatingJava
+            visible: !runningStatus
             color: "white"
 
 
@@ -80,7 +80,7 @@ Item {
             }
         }
     }
-    
+
     Label {
         text: label
         anchors.horizontalCenter: mainErrorsRectangle.horizontalCenter
