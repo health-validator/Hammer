@@ -8,6 +8,8 @@ curl --silent --output "dotnet-sdk.tar.gz" "https://download.visualstudio.micros
 
 tree .
 
+mkdir ".dotnetsdk"
+
 tar --extract --file "dotnet-sdk.tar.gz" --directory ".dotnetsdk"
 
 tree .
