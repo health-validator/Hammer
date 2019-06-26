@@ -51,8 +51,8 @@ class Program
     private readonly IResourceResolver _coreSource = new CachedResolver(ZipSource.CreateValidationSource());
 
     private IResourceResolver _combinedSource;
-    
-    Regex cleanFhirPath = new Regex(@"([^\(]+)", RegexOptions.Compiled);
+
+    private readonly Regex _cleanFhirPath = new Regex(@"([^\(]+)", RegexOptions.Compiled);
 
     // ReSharper disable MemberCanBePrivate.Global
     #region QML-accessible properties
@@ -236,7 +236,7 @@ class Program
     
     private CancellationTokenSource _validatorCancellationSource;
     
-    private List<Process> _validatorProcesses = new List<Process>();
+    private readonly List<Process> _validatorProcesses = new List<Process>();
 
     private void ResetResults()
     {
@@ -439,7 +439,7 @@ class Program
         return _parsedResource.Name;
       }
       
-      var matches = cleanFhirPath.Matches(rawLocation);
+      var matches = _cleanFhirPath.Matches(rawLocation);
       if (!matches.Any()) { return null; }
       var location = matches.First().Groups[0].ToString().Trim();
       return location;
@@ -820,7 +820,7 @@ class Program
   /// It is based on the CommandLine library.
   /// </summary>
   public class CLIParser {
-    ParserResult<CLIOptions> cliOptions;
+    private readonly ParserResult<CLIOptions> _cliOptions;
 
     /// <summary>
     /// Data storage class to store the command line options and arguments.
@@ -840,13 +840,13 @@ class Program
     /// </summary>
     public CLIParser(string[] args)
     {
-      cliOptions = Parser.Default.ParseArguments<CLIOptions>(args);
+      _cliOptions = Parser.Default.ParseArguments<CLIOptions>(args);
     }
 
-    public bool parsedSuccessfully {
+    public bool ParsedSuccessfully {
       get {
         var success = true;            
-        cliOptions.WithNotParsed(errors => success = false);
+        _cliOptions.WithNotParsed(errors => success = false);
         return success;
       }
     }
@@ -856,7 +856,7 @@ class Program
     /// </summary>
     public void Process()
     {
-      cliOptions.WithParsed(result => {
+      _cliOptions.WithParsed(result => {
         AppModel.Instance.AnimateQml = false;
 
         if (result.ScopeDir != null) {
@@ -893,7 +893,7 @@ class Program
         // Now we can check command line options to see if we should bail
         // out before we start rendering the interface.
         var cliParser = new CLIParser(args);
-        if (!cliParser.parsedSuccessfully) {
+        if (!cliParser.ParsedSuccessfully) {
           return 1;
         }
 
