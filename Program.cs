@@ -233,9 +233,9 @@ class Program
     #endregion
 
     private ITypedElement _parsedResource;
-    
+
     private CancellationTokenSource _validatorCancellationSource;
-    
+
     private List<Process> _validatorProcesses = new List<Process>();
 
     private void ResetResults()
@@ -671,6 +671,7 @@ class Program
         validator.StartInfo.UseShellExecute = false;
         validator.StartInfo.RedirectStandardOutput = true;
         validator.StartInfo.RedirectStandardError = true;
+        validator.StartInfo.CreateNoWindow = true;
 
         try
         {
@@ -802,7 +803,7 @@ class Program
         _validatorCancellationSource.Dispose();
       }
       _validatorCancellationSource = null;
-      
+
       // We can actively kill the Java validator as this is an external
       // process. The .NET validator needs to run its course until completion,
       // we'll just ignore the results.
