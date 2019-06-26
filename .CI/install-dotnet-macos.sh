@@ -6,4 +6,4 @@ mkdir ".dotnetsdk"
 
 tar --extract --file "dotnet-sdk.tar.gz" --directory ".dotnetsdk"
 
-export PATH=$PATH;"$(pwd)/.dotnetsdk"
+export PATH=$PATH:$(pwd)/.dotnetsdk
