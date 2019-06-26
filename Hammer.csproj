@@ -45,11 +45,11 @@
   </PropertyGroup>
 
   <!-- how to copy downloaded file to publish directory? -->
-  <!-- <Target Name="DownloadContentFiles" BeforeTargets="BeforePublish">
+  <Target Name="DownloadContentFiles" BeforeTargets="BeforeBuild">
     <DownloadFile SourceUrl="$(LatestValidatorUrl)" DestinationFolder="$(MSBuildProjectDirectory)">
       <Output TaskParameter="DownloadedFile" ItemName="Content" />
     </DownloadFile>
-  </Target> -->
+  </Target>
 
   <ItemGroup>
     <Content Include="Main.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
