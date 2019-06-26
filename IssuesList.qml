@@ -43,11 +43,11 @@ ColumnLayout {
             property int rightMargin: 15
 
             visible: {
-                if (modelData.severity === "error" && showErrors.checked) {
+                if (modelData.severity === "error" && settings.showErrors.checked) {
                     return true
-                } else if (modelData.severity === "warning" && showWarnings.checked) {
+                } else if (modelData.severity === "warning" && settings.showWarnings.checked) {
                     return true
-                }  else if (modelData.severity === "information" && showInfo.checked) {
+                }  else if (modelData.severity === "information" && settings.showInfo.checked) {
                     return true
                 } else {
                     return false
