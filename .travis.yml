@@ -23,6 +23,7 @@ script:
  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then .CI/install-dotnet-macos.sh; fi
  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml; fi
  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then sed -i '' 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml; fi
+ - export PATH=$PATH:$(pwd)/.dotnetsdk
  - dotnet --version
  - wget --quiet -O org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
  - dotnet publish --configuration Release --self-contained --runtime linux-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true

@@ -5,5 +5,3 @@ curl --silent --output "dotnet-sdk.tar.gz" "https://download.visualstudio.micros
 mkdir ".dotnetsdk"
 
 tar --extract --file "dotnet-sdk.tar.gz" --directory ".dotnetsdk"
-
-export PATH=$PATH:$(pwd)/.dotnetsdk
