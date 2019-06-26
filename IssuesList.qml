@@ -13,6 +13,7 @@ ColumnLayout {
     anchors.right: parent.right
 
     signal peekIssue(int lineNumber, int linePosition)
+    signal rightClicked()
 
     Label {
         text: label
@@ -125,7 +126,12 @@ ColumnLayout {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-                onClicked: rootComponent.peekIssue(modelData.lineNumber, modelData.linePosition)
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onClicked: if (mouse.button === Qt.RightButton) {
+                               rootComponent.rightClicked()
+                           } else {
+                               rootComponent.peekIssue(modelData.lineNumber, modelData.linePosition)
+                           }
             }
         }
     }

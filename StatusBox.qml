@@ -10,6 +10,7 @@ Item {
 
     /** Activated whenever the box is clicked. */ 
     signal clicked()
+    signal rightClicked()
 
     height: 100
 
@@ -24,7 +25,12 @@ Item {
             hoverEnabled: true
             anchors.fill: parent
             cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-            onClicked: parent.parent.clicked()
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            onClicked: if (mouse.button === Qt.RightButton) {
+                           parent.parent.rightClicked()
+                       } else {
+                           parent.parent.clicked()
+                       }
         }
 
         BusyIndicator {
