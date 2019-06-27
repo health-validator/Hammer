@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -488,14 +489,24 @@ class Program
 
     public void CopyValidationReportMarkdown()
     {
-      var list = new[]
+      var dotnetReport = new ArrayList();
+      foreach (var issue in DotnetResult.Issues)
       {
-        new { Username = "Falcore", Score = 1293, },
-        new { Username = "Dunsby", Score = 2342, },
-        new { Username = "Habisham", Score = 5234, },
-      };
+        dotnetReport.Add(new {Severity = issue.Severity, Text = issue.Text, Location = issue.Location});
+      }
+      
+      var javaReport = new ArrayList();
+      foreach (var issue in JavaResult.Issues)
+      {
+        javaReport.Add(new {Severity = issue.Severity, Text = issue.Text, Location = issue.Location});
+      }
 
-      Clipboard.SetText(list.ToMarkdownTable());
+      var report = "# .NET Validator" +
+                     $"{dotnetReport.ToArray().ToMarkdownTable()}" +
+                     "# Java Validator" +
+                     $"{javaReport.ToArray().ToMarkdownTable()}";
+
+      Clipboard.SetText(report);
     }
     
     public OperationOutcome ValidateWithDotnet()
