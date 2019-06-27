@@ -62,14 +62,6 @@ ApplicationWindow {
         onActivated: { addResourcesPage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
     }
 
-    Shortcut {
-        sequence: "Ctrl+T"
-        onActivated: {
-            appmodel.loadResourceFile("file:///home/vadi/Desktop/swedishnationalmedicationlist/MedicationRequest-example-bad.json")
-            appmodel.startValidation()
-        }
-    }
-
     Page {
         id: addResourcesPage
         width: window.width
@@ -237,27 +229,12 @@ ApplicationWindow {
         Button {
             id: loadNewInstanceButton
             text: "📂"
-//            visible: textArea.state === "EXPANDED"
-            visible: textArea.state === "EXPANDED" && addResourcesPage.state === "ENTERING_RESOURCE"
+            visible: textArea.state === "EXPANDED"
 
-            onClicked: {
-                addResourcesPage.state = "ENTERING_RESOURCE"
-                resourcePicker.open()
-            }
+            onClicked: resourcePicker.open()
 
             ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             ToolTip.text: qsTr(`Open new instance (Ctrl+O)`)
-        }
-
-        Button {
-            id: copyResultsButton
-            text: "📋"
-            visible: addResourcesPage.state === "VALIDATION_RESULTS"
-            enabled: !appmodel.validatingDotnet || !appmodel.validatingJava
-            onClicked: { appmodel.copyValidationReportMarkdown(); toast.show("Copied"); }
-
-            ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
-            ToolTip.text: qsTr(`Copy validation report as a CSV to clipboard`)
         }
 
         Button {
@@ -273,6 +250,9 @@ ApplicationWindow {
                             && resultsPageEditor.state === "VISIBLE")) {
                     appmodel.startValidation()
                 } else {
+                    if (addResourcesPage.state === "VALIDATION_RESULTS") {
+                        appmodel.cancelValidation()
+                    }
                     addResourcesPage.state = "ENTERING_RESOURCE"
                 }
             }
@@ -288,6 +268,18 @@ ApplicationWindow {
         height: parent.height - actionButton.height
         x: resultsPane.width
 
+        Menu {
+            id: contextMenu
+            MenuItem {
+                text: qsTr("Copy all as CSV")
+                onTriggered: { appmodel.copyValidationReport(); toast.show(qsTr("Copied all results as a CSV")) }
+            }
+        }
+
+        function openContextMenu() {
+            contextMenu.open()
+        }
+
         ColumnLayout {
             id: errorsColumn
             anchors.fill: parent
@@ -302,12 +294,13 @@ ApplicationWindow {
                     id: dotnetErrorsBox
                     label: ".NET"
                     width: resultsPane.availableWidth/2
-                    
+
                     runningStatus: appmodel.validatingDotnet
-                    errorCount:    appmodel.dotnetResult.errorCount
-                    warningCount:  appmodel.dotnetResult.warningCount
+                    errorCount:    appmodel.dotnetErrorCount
+                    warningCount:  appmodel.dotnetWarningCount
 
                     onClicked: errorsScrollView.contentItem.contentY = dotnetErrorList.y
+                    onRightClicked: if (!appmodel.validatingDotnet) resultsPane.openContextMenu()
                 }
 
                 StatusBox {
@@ -316,10 +309,11 @@ ApplicationWindow {
                     width: resultsPane.availableWidth/2
 
                     runningStatus: appmodel.validatingJava
-                    errorCount:    appmodel.javaResult.errorCount
-                    warningCount:  appmodel.javaResult.warningCount
+                    errorCount:    appmodel.javaErrorCount
+                    warningCount:  appmodel.javaWarningCount
 
                     onClicked: errorsScrollView.contentItem.contentY = javaErrorList.y
+                    onRightClicked: if (!appmodel.validatingJava) resultsPane.openContextMenu()
                 }
             }
 
@@ -328,7 +322,7 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 clip: true
-                
+
                 contentWidth: parent.width
                 contentHeight: errorsRepeaterColumn.height
 
@@ -345,23 +339,25 @@ ApplicationWindow {
                     function peekIssue(lineNumber, linePosition) {
                         if (lineNumber === 0 && linePosition === 0) { return; }
                         resultsPageEditor.state = "VISIBLE"
-                        resultsPageEditor.scrollToLine(lineNumber)
+                        resultsPageEditor.openError(lineNumber, linePosition)
                     }
 
                     IssuesList {
                         id: dotnetErrorList
                         label: ".NET"
-                        labelVisible: !appmodel.validatingDotnet && (appmodel.dotnetResult.errorCount >= 1 || appmodel.dotnetResult.warningCount >= 1)
-                        dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetResult.issues)
+                        labelVisible: !appmodel.validatingDotnet && (appmodel.dotnetErrorCount >= 1 || appmodel.dotnetWarningCount >= 1)
+                        dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
+                        onRightClicked: resultsPane.openContextMenu()
                     }
 
                     IssuesList {
                         id: javaErrorList
                         label: !appmodel.javaValidationCrashed ? "Java" : "Java (validation crashed, details below)"
-                        labelVisible: !appmodel.validatingJava && (appmodel.javaResult.errorCount >= 1 || appmodel.javaResult.warningCount >= 1)
-                        dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaResult.issues)
+                        labelVisible: !appmodel.validatingJava && (appmodel.javaErrorCount >= 1 || appmodel.javaWarningCount >= 1)
+                        dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
+                        onRightClicked: resultsPane.openContextMenu()
                     }
                 }
             }

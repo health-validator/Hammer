@@ -13,6 +13,7 @@ ColumnLayout {
     anchors.right: parent.right
 
     signal peekIssue(int lineNumber, int linePosition)
+    signal rightClicked()
 
     Label {
         text: label
@@ -46,7 +47,7 @@ ColumnLayout {
                     return true
                 } else if (modelData.severity === "warning" && showWarnings.checked) {
                     return true
-                }  else if (modelData.severity === "informational" && showInfo.checked) {
+                }  else if (modelData.severity === "information" && showInfo.checked) {
                     return true
                 } else {
                     return false
@@ -125,7 +126,12 @@ ColumnLayout {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
-                onClicked: rootComponent.peekIssue(modelData.lineNumber, modelData.linePosition)
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onClicked: if (mouse.button === Qt.RightButton) {
+                               rootComponent.rightClicked()
+                           } else {
+                               rootComponent.peekIssue(modelData.lineNumber, modelData.linePosition)
+                           }
             }
         }
     }

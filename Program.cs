@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using CsvHelper;
@@ -27,7 +28,7 @@ using Task = System.Threading.Tasks.Task;
 class Program
 {
   [Signal("validationStarted")]
-  public class AppModel
+  public class AppModel : IDisposable
   {
     private static AppModel _instance;
     public static AppModel Instance => _instance ?? (_instance = new AppModel());
@@ -37,6 +38,15 @@ class Program
     public AppModel()
     {
       _instance = this;
+    }
+
+    public void Dispose()
+    {
+      if (_validatorCancellationSource != null) {
+        _validatorCancellationSource.Dispose();
+        _validatorCancellationSource = null;
+      }
+      GC.SuppressFinalize(this);
     }
 
     private readonly IResourceResolver _coreSource = new CachedResolver(ZipSource.CreateValidationSource());
@@ -148,6 +158,48 @@ class Program
       set => this.SetProperty(ref _validatingJava, value);
     }
 
+    private int _javaErrorCount;
+    [NotifySignal]
+    public int JavaErrorCount {
+      get => _javaErrorCount;
+      set => this.SetProperty(ref _javaErrorCount, value);
+    }
+
+    private int _javaWarningCount;
+    [NotifySignal]
+    public int JavaWarningCount {
+      get => _javaWarningCount;
+      set => this.SetProperty(ref _javaWarningCount, value);
+    }
+
+    private List<Issue> _javaIssues = new List<Issue>();
+    [NotifySignal]
+    public List<Issue> JavaIssues {
+      get => _javaIssues;
+      set => this.SetProperty(ref _javaIssues, value);
+    }
+
+    private int _dotnetErrorCount;
+    [NotifySignal]
+    public int DotnetErrorCount {
+      get => _dotnetErrorCount;
+      set => this.SetProperty(ref _dotnetErrorCount, value);
+    }
+
+    private int _dotnetWarningCount;
+    [NotifySignal]
+    public int DotnetWarningCount {
+      get => _dotnetWarningCount;
+      set => this.SetProperty(ref _dotnetWarningCount, value);
+    }
+    
+    private List<Issue> _dotnetIssues = new List<Issue>();
+    [NotifySignal]
+    public List<Issue> DotnetIssues {
+      get => _dotnetIssues;
+      set => this.SetProperty(ref _dotnetIssues, value);
+    }
+
     private bool _javaValidationCrashed;
     [NotifySignal]
     public bool JavaValidationCrashed
@@ -163,7 +215,7 @@ class Program
       get => _animateQml;
       set => this.SetProperty(ref _animateQml, value);
     }
-    
+
     private ValidationResult _javaResult = new ValidationResult();
     [NotifySignal]
     public ValidationResult JavaResult
@@ -180,15 +232,21 @@ class Program
       set => this.SetProperty(ref _dotnetResult, value);
     }
     #endregion
-    // ReSharper restore MemberCanBePrivate.Global
-
     
     private ITypedElement _parsedResource;
     
+    private CancellationTokenSource _validatorCancellationSource;
+    
+    private List<Process> _validatorProcesses = new List<Process>();
+
     private void ResetResults()
     {
-      JavaResult = new ValidationResult { ValidatorType = ValidatorType.Java };
-      DotnetResult = new ValidationResult { ValidatorType = ValidatorType.Dotnet };
+      JavaErrorCount     = 0;
+      JavaWarningCount   = 0;
+      JavaIssues         = new List<Issue>();
+      DotnetErrorCount   = 0;
+      DotnetWarningCount = 0;
+      DotnetIssues       = new List<Issue>();
       JavaValidationCrashed = false;
     }
 
@@ -246,6 +304,7 @@ class Program
         { get => _warningCount; set => this.SetProperty(ref _warningCount, value); }
     }
 
+    // not a struct due to https://github.com/qmlnet/qmlnet/issues/135
     public class Issue
     {
       private string _severity;
@@ -466,7 +525,7 @@ class Program
         csv.WriteField("Validator engine");
         csv.NextRecord();
 
-        foreach (var issue in DotnetResult.Issues) {
+        foreach (var issue in DotnetIssues) {
           csv.WriteField(issue.Severity);
           csv.WriteField(issue.Text);
           csv.WriteField(issue.Location);
@@ -474,7 +533,7 @@ class Program
           csv.NextRecord();
         }
 
-        foreach (var issue in JavaResult.Issues)
+        foreach (var issue in JavaIssues)
         {
           csv.WriteField(issue.Severity);
           csv.WriteField(issue.Text);
@@ -509,7 +568,7 @@ class Program
       Clipboard.SetText(report);
     }
     
-    public OperationOutcome ValidateWithDotnet()
+    public OperationOutcome ValidateWithDotnet(CancellationToken token)
     {
       Console.WriteLine("Beginning .NET validation");
       try
@@ -555,9 +614,13 @@ class Program
         
         result = validator.Validate(_parsedResource);
         sw.Stop();
+        token.ThrowIfCancellationRequested();
         Console.WriteLine($".NET validation performed in {sw.ElapsedMilliseconds}ms");
         
         return result;
+      }
+      catch (OperationCanceledException) {
+        throw;
       }
       catch (Exception ex)
       {
@@ -605,7 +668,7 @@ class Program
       return result;
     }
 
-    public OperationOutcome ValidateWithJava()
+    public OperationOutcome ValidateWithJava(CancellationToken token)
     {
       Console.WriteLine("Beginning Java validation");
       var resourcePath = SerializeResource(ResourceText, InstanceFormat);
@@ -624,6 +687,8 @@ class Program
       string validatorOutput, resultText;
       using (var validator = new Process())
       {
+        _validatorProcesses.Add(validator);
+
         validator.StartInfo.FileName = "java";
         validator.StartInfo.Arguments = finalArguments;
         validator.StartInfo.UseShellExecute = false;
@@ -663,6 +728,8 @@ class Program
         }
 
         sw.Stop();
+        _validatorProcesses.Remove(validator);
+        token.ThrowIfCancellationRequested();
         Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
 
         if (validator.ExitCode != 0 || !File.Exists(outputJson))
@@ -695,43 +762,79 @@ class Program
 
     public async void StartValidation()
     {
+      CancelValidation();
       ResetResults();
       ValidatingDotnet = true;
       ValidatingJava = true;
       this.ActivateSignal("validationStarted");
+
+      // Create a new CancellationTokenSource that can be used to signal to the
+      // tasks that we want to cancel them.
+      _validatorCancellationSource = new CancellationTokenSource();
+      CancellationToken token = _validatorCancellationSource.Token;
       // () wrapper so older MS Build (15.9.20) works
-      Task<OperationOutcome> validateWithJava = Task.Run(() => ValidateWithJava());
-      // .ContinueWith(System.Threading.Tasks.Task <OperationOutcome> t =>
-      // {
-      //   setOutcome(t.Result, ValidatorType.Java);
-      //   ValidatingJava = false;
-      // });
-      // TaskScheduler.FromCurrentSynchronizationContext()
-      Task<OperationOutcome> validateWithDotnet = Task.Run(() => ValidateWithDotnet());
+      Task<OperationOutcome> validateWithJava = Task.Run(() => ValidateWithJava(token), token);
+      Task<OperationOutcome> validateWithDotnet = Task.Run(() => ValidateWithDotnet(token), token);
 
       var allTasks = new List<Task> { validateWithJava, validateWithDotnet };
       while (allTasks.Any())
       {
-        var finished = await Task.WhenAny(allTasks);
-        if (finished == validateWithJava)
-        {
-          allTasks.Remove(validateWithJava);
-          var result = await validateWithJava;
-          SetOutcome(result, ValidatorType.Java);
+        try {
+          var finished = await Task.WhenAny(allTasks);
+          if (finished == validateWithJava)
+          {
+            allTasks.Remove(validateWithJava);
+            var result = await validateWithJava;
+            JavaErrorCount   = result.Errors + result.Fatals;
+            JavaWarningCount = result.Warnings;
+            JavaIssues       = convertIssues(result.Issue);
+            SetOutcome(result, ValidatorType.Java);
+            ValidatingJava = false;
+          }
+          else if (finished == validateWithDotnet)
+          {
+            allTasks.Remove(validateWithDotnet);
+            var result = await validateWithDotnet;
+            DotnetErrorCount   = result.Errors + result.Fatals;
+            DotnetWarningCount = result.Warnings;
+            DotnetIssues       = convertIssues(result.Issue);
+            SetOutcome(result, ValidatorType.Dotnet);
+            ValidatingDotnet = false;
+          }
+          else
+          {
+            allTasks.Remove(finished);
+          }
+        } catch (OperationCanceledException) {
+          // When we signalled to cancel the validation, the
+          // OperationCanceledException is thrown whenever we await the task.
+          // This prevents processing the results, effectively decoupling the
+          // task. We don't need to handle the exception itself.
+		    } catch (Exception) {
           ValidatingJava = false;
-        }
-        else if (finished == validateWithDotnet)
-        {
-          allTasks.Remove(validateWithDotnet);
-          var result = await validateWithDotnet;
-          SetOutcome(result, ValidatorType.Dotnet);
           ValidatingDotnet = false;
         }
-        else
-        {
-          allTasks.Remove(finished);
-        }
       }
+    }
+
+    public void CancelValidation()
+    {
+      // Signal the CancellationToken in the tasks that we want to cancel.
+      if (_validatorCancellationSource != null) {
+        _validatorCancellationSource.Cancel();
+        _validatorCancellationSource.Dispose();
+      }
+      _validatorCancellationSource = null;
+      
+      // We can actively kill the Java validator as this is an external
+      // process. The .NET validator needs to run its course until completion,
+      // we'll just ignore the results.
+      foreach (var process in _validatorProcesses) {
+        process.Kill();
+      }
+
+      ValidatingDotnet = false;
+      ValidatingJava   = false;
     }
   }
 
@@ -774,7 +877,7 @@ class Program
     /// <summary>
     /// Perform the actions specified by the command line.
     /// </summary>
-    public void process()
+    public void Process()
     {
       cliOptions.WithParsed(result => {
         AppModel.Instance.AnimateQml = false;
@@ -822,7 +925,7 @@ class Program
 
         // Once the GUI is loaded, we can start working with the AppModel
         // instance.
-        cliParser.process();
+        cliParser.Process();
 
         return app.Exec();
       }
