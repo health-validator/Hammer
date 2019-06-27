@@ -548,11 +548,26 @@ class Program
 
     public void CopyValidationReportMarkdown()
     {
-      var report = "**.NET Validator**\n\n" +
-                     $"{DotnetResult.Issues.ToMarkdownTable()}\n\n" +
-                     "** Java Validator**\n\n" +
-                     $"{DotnetResult.Issues.ToMarkdownTable()}";
-      
+      var report = "";
+
+      if (!ValidatingDotnet)
+      {
+        report += $@"**.NET Validator**
+
+{DotnetResult.Issues.ToMarkdownTable()}
+
+";
+      }
+
+      if (!ValidatingJava)
+      {
+        report += $@"** Java Validator**
+
+{JavaResult.Issues.ToMarkdownTable()}
+
+";
+      }
+
       Clipboard.SetText(report);
     }
     
