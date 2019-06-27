@@ -62,14 +62,6 @@ ApplicationWindow {
         onActivated: { addResourcesPage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
     }
 
-    Shortcut {
-        sequence: "Ctrl+T"
-        onActivated: {
-            appmodel.loadResourceFile("file:///home/vadi/Desktop/swedishnationalmedicationlist/MedicationRequest-example-bad.json")
-            appmodel.startValidation()
-        }
-    }
-
     Page {
         id: addResourcesPage
         width: window.width
@@ -302,7 +294,7 @@ ApplicationWindow {
                     id: dotnetErrorsBox
                     label: ".NET"
                     width: resultsPane.availableWidth/2
-                    
+
                     runningStatus: appmodel.validatingDotnet
                     errorCount:    appmodel.dotnetErrorCount
                     warningCount:  appmodel.dotnetWarningCount
@@ -330,7 +322,7 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 clip: true
-                
+
                 contentWidth: parent.width
                 contentHeight: errorsRepeaterColumn.height
 
