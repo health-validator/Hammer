@@ -271,8 +271,12 @@ ApplicationWindow {
         Menu {
             id: contextMenu
             MenuItem {
-                text: qsTr("Copy all as CSV")
+                text: qsTr("Copy report as CSV")
                 onTriggered: { appmodel.copyValidationReport(); toast.show(qsTr("Copied all results as a CSV")) }
+            }
+            MenuItem {
+                text: qsTr("Copy report as Markdown")
+                onTriggered: { appmodel.copyValidationReportMarkdown(); toast.show(qsTr("Copied as Markdown (works well in Zulip)")) }
             }
         }
 

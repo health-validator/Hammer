@@ -548,23 +548,11 @@ class Program
 
     public void CopyValidationReportMarkdown()
     {
-      var dotnetReport = new ArrayList();
-      foreach (var issue in DotnetResult.Issues)
-      {
-        dotnetReport.Add(new {Severity = issue.Severity, Text = issue.Text, Location = issue.Location});
-      }
+      var report = "**.NET Validator**\n\n" +
+                     $"{DotnetResult.Issues.ToMarkdownTable()}\n\n" +
+                     "** Java Validator**\n\n" +
+                     $"{DotnetResult.Issues.ToMarkdownTable()}";
       
-      var javaReport = new ArrayList();
-      foreach (var issue in JavaResult.Issues)
-      {
-        javaReport.Add(new {Severity = issue.Severity, Text = issue.Text, Location = issue.Location});
-      }
-
-      var report = "# .NET Validator" +
-                     $"{dotnetReport.ToArray().ToMarkdownTable()}" +
-                     "# Java Validator" +
-                     $"{javaReport.ToArray().ToMarkdownTable()}";
-
       Clipboard.SetText(report);
     }
     
