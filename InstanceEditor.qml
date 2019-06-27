@@ -5,6 +5,7 @@ import QtQuick.Controls 2.5
 ScrollView {
     property string instanceText
     property string fontName
+    property string instancePlaceholder
 
     /** Scroll the text to the specified line number
       * @param lineNumber the line number, with counting started at 1
@@ -26,7 +27,6 @@ ScrollView {
     }
 
     clip: true
-    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
     onImplicitHeightChanged: textArea.update()
 
     TextArea {
@@ -39,6 +39,7 @@ ScrollView {
         selectByMouse: true
         wrapMode: "WrapAtWordBoundaryOrAnywhere"
         renderType: Text.NativeRendering
+        placeholderText: instancePlaceholder
 
         background: Rectangle {
             anchors.fill: parent

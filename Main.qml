@@ -114,16 +114,15 @@ ApplicationWindow {
                 ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             }
 
-            TextArea {
+            InstanceEditor {
                 id: textArea
-                placeholderText: qsTr("or load it here")
-                renderType: Text.NativeRendering
-                onTextChanged: appmodel.resourceText = text
-                text: appmodel.resourceText
+                instancePlaceholder: qsTr("or load it here")
+                instanceText: appmodel.resourceText
                 // ensure the tooltip isn't monospace, only the text
-                font.family: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
-                selectByMouse: true
-                wrapMode: "WrapAtWordBoundaryOrAnywhere"
+                fontName: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
+
+                anchors.top: loadResourceButton.top
+                anchors.bottom: loadResourceButton.bottom
 
                 onParentChanged: textArea.forceActiveFocus()
 
