@@ -302,7 +302,7 @@ ApplicationWindow {
                     id: dotnetErrorsBox
                     label: ".NET"
                     width: resultsPane.availableWidth/2
-                    
+
                     runningStatus: appmodel.validatingDotnet
                     errorCount:    appmodel.dotnetErrorCount
                     warningCount:  appmodel.dotnetWarningCount
@@ -330,7 +330,7 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 clip: true
-                
+
                 contentWidth: parent.width
                 contentHeight: errorsRepeaterColumn.height
 
@@ -357,6 +357,9 @@ ApplicationWindow {
                         dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                         onRightClicked: resultsPane.openContextMenu()
+                        showErrors: settings.showErrors.checked
+                        showWarnings: settings.showWarnings.checked
+                        showshowInfo: settings.showInfo.checked
                     }
 
                     IssuesList {
@@ -366,6 +369,9 @@ ApplicationWindow {
                         dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                         onRightClicked: resultsPane.openContextMenu()
+                        showErrors: settings.showErrors.checked
+                        showWarnings: settings.showWarnings.checked
+                        showshowInfo: settings.showInfo.checked
                     }
                 }
             }

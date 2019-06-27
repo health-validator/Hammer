@@ -8,6 +8,9 @@ ColumnLayout {
     property string label        /** The label for the current collection of messages */
     property bool   labelVisible /** Set this to indicate if the label should be visible */
     property var    dataModel    /** Set this to the datamodel from the C# side */
+    property bool   showErrors   /** Show messages with severity 'error' or 'fatal' */
+    property bool   showWarnings /** Show messages with severity 'warning' */
+    property bool   showshowInfo /** Show messages with severity 'informational' */
 
     anchors.left: parent.left
     anchors.right: parent.right
@@ -43,11 +46,11 @@ ColumnLayout {
             property int rightMargin: 15
 
             visible: {
-                if (modelData.severity === "error" && settings.showErrors.checked) {
+                if (modelData.severity === "error" && showErrors) {
                     return true
-                } else if (modelData.severity === "warning" && settings.showWarnings.checked) {
+                } else if (modelData.severity === "warning" && showWarnings) {
                     return true
-                }  else if (modelData.severity === "information" && settings.showInfo.checked) {
+                }  else if (modelData.severity === "information" && showInfo) {
                     return true
                 } else {
                     return false
