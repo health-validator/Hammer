@@ -129,6 +129,9 @@ ApplicationWindow {
                 // ensure the tooltip isn't monospace, only the text
                 fontName: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
 
+                anchors.top: loadResourceButton.top
+                anchors.bottom: loadResourceButton.bottom
+
                 onParentChanged: textArea.forceActiveFocus()
 
                 states: [
@@ -153,8 +156,6 @@ ApplicationWindow {
                     }
                 ]
                 state: "MINIMAL"
-                // textfield does not gain correct height on start, setting/unsetting text 'fixes' it
-                Component.onCompleted: { appmodel.resourceText = "_"; appmodel.resourceText = "" }
 
                 transitions: Transition {
                     ParentAnimation {
@@ -300,7 +301,7 @@ ApplicationWindow {
                     id: dotnetErrorsBox
                     label: ".NET"
                     width: resultsPane.availableWidth/2
-                    
+
                     runningStatus: appmodel.validatingDotnet
                     errorCount:    appmodel.dotnetErrorCount
                     warningCount:  appmodel.dotnetWarningCount
@@ -328,7 +329,7 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 clip: true
-                
+
                 contentWidth: parent.width
                 contentHeight: errorsRepeaterColumn.height
 
