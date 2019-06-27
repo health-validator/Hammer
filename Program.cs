@@ -52,8 +52,6 @@ class Program
 
     private IResourceResolver _combinedSource;
 
-    private readonly Regex _cleanFhirPath = new Regex(@"([^\(]+)", RegexOptions.Compiled);
-
     // ReSharper disable MemberCanBePrivate.Global
     #region QML-accessible properties
     private ResourceFormat _instanceFormat;
@@ -428,9 +426,15 @@ class Program
 
       return serializationDetails;
     }
+    
+    private static MatchCollection ExtractLocation(string rawLocation)
+    {
+      const string pattern = @"([^\(]+)";
+      return Regex.Matches(rawLocation, pattern);
+    }
 
-    // trim Java FHIRpath of its position information, which isn't always correct
-    // we have to compute it ourselves for .NET, might as well do it for Java
+    ///<summary>Trims Java FHIRpath of its position information, which isn't always correct
+    /// we have to compute it ourselves for .NET, might as well do it for Java</summary>
     private string SanitizeLocation(string rawLocation)
     {
       // heuristic for the Java validator
@@ -438,8 +442,8 @@ class Program
       {
         return _parsedResource.Name;
       }
-      
-      var matches = _cleanFhirPath.Matches(rawLocation);
+
+      var matches = ExtractLocation(rawLocation);
       if (!matches.Any()) { return null; }
       var location = matches.First().Groups[0].ToString().Trim();
       return location;
