@@ -348,6 +348,13 @@ class Program
       }
     }
 
+    private class MarkdownIssue
+    {
+      public string Severity;
+      public string Text;
+      public string Location;
+    }
+    
     public ResourceFormat InstanceFormat
     {
       get => _instanceFormat;
@@ -548,13 +555,31 @@ class Program
 
     public void CopyValidationReportMarkdown()
     {
+      List<MarkdownIssue> ConvertToMarkdown(List<Issue> rawIssues)
+      {
+        var dotnetIssues = new List<MarkdownIssue> { };
+        foreach (var issue in rawIssues)
+        {
+          dotnetIssues.Add(new MarkdownIssue()
+          {
+            Severity = issue.Severity,
+            Text = issue.Text,
+            Location = (issue.LineNumber == 0 && issue.LinePosition == 0) ? 
+              "" :
+              $"{issue.Location} (line {issue.LineNumber}:{issue.LinePosition})"
+          });
+        }
+
+        return dotnetIssues;
+      }
+
       var report = "";
 
       if (!ValidatingDotnet)
       {
         report += $@"**.NET Validator**
 
-{DotnetResult.Issues.ToMarkdownTable()}
+{ConvertToMarkdown(DotnetResult.Issues).ToMarkdownTable()}
 
 ";
       }
@@ -563,7 +588,7 @@ class Program
       {
         report += $@"** Java Validator**
 
-{JavaResult.Issues.ToMarkdownTable()}
+{ConvertToMarkdown(JavaResult.Issues).ToMarkdownTable()}
 
 ";
       }
