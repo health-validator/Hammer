@@ -726,6 +726,7 @@ class Program
         validator.StartInfo.UseShellExecute = false;
         validator.StartInfo.RedirectStandardOutput = true;
         validator.StartInfo.RedirectStandardError = true;
+        validator.StartInfo.CreateNoWindow = true;
 
         try
         {
