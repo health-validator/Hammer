@@ -14,7 +14,7 @@ ApplicationWindow {
     minimumWidth: 550; minimumHeight: 300
     title: qsTr("Hammer STU3 (experimental)")
 
-    Universal.theme: darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
+    Universal.theme: settings.darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
 
     property int tooltipDelay: 1500
     property int animationDuration: appmodel.animateQml ? 1000 : 0
@@ -175,19 +175,19 @@ ApplicationWindow {
                 name: "ENTERING_RESOURCE"
                 PropertyChanges { target: addResourcesPage; x: 0 }
                 PropertyChanges { target: resultsPane; x: resultsPane.width }
-                PropertyChanges { target: settingsPane; y: window.height }
+                PropertyChanges { target: settings; y: window.height }
                 PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
             },
             State {
                 name: "VALIDATION_RESULTS"
                 PropertyChanges { target: addResourcesPage; x: addResourcesPage.width * -1 }
                 PropertyChanges { target: resultsPane; x: 0 }
-                PropertyChanges { target: settingsPane; y: window.height }
+                PropertyChanges { target: settings; y: window.height }
                 PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
             },
             State {
                 name: "EDITING_SETTINGS"
-                PropertyChanges { target: settingsPane; y: 0 }
+                PropertyChanges { target: settings; y: 0 }
                 PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
             }
         ]
@@ -348,6 +348,9 @@ ApplicationWindow {
                         dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                         onRightClicked: resultsPane.openContextMenu()
+                        showErrors: settings.showErrors.checked
+                        showWarnings: settings.showWarnings.checked
+                        showshowInfo: settings.showInfo.checked
                     }
 
                     IssuesList {
@@ -357,6 +360,9 @@ ApplicationWindow {
                         dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                         onRightClicked: resultsPane.openContextMenu()
+                        showErrors: settings.showErrors.checked
+                        showWarnings: settings.showWarnings.checked
+                        showshowInfo: settings.showInfo.checked
                     }
                 }
             }
@@ -395,107 +401,13 @@ ApplicationWindow {
         }
     }
 
-    Pane {
-        id: settingsPane
-        height: addResourcesPage.height; width: addResourcesPage.width
-        x: 0; y: window.height
+    SettingsPane {
+        id: settings
+        height: addResourcesPage.height
         horizontalPadding: 40
-
-        property int headerFontSize: 14
-
-        GridLayout {
-            id: grid
-            columns: 3
-            anchors.fill: parent
-            rowSpacing: 10
-
-            Text {
-                text: qsTr("Scope")
-                color: Universal.foreground
-                font.pointSize: settingsPane.headerFontSize
-                font.bold: true
-
-                Layout.columnSpan: 3
-
-                ToolTip.visible: scopeMouseArea.containsMouse
-                ToolTip.text: qsTr("The scope (context) that this resource should be validated in.\nCurrently only folders are considered - packages are coming soon")
-
-                MouseArea {
-                    id: scopeMouseArea; hoverEnabled: true; anchors.fill: parent
-                }
-            }
-            TextField {
-                text: appmodel.scopeDirectory
-                onTextChanged: appmodel.loadScopeDirectory(text)
-                selectByMouse: true
-                placeholderText: qsTr("Current scope: none")
-                Layout.columnSpan: 2
-                Layout.fillWidth: true
-            }
-            Button {
-                text: "<center>Browse...</center>"
-                onClicked: scopePicker.open()
-
-                FolderDialog {
-                    id: scopePicker
-                    title: "Folder to act as the scope (context) for validation"
-                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
-                    onAccepted: appmodel.loadScopeDirectory(scopePicker.folder)
-                }
-            }
-
-            Text {
-                text: qsTr("Show me")
-                color: Universal.foreground
-                font.pointSize: settingsPane.headerFontSize
-                font.bold: true
-                Layout.fillWidth: true; Layout.columnSpan: 3
-                topPadding: 10
-            }
-            RowLayout {
-                Layout.columnSpan: 3
-                CheckBox {
-                    id: showErrors
-                    text: qsTr("Errors")
-                    checked: true
-                    Layout.fillWidth: true
-                }
-                CheckBox {
-                    id: showWarnings
-                    text: qsTr("Warnings")
-                    checked: true
-                    Layout.fillWidth: true
-                }
-                CheckBox {
-                    id: showInfo
-                    text: qsTr("Info")
-                    checked: true
-                    Layout.fillWidth: true
-                }
-            }
-
-            Text {
-                text: qsTr("Appearance")
-                color: Universal.foreground
-                font.pointSize: settingsPane.headerFontSize
-                font.bold: true
-                Layout.fillWidth: true
-                Layout.columnSpan: 3
-                topPadding: 10
-            }
-
-            Switch {
-                id: darkAppearanceSwitch
-                text: qsTr("Dark")
-            }
-
-            Item {
-                id: spanner
-                Layout.columnSpan: 3
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
-        }
+        width: addResourcesPage.width
+        x: 0
+        y: window.height
     }
 }
 

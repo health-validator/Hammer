@@ -1,0 +1,111 @@
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import appmodel 1.0
+import QtQuick.Controls.Universal 2.12
+import QtQuick.Layouts 1.12
+import Qt.labs.platform 1.1
+
+Pane {
+    id: settingsPane
+
+    property Switch darkAppearanceSwitch: darkAppearanceSwitch
+    property CheckBox showErrors: showErrors
+    property CheckBox showWarnings: showWarnings
+    property CheckBox showInfo: showInfo
+
+    readonly property int headerFontSize: 14
+
+    GridLayout {
+        id: grid
+        columns: 3
+        anchors.fill: parent
+        rowSpacing: 10
+
+        Text {
+            text: qsTr("Scope")
+            color: Universal.foreground
+            font.pointSize: settingsPane.headerFontSize
+            font.bold: true
+
+            Layout.columnSpan: 3
+
+            ToolTip.visible: scopeMouseArea.containsMouse
+            ToolTip.text: qsTr("The scope (context) that this resource should be validated in.\nCurrently only folders are considered - packages are coming soon")
+
+            MouseArea {
+                id: scopeMouseArea; hoverEnabled: true; anchors.fill: parent
+            }
+        }
+        TextField {
+            text: appmodel.scopeDirectory
+            onTextChanged: appmodel.loadScopeDirectory(text)
+            selectByMouse: true
+            placeholderText: qsTr("Current scope: none")
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+        }
+        Button {
+            text: "<center>Browse...</center>"
+            onClicked: scopePicker.open()
+
+            FolderDialog {
+                id: scopePicker
+                title: "Folder to act as the scope (context) for validation"
+                folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
+                onAccepted: appmodel.loadScopeDirectory(scopePicker.folder)
+            }
+        }
+
+        Text {
+            text: qsTr("Show me")
+            color: Universal.foreground
+            font.pointSize: settingsPane.headerFontSize
+            font.bold: true
+            Layout.fillWidth: true; Layout.columnSpan: 3
+            topPadding: 10
+        }
+        RowLayout {
+            Layout.columnSpan: 3
+            CheckBox {
+                id: showErrors
+                text: qsTr("Errors")
+                checked: true
+                Layout.fillWidth: true
+            }
+            CheckBox {
+                id: showWarnings
+                text: qsTr("Warnings")
+                checked: true
+                Layout.fillWidth: true
+            }
+            CheckBox {
+                id: showInfo
+                text: qsTr("Info")
+                checked: true
+                Layout.fillWidth: true
+            }
+        }
+
+        Text {
+            text: qsTr("Appearance")
+            color: Universal.foreground
+            font.pointSize: settingsPane.headerFontSize
+            font.bold: true
+            Layout.fillWidth: true
+            Layout.columnSpan: 3
+            topPadding: 10
+        }
+
+        Switch {
+            id: darkAppearanceSwitch
+            text: qsTr("Dark")
+        }
+
+        Item {
+            id: spanner
+            Layout.columnSpan: 3
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
+    }
+}
