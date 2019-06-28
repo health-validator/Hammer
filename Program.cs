@@ -520,7 +520,7 @@ class Program
         InstanceFormat = ResourceFormat.Unknown;
     }
 
-    public void CopyValidationReport()
+    public void CopyValidationReportCsv()
     {
       using (var writer = new StringWriter())
       using (var csv = new CsvWriter(writer))
@@ -557,10 +557,10 @@ class Program
     {
       List<MarkdownIssue> ConvertToMarkdown(List<Issue> rawIssues)
       {
-        var dotnetIssues = new List<MarkdownIssue> { };
+        var markdownIssues = new List<MarkdownIssue>{};
         foreach (var issue in rawIssues)
         {
-          dotnetIssues.Add(new MarkdownIssue()
+          markdownIssues.Add(new MarkdownIssue()
           {
             Severity = issue.Severity,
             Text = issue.Text,
@@ -570,7 +570,7 @@ class Program
           });
         }
 
-        return dotnetIssues;
+        return markdownIssues;
       }
 
       var report = "";
