@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -345,6 +346,13 @@ class Program
       }
     }
 
+    private class MarkdownIssue
+    {
+      public string Severity;
+      public string Text;
+      public string Location;
+    }
+    
     public ResourceFormat InstanceFormat
     {
       get => _instanceFormat;
@@ -516,7 +524,7 @@ class Program
         InstanceFormat = ResourceFormat.Unknown;
     }
 
-    public void CopyValidationReport()
+    public void CopyValidationReportCsv()
     {
       using (var writer = new StringWriter())
       using (var csv = new CsvWriter(writer))
@@ -549,6 +557,49 @@ class Program
       }
     }
 
+    public void CopyValidationReportMarkdown()
+    {
+      List<MarkdownIssue> ConvertToMarkdown(List<Issue> rawIssues)
+      {
+        var markdownIssues = new List<MarkdownIssue>{};
+        foreach (var issue in rawIssues)
+        {
+          markdownIssues.Add(new MarkdownIssue()
+          {
+            Severity = issue.Severity,
+            Text = issue.Text,
+            Location = (issue.LineNumber == 0 && issue.LinePosition == 0) ? 
+              "" :
+              $"{issue.Location} (line {issue.LineNumber}:{issue.LinePosition})"
+          });
+        }
+
+        return markdownIssues;
+      }
+
+      var report = "";
+
+      if (!ValidatingDotnet)
+      {
+        report += $@"**.NET Validator**
+
+{ConvertToMarkdown(DotnetResult.Issues).ToMarkdownTable()}
+
+";
+      }
+
+      if (!ValidatingJava)
+      {
+        report += $@"** Java Validator**
+
+{ConvertToMarkdown(JavaResult.Issues).ToMarkdownTable()}
+
+";
+      }
+
+      Clipboard.SetText(report);
+    }
+    
     public OperationOutcome ValidateWithDotnet(CancellationToken token)
     {
       Console.WriteLine("Beginning .NET validation");
