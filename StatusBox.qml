@@ -5,8 +5,28 @@ import QtQuick.Controls 2.5
 Item {
     property string label          /** Label to show underneath the box */
     property bool   runningStatus  /** Set this to indicate if the validation is running */
-    property int    errorCount     /** Set this to the number of errors during validation */
-    property int    warningCount   /** Set this to the number of warnings during valudation */
+    property var    dataModel
+    
+    property int    errorCount
+    property int    warningCount
+    property int    infoCount
+
+    onDataModelChanged: {
+        var error = 0
+        var warning = 0
+        var info = 0
+
+        for (var i = 0; i < dataModel.rowCount(); i++) {
+            var severity = dataModel.data(dataModel.index(i, 0)).severity
+            if (severity == "information") info++
+            else if (severity == "warning") warning++
+            else if (severity == "error" | severity == "fatal") error++
+        }
+
+        errorCount = error
+        warningCount = warning
+        infoCount = info
+    }
 
     /** Activated whenever the box is clicked. */
     signal clicked()

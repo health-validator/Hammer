@@ -295,8 +295,7 @@ ApplicationWindow {
                     width: resultsPane.availableWidth/2
 
                     runningStatus: appmodel.validatingDotnet
-                    errorCount:    appmodel.dotnetErrorCount
-                    warningCount:  appmodel.dotnetWarningCount
+                    dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
 
                     onClicked: errorsScrollView.contentItem.contentY = dotnetErrorList.y
                     onRightClicked: if (!appmodel.validatingDotnet) resultsPane.openContextMenu()
@@ -308,8 +307,7 @@ ApplicationWindow {
                     width: resultsPane.availableWidth/2
 
                     runningStatus: appmodel.validatingJava
-                    errorCount:    appmodel.javaErrorCount
-                    warningCount:  appmodel.javaWarningCount
+                    dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
 
                     onClicked: errorsScrollView.contentItem.contentY = javaErrorList.y
                     onRightClicked: if (!appmodel.validatingJava) resultsPane.openContextMenu()
@@ -344,25 +342,23 @@ ApplicationWindow {
                     IssuesList {
                         id: dotnetErrorList
                         label: ".NET"
-                        labelVisible: !appmodel.validatingDotnet && (appmodel.dotnetErrorCount >= 1 || appmodel.dotnetWarningCount >= 1)
                         dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                         onRightClicked: resultsPane.openContextMenu()
                         showErrors: settings.showErrors.checked
                         showWarnings: settings.showWarnings.checked
-                        showshowInfo: settings.showInfo.checked
+                        showInfo: settings.showInfo.checked
                     }
 
                     IssuesList {
                         id: javaErrorList
                         label: !appmodel.javaValidationCrashed ? "Java" : "Java (validation crashed, details below)"
-                        labelVisible: !appmodel.validatingJava && (appmodel.javaErrorCount >= 1 || appmodel.javaWarningCount >= 1)
                         dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                         onRightClicked: resultsPane.openContextMenu()
                         showErrors: settings.showErrors.checked
                         showWarnings: settings.showWarnings.checked
-                        showshowInfo: settings.showInfo.checked
+                        showInfo: settings.showInfo.checked
                     }
                 }
             }
