@@ -29,5 +29,7 @@ build_script:
     dotnet --version
 
     dotnet publish --configuration Release --self-contained --runtime win-x64 /p:PublishTrimmed=true /p:PublishReadyToRun=true /p:OutputType=WinExe /p:TargetFramework=netcoreapp3.0
+
+    rename bin\Release\netcoreapp3.0\win-x64\publish\ bin\Release\netcoreapp3.0\win-x64\Hammer\
 artifacts:
-- path: bin\Release\netcoreapp3.0\win-x64\publish\
+- path: bin\Release\netcoreapp3.0\win-x64\Hammer\
