@@ -952,6 +952,9 @@ class Program
           return 1;
         }
 
+        // This is a hack, see the comment in the file 
+        engine.Load("ApplicationName.qml");
+       
         // Now we can load the GUI
         engine.Load("Main.qml");
 

@@ -5,16 +5,19 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
 import QtQuick.Layouts 1.12
+import QtQml 2.12
 import Qt.labs.platform 1.1
+import Qt.labs.settings 1.0
 
 ApplicationWindow {
     id: window
     visible: true
+    visibility: settings.windowVisibility
     width: 640; height: 650
     minimumWidth: 550; minimumHeight: 300
     title: qsTr("Hammer STU3 (experimental)")
 
-    Universal.theme: settings.darkAppearanceSwitch.checked ? Universal.Dark : Universal.Light
+    Universal.theme: settings.appearDark ? Universal.Dark : Universal.Light
 
     property int tooltipDelay: 1500
     property int animationDuration: appmodel.animateQml ? 1000 : 0
@@ -175,19 +178,19 @@ ApplicationWindow {
                 name: "ENTERING_RESOURCE"
                 PropertyChanges { target: addResourcesPage; x: 0 }
                 PropertyChanges { target: resultsPane; x: resultsPane.width }
-                PropertyChanges { target: settings; y: window.height }
+                PropertyChanges { target: settingsPane; y: window.height }
                 PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
             },
             State {
                 name: "VALIDATION_RESULTS"
                 PropertyChanges { target: addResourcesPage; x: addResourcesPage.width * -1 }
                 PropertyChanges { target: resultsPane; x: 0 }
-                PropertyChanges { target: settings; y: window.height }
+                PropertyChanges { target: settingsPane; y: window.height }
                 PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
             },
             State {
                 name: "EDITING_SETTINGS"
-                PropertyChanges { target: settings; y: 0 }
+                PropertyChanges { target: settingsPane; y: 0 }
                 PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
             }
         ]
@@ -352,9 +355,9 @@ ApplicationWindow {
                         dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                         onRightClicked: resultsPane.openContextMenu()
-                        showErrors: settings.showErrors.checked
-                        showWarnings: settings.showWarnings.checked
-                        showshowInfo: settings.showInfo.checked
+                        showErrors: settings.showErrors
+                        showWarnings: settings.showWarnings
+                        showshowInfo: settings.showInfo
                     }
 
                     IssuesList {
@@ -364,9 +367,9 @@ ApplicationWindow {
                         dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                         onRightClicked: resultsPane.openContextMenu()
-                        showErrors: settings.showErrors.checked
-                        showWarnings: settings.showWarnings.checked
-                        showshowInfo: settings.showInfo.checked
+                        showErrors: settings.showErrors
+                        showWarnings: settings.showWarnings
+                        showshowInfo: settings.showInfo
                     }
                 }
             }
@@ -406,13 +409,35 @@ ApplicationWindow {
     }
 
     SettingsPane {
-        id: settings
+        id: settingsPane
         height: addResourcesPage.height
         horizontalPadding: 40
         width: addResourcesPage.width
         x: 0
         y: window.height
     }
+
+    Settings {
+        id: settings
+
+        property alias appearDark:   settingsPane.appearDark
+        property alias showErrors:   settingsPane.showErrors
+        property alias showWarnings: settingsPane.showWarnings
+        property alias showInfo:     settingsPane.showInfo
+
+        property alias windowWidth:  window.width
+        property alias windowHeight: window.height
+
+        // We can't alias the visibility property (hidden, windowed, maximized)
+        // because the window is always hidden on shutdown, so we need to
+        // ignore that. That means we have to do some work to prevent a binding
+        // loop.
+        property int windowVisibility: Window.Windowed
+        function updateWindowVisibility() {
+            if (window.visibility != Window.Hidden) windowVisibility = window.visibility
+        }
+    }
+    onVisibilityChanged: settings.updateWindowVisibility()
 }
 
 
