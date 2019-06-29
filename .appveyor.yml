@@ -32,4 +32,4 @@ build_script:
 
 artifacts:
 - path: bin\Release\netcoreapp3.0\win-x64\publish
-  name: Hammer.zip
+  name: Hammer
