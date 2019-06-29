@@ -10,7 +10,7 @@ addons:
 
 script:
  - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
- - wget --quiet -O . https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
+ - wget --quiet -O org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
  - dotnet publish
  - cd bin/Debug/netcoreapp2.2
  - mv publish Hammer
