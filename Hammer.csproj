@@ -42,7 +42,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="org.hl7.fhir.validator.jar" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <!-- only copy on release because the file is already present then. Couldn't get msbuild to download on its own -->
+    <Content Include="org.hl7.fhir.validator.jar" Condition=" '$(Configuration)' == 'Release' " CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="*.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/run-hammer.bat" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
