@@ -156,20 +156,6 @@ class Program
       set => this.SetProperty(ref _validatingJava, value);
     }
 
-    private int _javaErrorCount;
-    [NotifySignal]
-    public int JavaErrorCount {
-      get => _javaErrorCount;
-      set => this.SetProperty(ref _javaErrorCount, value);
-    }
-
-    private int _javaWarningCount;
-    [NotifySignal]
-    public int JavaWarningCount {
-      get => _javaWarningCount;
-      set => this.SetProperty(ref _javaWarningCount, value);
-    }
-
     private List<Issue> _javaIssues = new List<Issue>();
     [NotifySignal]
     public List<Issue> JavaIssues {
@@ -177,20 +163,6 @@ class Program
       set => this.SetProperty(ref _javaIssues, value);
     }
 
-    private int _dotnetErrorCount;
-    [NotifySignal]
-    public int DotnetErrorCount {
-      get => _dotnetErrorCount;
-      set => this.SetProperty(ref _dotnetErrorCount, value);
-    }
-
-    private int _dotnetWarningCount;
-    [NotifySignal]
-    public int DotnetWarningCount {
-      get => _dotnetWarningCount;
-      set => this.SetProperty(ref _dotnetWarningCount, value);
-    }
-    
     private List<Issue> _dotnetIssues = new List<Issue>();
     [NotifySignal]
     public List<Issue> DotnetIssues {
@@ -239,38 +211,9 @@ class Program
 
     private void ResetResults()
     {
-      JavaErrorCount     = 0;
-      JavaWarningCount   = 0;
       JavaIssues         = new List<Issue>();
-      DotnetErrorCount   = 0;
-      DotnetWarningCount = 0;
       DotnetIssues       = new List<Issue>();
       JavaValidationCrashed = false;
-    }
-
-    private void SetOutcome(OperationOutcome outcome, ValidatorType type)
-    {
-      if (type == ValidatorType.Java) {
-        JavaResult = new ValidationResult
-        {
-          ValidatorType = type,
-          Issues = convertIssues(outcome.Issue),
-          WarningCount = outcome.Warnings,
-          ErrorCount = outcome.Errors + outcome.Fatals
-        };
-        // warnings have to be set before errors for some reason, otherwise not transferred to QML
-      } else {
-        DotnetResult = new ValidationResult
-        {
-          ValidatorType = type,
-          Issues = convertIssues(outcome.Issue),
-          WarningCount = outcome.Warnings,
-          ErrorCount = outcome.Errors + outcome.Fatals
-        };
-        // warnings have to be set before errors for some reason, otherwise not transferred to QML
-      }
-
-      // Console.WriteLine(outcome.ToString());
     }
 
     public enum ValidatorType { Dotnet = 1, Java = 2 }
@@ -817,20 +760,14 @@ class Program
           {
             allTasks.Remove(validateWithJava);
             var result = await validateWithJava;
-            JavaErrorCount   = result.Errors + result.Fatals;
-            JavaWarningCount = result.Warnings;
             JavaIssues       = convertIssues(result.Issue);
-            SetOutcome(result, ValidatorType.Java);
             ValidatingJava = false;
           }
           else if (finished == validateWithDotnet)
           {
             allTasks.Remove(validateWithDotnet);
             var result = await validateWithDotnet;
-            DotnetErrorCount   = result.Errors + result.Fatals;
-            DotnetWarningCount = result.Warnings;
             DotnetIssues       = convertIssues(result.Issue);
-            SetOutcome(result, ValidatorType.Dotnet);
             ValidatingDotnet = false;
           }
           else
