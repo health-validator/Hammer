@@ -11,8 +11,7 @@ import Qt.labs.settings 1.0
 
 ApplicationWindow {
     id: window
-    visible: true
-    visibility: settings.windowVisibility
+    Component.onCompleted: settings.isWindowMaximized ? showMaximized() : showNormal()
     width: 640; height: 650
     minimumWidth: 550; minimumHeight: 300
     title: qsTr("Hammer STU3 (experimental)")
@@ -303,9 +302,9 @@ ApplicationWindow {
 
                     runningStatus: appmodel.validatingDotnet
                     dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
-                    showErrors: settings.showErrors.checked
-                    showWarnings: settings.showWarnings.checked
-                    showInfo: settings.showInfo.checked
+                    showErrors: settings.showErrors
+                    showWarnings: settings.showWarnings
+                    showInfo: settings.showInfo
 
                     onClicked: errorsScrollView.contentItem.contentY = dotnetErrorList.y
                     onRightClicked: if (!appmodel.validatingDotnet) resultsPane.openContextMenu()
@@ -318,9 +317,9 @@ ApplicationWindow {
 
                     runningStatus: appmodel.validatingJava
                     dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
-                    showErrors: settings.showErrors.checked
-                    showWarnings: settings.showWarnings.checked
-                    showInfo: settings.showInfo.checked
+                    showErrors: settings.showErrors
+                    showWarnings: settings.showWarnings
+                    showInfo: settings.showInfo
 
                     onClicked: errorsScrollView.contentItem.contentY = javaErrorList.y
                     onRightClicked: if (!appmodel.validatingJava) resultsPane.openContextMenu()
@@ -360,7 +359,7 @@ ApplicationWindow {
                         onRightClicked: resultsPane.openContextMenu()
                         showErrors: settings.showErrors
                         showWarnings: settings.showWarnings
-                        showshowInfo: settings.showInfo
+                        showInfo: settings.showInfo
                     }
 
                     IssuesList {
@@ -371,7 +370,7 @@ ApplicationWindow {
                         onRightClicked: resultsPane.openContextMenu()
                         showErrors: settings.showErrors
                         showWarnings: settings.showWarnings
-                        showshowInfo: settings.showInfo
+                        showInfo: settings.showInfo
                     }
                 }
             }
@@ -430,16 +429,17 @@ ApplicationWindow {
         property alias windowWidth:  window.width
         property alias windowHeight: window.height
 
-        // We can't alias the visibility property (hidden, windowed, maximized)
-        // because the window is always hidden on shutdown, so we need to
-        // ignore that. That means we have to do some work to prevent a binding
-        // loop.
-        property int windowVisibility: Window.Windowed
-        function updateWindowVisibility() {
-            if (window.visibility != Window.Hidden) windowVisibility = window.visibility
+        property bool isWindowMaximized: false
+        function updateWindowMaximized() {
+            // Check only for maximized/windowed, ignore the minimalized state or hidden state on shutdown
+            if (window.visibility == Window.Maximized) { 
+                isWindowMaximized = true
+            } else if (window.visibility == Window.Windowed) {
+                isWindowMaximized = false
+            }
         }
     }
-    onVisibilityChanged: settings.updateWindowVisibility()
+    onVisibilityChanged: settings.updateWindowMaximized()
 }
 
 
