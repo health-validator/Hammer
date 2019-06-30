@@ -5,27 +5,40 @@ import QtQuick.Controls 2.5
 Item {
     property string label          /** Label to show underneath the box */
     property bool   runningStatus  /** Set this to indicate if the validation is running */
-    property var    dataModel
-    
-    property int    errorCount
-    property int    warningCount
-    property int    infoCount
+    property var    dataModel      /** Set this to the issue list, should be a NetListModel converted from C# List<Issue>  */
+    property bool   showErrors     /** Show messages with severity 'error' or 'fatal' */
+    property bool   showWarnings   /** Show messages with severity 'warning' */
+    property bool   showInfo       /** Show messages with severity 'informational' */
 
+    Item {
+        id: counts
+        property int errorCount
+        property int warningCount
+        property int infoCount
+    }
+
+    // Count the number of errors, warnings and info messages in the data model
     onDataModelChanged: {
-        var error = 0
-        var warning = 0
-        var info = 0
+        if (dataModel === undefined) return
+
+        var errorCount   = 0
+        var warningCount = 0
+        var infoCount    = 0
 
         for (var i = 0; i < dataModel.rowCount(); i++) {
-            var severity = dataModel.data(dataModel.index(i, 0)).severity
-            if (severity == "information") info++
-            else if (severity == "warning") warning++
-            else if (severity == "error" | severity == "fatal") error++
+            const severity = dataModel.data(dataModel.index(i, 0)).severity
+            if (severity === "information") {
+                infoCount++
+            } else if (severity === "warning") {
+                warningCount++
+            } else if (severity === "error" || severity === "fatal") {
+                errorCount++
+            }
         }
 
-        errorCount = error
-        warningCount = warning
-        infoCount = info
+        counts.errorCount   = errorCount
+        counts.warningCount = warningCount
+        counts.infoCount    = infoCount
     }
 
     /** Activated whenever the box is clicked. */
@@ -63,7 +76,7 @@ Item {
             radius: 3
             anchors.margins: 1
             anchors.fill: parent
-            visible: !runningStatus && errorCount === 0
+            visible: !runningStatus && counts.errorCount === 0
             gradient: Gradient {
                 GradientStop { position: 0.0; color: "#00b09b" }
                 GradientStop { position: 1.0; color: "#96c93d" }
@@ -74,7 +87,7 @@ Item {
             radius: 3
             anchors.margins: 1
             anchors.fill: parent
-            visible: !runningStatus && errorCount > 0
+            visible: !runningStatus && counts.errorCount > 0
             gradient: Gradient {
                 GradientStop { position: 0.0; color: "#c31432" }
                 GradientStop { position: 1.0; color: "#240b36" }
@@ -83,15 +96,19 @@ Item {
         }
 
         Label {
-            text: qsTr(`${errorCount} ∙ ${warningCount}`)
+            // Bit of a nasty expression, but it listens to the changed() signals of the counts
+            text: [counts.errorCount, counts.warningCount, counts.infoCount]
+                .filter((count, index) => (index == 0 && showErrors) || (index == 1 && showWarnings) || (index == 2 && showInfo))
+                .join(" ∙ ")
             font.pointSize: 35
             anchors.centerIn: parent
             visible: !runningStatus
             color: "white"
 
-
             ToolTip.visible: errorsMouseArea.containsMouse
-            ToolTip.text: qsTr(`${errorCount} Errors ∙ ${warningCount} Warnings`)
+            ToolTip.text: [qsTr(`${counts.errorCount} Errors`), qsTr(`${counts.warningCount} Warnings`), qsTr(`${counts.infoCount} Info messages`)]
+                .filter((count, index) => (index == 0 && showErrors) || (index == 1 && showWarnings) || (index == 2 && showInfo))
+                .join(" ∙ ")
 
             MouseArea {
                 id: errorsMouseArea;

@@ -300,6 +300,9 @@ ApplicationWindow {
 
                     runningStatus: appmodel.validatingDotnet
                     dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
+                    showErrors: settings.showErrors.checked
+                    showWarnings: settings.showWarnings.checked
+                    showInfo: settings.showInfo.checked
 
                     onClicked: errorsScrollView.contentItem.contentY = dotnetErrorList.y
                     onRightClicked: if (!appmodel.validatingDotnet) resultsPane.openContextMenu()
@@ -312,6 +315,9 @@ ApplicationWindow {
 
                     runningStatus: appmodel.validatingJava
                     dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
+                    showErrors: settings.showErrors.checked
+                    showWarnings: settings.showWarnings.checked
+                    showInfo: settings.showInfo.checked
 
                     onClicked: errorsScrollView.contentItem.contentY = javaErrorList.y
                     onRightClicked: if (!appmodel.validatingJava) resultsPane.openContextMenu()
