@@ -890,6 +890,8 @@ class Program
         }
 
         // Now we can load the GUI
+        QCoreApplication.OrganizationDomain = "Hammer.mc";
+        QCoreApplication.OrganizationName = "Hammer";
         engine.Load("Main.qml");
 
         // Once the GUI is loaded, we can start working with the AppModel

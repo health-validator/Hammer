@@ -4,14 +4,15 @@ import appmodel 1.0
 import QtQuick.Controls.Universal 2.12
 import QtQuick.Layouts 1.12
 import Qt.labs.platform 1.1
+import Qt.labs.settings 1.0
 
 Pane {
     id: settingsPane
 
-    property Switch darkAppearanceSwitch: darkAppearanceSwitch
-    property CheckBox showErrors: showErrors
-    property CheckBox showWarnings: showWarnings
-    property CheckBox showInfo: showInfo
+    property alias appearDark:   darkAppearanceSwitch.checked
+    property alias showErrors:   showErrorsBox.checked
+    property alias showWarnings: showWarningsBox.checked
+    property alias showInfo:     showInfoBox.checked
 
     readonly property int headerFontSize: 14
 
@@ -67,19 +68,19 @@ Pane {
         RowLayout {
             Layout.columnSpan: 3
             CheckBox {
-                id: showErrors
+                id: showErrorsBox
                 text: qsTr("Errors")
                 checked: true
                 Layout.fillWidth: true
             }
             CheckBox {
-                id: showWarnings
+                id: showWarningsBox
                 text: qsTr("Warnings")
                 checked: true
                 Layout.fillWidth: true
             }
             CheckBox {
-                id: showInfo
+                id: showInfoBox
                 text: qsTr("Info")
                 checked: true
                 Layout.fillWidth: true
