@@ -6,11 +6,10 @@ import QtQuick.Layouts 1.12
 ColumnLayout {
     id: rootComponent
     property string label        /** The label for the current collection of messages */
-    property bool   labelVisible /** Set this to indicate if the label should be visible */
     property var    dataModel    /** Set this to the datamodel from the C# side */
     property bool   showErrors   /** Show messages with severity 'error' or 'fatal' */
     property bool   showWarnings /** Show messages with severity 'warning' */
-    property bool   showshowInfo /** Show messages with severity 'informational' */
+    property bool   showInfo     /** Show messages with severity 'informational' */
 
     anchors.left: parent.left
     anchors.right: parent.right
@@ -23,7 +22,7 @@ ColumnLayout {
         Layout.alignment: Qt.AlignCenter
         color: "#696969"
         font.pointSize: 17
-        visible: labelVisible
+        visible: messagesRepeater.count > 0
     }
 
     Repeater {
