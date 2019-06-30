@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -51,8 +52,6 @@ class Program
     private readonly IResourceResolver _coreSource = new CachedResolver(ZipSource.CreateValidationSource());
 
     private IResourceResolver _combinedSource;
-    
-    Regex cleanFhirPath = new Regex(@"([^\(]+)", RegexOptions.Compiled);
 
     // ReSharper disable MemberCanBePrivate.Global
     #region QML-accessible properties
@@ -208,7 +207,7 @@ class Program
     
     private CancellationTokenSource _validatorCancellationSource;
     
-    private List<Process> _validatorProcesses = new List<Process>();
+    private readonly List<Process> _validatorProcesses = new List<Process>();
 
     private void ResetResults()
     {
@@ -290,6 +289,13 @@ class Program
       }
     }
 
+    private class MarkdownIssue
+    {
+      public string Severity;
+      public string Text;
+      public string Location;
+    }
+    
     public ResourceFormat InstanceFormat
     {
       get => _instanceFormat;
@@ -371,9 +377,15 @@ class Program
 
       return serializationDetails;
     }
+    
+    private static MatchCollection ExtractLocation(string rawLocation)
+    {
+      const string pattern = @"([^\(]+)";
+      return Regex.Matches(rawLocation, pattern);
+    }
 
-    // trim Java FHIRpath of its position information, which isn't always correct
-    // we have to compute it ourselves for .NET, might as well do it for Java
+    ///<summary>Trims Java FHIRpath of its position information, which isn't always correct
+    /// we have to compute it ourselves for .NET, might as well do it for Java</summary>
     private string SanitizeLocation(string rawLocation)
     {
       // heuristic for the Java validator
@@ -381,8 +393,8 @@ class Program
       {
         return _parsedResource.Name;
       }
-      
-      var matches = cleanFhirPath.Matches(rawLocation);
+
+      var matches = ExtractLocation(rawLocation);
       if (!matches.Any()) { return null; }
       var location = matches.First().Groups[0].ToString().Trim();
       return location;
@@ -455,7 +467,7 @@ class Program
         InstanceFormat = ResourceFormat.Unknown;
     }
 
-    public void CopyValidationReport()
+    public void CopyValidationReportCsv()
     {
       using (var writer = new StringWriter())
       using (var csv = new CsvWriter(writer))
@@ -488,6 +500,49 @@ class Program
       }
     }
 
+    public void CopyValidationReportMarkdown()
+    {
+      List<MarkdownIssue> ConvertToMarkdown(List<Issue> rawIssues)
+      {
+        var markdownIssues = new List<MarkdownIssue>{};
+        foreach (var issue in rawIssues)
+        {
+          markdownIssues.Add(new MarkdownIssue()
+          {
+            Severity = issue.Severity,
+            Text = issue.Text,
+            Location = (issue.LineNumber == 0 && issue.LinePosition == 0) ? 
+              "" :
+              $"{issue.Location} (line {issue.LineNumber}:{issue.LinePosition})"
+          });
+        }
+
+        return markdownIssues;
+      }
+
+      var report = "";
+
+      if (!ValidatingDotnet)
+      {
+        report += $@"**.NET Validator**
+
+{ConvertToMarkdown(DotnetResult.Issues).ToMarkdownTable()}
+
+";
+      }
+
+      if (!ValidatingJava)
+      {
+        report += $@"** Java Validator**
+
+{ConvertToMarkdown(JavaResult.Issues).ToMarkdownTable()}
+
+";
+      }
+
+      Clipboard.SetText(report);
+    }
+    
     public OperationOutcome ValidateWithDotnet(CancellationToken token)
     {
       Console.WriteLine("Beginning .NET validation");
@@ -757,7 +812,7 @@ class Program
   /// It is based on the CommandLine library.
   /// </summary>
   public class CLIParser {
-    ParserResult<CLIOptions> cliOptions;
+    private readonly ParserResult<CLIOptions> _cliOptions;
 
     /// <summary>
     /// Data storage class to store the command line options and arguments.
@@ -777,13 +832,13 @@ class Program
     /// </summary>
     public CLIParser(string[] args)
     {
-      cliOptions = Parser.Default.ParseArguments<CLIOptions>(args);
+      _cliOptions = Parser.Default.ParseArguments<CLIOptions>(args);
     }
 
-    public bool parsedSuccessfully {
+    public bool ParsedSuccessfully {
       get {
         var success = true;            
-        cliOptions.WithNotParsed(errors => success = false);
+        _cliOptions.WithNotParsed(errors => success = false);
         return success;
       }
     }
@@ -793,7 +848,7 @@ class Program
     /// </summary>
     public void Process()
     {
-      cliOptions.WithParsed(result => {
+      _cliOptions.WithParsed(result => {
         AppModel.Instance.AnimateQml = false;
 
         if (result.ScopeDir != null) {
@@ -830,7 +885,7 @@ class Program
         // Now we can check command line options to see if we should bail
         // out before we start rendering the interface.
         var cliParser = new CLIParser(args);
-        if (!cliParser.parsedSuccessfully) {
+        if (!cliParser.ParsedSuccessfully) {
           return 1;
         }
 
