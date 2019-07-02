@@ -122,9 +122,17 @@ ColumnLayout {
                 font.pointSize: 9
                 textFormat: Text.PlainText
                 wrapMode: "WrapAtWordBoundaryOrAnywhere"
+
+                opacity: mousearea.containsMouse ? 1.0 : 0
+                Behavior on opacity {
+                    OpacityAnimator {
+                        duration: 250
+                    }
+                }
             }
 
             MouseArea {
+                id: mousearea
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
