@@ -13,7 +13,9 @@ script:
  - git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
  - cd org.hl7.fhir.core
  - mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
+ - cp /home/travis/build/health-validator/Hammer/org.hl7.fhir.core/org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli-3.8.9-SNAPSHOT.jar $HOME/health-validator/Hammer/org.hl7.fhir.validator.jar
 #  - move C:\projects\hammer\org.hl7.fhir.core\org.hl7.fhir.validation.cli\target\org.hl7.fhir.validation.cli*.jar %APPVEYOR_BUILD_FOLDER%\org.hl7.fhir.validator.jar
+ - cd $HOME/health-validator/Hammer
  - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
 #  - wget --quiet -O org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
  - dotnet publish
