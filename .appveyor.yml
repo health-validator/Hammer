@@ -19,7 +19,7 @@ install:
     $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
 cache:
   - '%LocalAppData%\NuGet\v3-cache'
-  - '%USERPROFILE%\.m2 -> **\pom.xml'
+  - '%USERPROFILE%\.m2'
 
 before_build:
     - cmd: >-
