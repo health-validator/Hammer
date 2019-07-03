@@ -55,19 +55,24 @@ Experimental and not ready for production. Try it out and [give feedback](https:
 
 ## Download
 
-You can [download](https://health-validator.github.io/latest/Hammer.zip) the latest version of Hammer for Windows, macOS and Linux.
+Download: [Windows](https://ci.appveyor.com/api/projects/vadi2/hammer/artifacts/bin/Release/netcoreapp3.0/win-x64/Hammer.zip?branch=master) (it's a lot of files - .NET is big!)
+
+Download: [macOS and Linux](https://health-validator.github.io/latest/Hammer.zip)
 
 ## How To Use
 
-Prerequisite:
-1. Install [.NET Core 2.2 Runtime](https://dotnet.microsoft.com/download)
-1. Launch Hammer:
-  * Windows - double-click `run-hammer.bat`
-  * macOS and Linux - double-click `run-hammer.sh`
+### Windows
+Double-click `Hammer.exe`.
 
-Validating:
+### macOS and Linux
+
+1. Install [.NET Core 2.2 Runtime](https://dotnet.microsoft.com/download)
+1. Launch Hammer: double-click `run-hammer.sh`
+
+### Validating
+
 1. Drag and drop, paste, or open a FHIR instance.
-1. Adjust the validation scope in settings if necessary.
+1. Adjust the validation scope in settings if necessary - by default, it's the folder and subfolders the resource was opened from.
 1. Click `Validate`.
 
 First time Hammer launches, it needs to download the necessary components to run - so it'll take a bit of time.
