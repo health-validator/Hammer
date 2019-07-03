@@ -17,7 +17,21 @@ install:
     Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory($tempFileCurrent, $env:DOTNET_INSTALL_DIR)
 
     $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
-cache: '%LocalAppData%\NuGet\v3-cache'
+cache:
+  - '%LocalAppData%\NuGet\v3-cache'
+  - C:\maven
+  - C:\Users\appveyor\.m2
+
+before_build:
+    - cmd: >-
+        git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
+
+        cd org.hl7.fhir.core
+
+        mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli -DoutputDirectory=.
+
+        tree /F .
+
 build_script:
 - cmd: >-
     @powershell -Command "get-content Main.qml | %{$_ -replace \"// import appmodel 1.0\", \"import appmodel 1.0\"}"
@@ -29,14 +43,6 @@ build_script:
     dotnet --version
 
     dotnet publish --configuration Release --self-contained --runtime win-x64 /p:PublishTrimmed=true /p:PublishReadyToRun=true /p:OutputType=WinExe /p:TargetFramework=netcoreapp3.0
-
-after_build:
-    - cmd: >-
-        git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
-
-        cd org.hl7.fhir.core
-
-        mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
 
 artifacts:
 - path: bin\Release\netcoreapp3.0\win-x64\publish
