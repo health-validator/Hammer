@@ -18,6 +18,7 @@ install:
 
 script:
  - cd $TRAVIS_BUILD_DIR
+ - java -jar org.hl7.fhir.validator.jar
  - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
  - dotnet publish --configuration Release
 
