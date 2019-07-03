@@ -27,17 +27,15 @@ before_build:
 
         cd org.hl7.fhir.core
 
-        mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli -DoutputDirectory=%APPVEYOR_BUILD_FOLDER%
+        mvn deploy -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
 
-        tree /F %APPVEYOR_BUILD_FOLDER%
+        move C:\projects\hammer\org.hl7.fhir.core\org.hl7.fhir.validation.cli\target\org.hl7.fhir.validation.cli-3.8.9-SNAPSHOT.jar %APPVEYOR_BUILD_FOLDER%\org.hl7.fhir.validation.cli.jar
 
 build_script:
 - cmd: >-
     cd %APPVEYOR_BUILD_FOLDER%
 
     @powershell -Command "get-content Main.qml | %{$_ -replace \"// import appmodel 1.0\", \"import appmodel 1.0\"}"
-
-    appveyor DownloadFile https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar -FileName org.hl7.fhir.validator.jar
 
     set PATH=%LocalAppData%\.dotnetsdk;%PATH%
 
