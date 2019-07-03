@@ -19,8 +19,7 @@ install:
     $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
 cache:
   - '%LocalAppData%\NuGet\v3-cache'
-  - C:\maven
-  - C:\Users\appveyor\.m2
+  - '%USERPROFILE%\.m2 -> **\pom.xml'
 
 before_build:
     - cmd: >-
@@ -28,12 +27,14 @@ before_build:
 
         cd org.hl7.fhir.core
 
-        mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli -DoutputDirectory=.
+        mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli -DoutputDirectory=%APPVEYOR_BUILD_FOLDER%
 
-        tree /F .
+        tree /F %APPVEYOR_BUILD_FOLDER%
 
 build_script:
 - cmd: >-
+    cd %APPVEYOR_BUILD_FOLDER%
+
     @powershell -Command "get-content Main.qml | %{$_ -replace \"// import appmodel 1.0\", \"import appmodel 1.0\"}"
 
     appveyor DownloadFile https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar -FileName org.hl7.fhir.validator.jar
