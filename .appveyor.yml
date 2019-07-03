@@ -29,7 +29,7 @@ before_build:
 
         mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
 
-        move C:\projects\hammer\org.hl7.fhir.core\org.hl7.fhir.validation.cli\target\org.hl7.fhir.validation.cli-3.8.9-SNAPSHOT.jar %APPVEYOR_BUILD_FOLDER%\org.hl7.fhir.validation.cli.jar
+        move C:\projects\hammer\org.hl7.fhir.core\org.hl7.fhir.validation.cli\target\org.hl7.fhir.validation.cli-3.8.9-SNAPSHOT.jar %APPVEYOR_BUILD_FOLDER%\org.hl7.fhir.validator.jar
 
 build_script:
 - cmd: >-
