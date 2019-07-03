@@ -9,15 +9,19 @@ addons:
     - tree
     - maven
 
-script:
+install:
  - git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
  - cd org.hl7.fhir.core
  - mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
  - mv /home/travis/build/health-validator/Hammer/org.hl7.fhir.core/org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli-3.8.9-SNAPSHOT.jar $TRAVIS_BUILD_DIR/org.hl7.fhir.validator.jar
+
+script:
  - cd $TRAVIS_BUILD_DIR
  - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
- - dotnet publish
- - cd bin/Debug/netcoreapp2.2
+ - dotnet publish --configuration Release
+
+after_success:
+ - cd bin/Release/netcoreapp2.2
  - mv publish Hammer
  - tree .
  - mv Hammer/assets/run-hammer.sh Hammer/run-hammer.sh
@@ -33,7 +37,7 @@ deploy:
   provider: pages
   repo: health-validator/latest
   target_branch: master
-  local_dir: bin/Debug/netcoreapp2.2/deploy
+  local_dir: bin/Release/netcoreapp2.2/deploy
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   keep_history: false
