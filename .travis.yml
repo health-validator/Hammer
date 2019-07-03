@@ -12,6 +12,7 @@ addons:
 install:
  - git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
  - cd org.hl7.fhir.core
+ - git rev-parse HEAD
  - mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
  - mv /home/travis/build/health-validator/Hammer/org.hl7.fhir.core/org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli-3.8.9-SNAPSHOT.jar $TRAVIS_BUILD_DIR/org.hl7.fhir.validator.jar
 
