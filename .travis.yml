@@ -15,11 +15,12 @@ install:
  - git rev-parse HEAD
  - mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
  - mv org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli*-SNAPSHOT.jar $TRAVIS_BUILD_DIR/org.hl7.fhir.validator.jar
-
-script:
  - cd $TRAVIS_BUILD_DIR
+ # verify the version of the validator we've built
  - java -jar org.hl7.fhir.validator.jar
  - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
+
+script:
  - dotnet publish --configuration Release
 
 after_success:
