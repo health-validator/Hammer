@@ -31,12 +31,15 @@ before_build:
 
         move C:\projects\hammer\org.hl7.fhir.core\org.hl7.fhir.validation.cli\target\org.hl7.fhir.validation.cli*.jar %APPVEYOR_BUILD_FOLDER%\org.hl7.fhir.validator.jar
 
+        cd %APPVEYOR_BUILD_FOLDER%
+
+        # verify the version of the validator we've built
+        java -jar org.hl7.fhir.validator.jar
+
+        @powershell -Command "get-content Main.qml | %{$_ -replace \"// import appmodel 1.0\", \"import appmodel 1.0\"}"
+
 build_script:
 - cmd: >-
-    cd %APPVEYOR_BUILD_FOLDER%
-
-    @powershell -Command "get-content Main.qml | %{$_ -replace \"// import appmodel 1.0\", \"import appmodel 1.0\"}"
-
     set PATH=%LocalAppData%\.dotnetsdk;%PATH%
 
     dotnet --version
