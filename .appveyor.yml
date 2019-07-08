@@ -17,13 +17,28 @@ install:
     Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory($tempFileCurrent, $env:DOTNET_INSTALL_DIR)
 
     $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
-cache: '%LocalAppData%\NuGet\v3-cache'
+cache:
+  - '%LocalAppData%\NuGet\v3-cache'
+  - '%USERPROFILE%\.m2'
+
+before_build:
+    - cmd: >-
+        git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
+
+        cd org.hl7.fhir.core
+
+        mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
+
+        move C:\projects\hammer\org.hl7.fhir.core\org.hl7.fhir.validation.cli\target\org.hl7.fhir.validation.cli*.jar %APPVEYOR_BUILD_FOLDER%\org.hl7.fhir.validator.jar
+
+        cd %APPVEYOR_BUILD_FOLDER%
+
+        java -jar org.hl7.fhir.validator.jar
+
+        @powershell -Command "get-content Main.qml | %{$_ -replace \"// import appmodel 1.0\", \"import appmodel 1.0\"}"
+
 build_script:
 - cmd: >-
-    @powershell -Command "get-content Main.qml | %{$_ -replace \"// import appmodel 1.0\", \"import appmodel 1.0\"}"
-
-    appveyor DownloadFile https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar -FileName org.hl7.fhir.validator.jar
-
     set PATH=%LocalAppData%\.dotnetsdk;%PATH%
 
     dotnet --version

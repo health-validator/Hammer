@@ -7,12 +7,24 @@ addons:
   apt:
     packages:
     - tree
+    - maven
+
+install:
+ - git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
+ - cd org.hl7.fhir.core
+ - git rev-parse HEAD
+ - mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
+ - mv org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli*-SNAPSHOT.jar $TRAVIS_BUILD_DIR/org.hl7.fhir.validator.jar
+ - cd $TRAVIS_BUILD_DIR
+ # verify the version of the validator we've built
+ - java -jar org.hl7.fhir.validator.jar
+ - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
 
 script:
- - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
- - wget --quiet -O org.hl7.fhir.validator.jar https://fhir.github.io/latest-ig-publisher/org.hl7.fhir.validator.jar
- - dotnet publish
- - cd bin/Debug/netcoreapp2.2
+ - dotnet publish --configuration Release
+
+after_success:
+ - cd bin/Release/netcoreapp2.2
  - mv publish Hammer
  - tree .
  - mv Hammer/assets/run-hammer.sh Hammer/run-hammer.sh
@@ -28,10 +40,14 @@ deploy:
   provider: pages
   repo: health-validator/latest
   target_branch: master
-  local_dir: bin/Debug/netcoreapp2.2/deploy
+  local_dir: bin/Release/netcoreapp2.2/deploy
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   keep_history: false
   verbose: true
   on:
     branch: master
+
+cache:
+  directories:
+  - $HOME/.m2
