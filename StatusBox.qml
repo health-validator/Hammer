@@ -6,7 +6,6 @@ Item {
     property string label          /** Label to show underneath the box */
     property bool   runningStatus  /** Set this to indicate if the validation is running */
     property var    dataModel      /** Set this to the issue list, should be a NetListModel converted from C# List<Issue>  */
-    property bool   showErrors     /** Show messages with severity 'error' or 'fatal' */
     property bool   showWarnings   /** Show messages with severity 'warning' */
     property bool   showInfo       /** Show messages with severity 'informational' */
 
@@ -98,7 +97,7 @@ Item {
         Label {
             // Bit of a nasty expression, but it listens to the changed() signals of the counts
             text: [counts.errorCount, counts.warningCount, counts.infoCount]
-                .filter((count, index) => (index == 0 && showErrors) || (index == 1 && showWarnings) || (index == 2 && showInfo))
+                .filter((count, index) => (index == 0) || (index == 1 && showWarnings) || (index == 2 && showInfo))
                 .join(" ∙ ")
             font.pointSize: 35
             anchors.centerIn: parent
@@ -107,7 +106,7 @@ Item {
 
             ToolTip.visible: errorsMouseArea.containsMouse
             ToolTip.text: [qsTr(`${counts.errorCount} Errors`), qsTr(`${counts.warningCount} Warnings`), qsTr(`${counts.infoCount} Info messages`)]
-                .filter((count, index) => (index == 0 && showErrors) || (index == 1 && showWarnings) || (index == 2 && showInfo))
+                .filter((count, index) => (index == 0) || (index == 1 && showWarnings) || (index == 2 && showInfo))
                 .join(" ∙ ")
 
             MouseArea {

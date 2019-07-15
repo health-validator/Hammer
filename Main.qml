@@ -302,7 +302,6 @@ ApplicationWindow {
 
                     runningStatus: appmodel.validatingDotnet
                     dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
-                    showErrors: settings.showErrors
                     showWarnings: settings.showWarnings
                     showInfo: settings.showInfo
 
@@ -317,7 +316,6 @@ ApplicationWindow {
 
                     runningStatus: appmodel.validatingJava
                     dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
-                    showErrors: settings.showErrors
                     showWarnings: settings.showWarnings
                     showInfo: settings.showInfo
 
@@ -357,7 +355,6 @@ ApplicationWindow {
                         dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                         onRightClicked: resultsPane.openContextMenu()
-                        showErrors: settings.showErrors
                         showWarnings: settings.showWarnings
                         showInfo: settings.showInfo
                     }
@@ -368,7 +365,6 @@ ApplicationWindow {
                         dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
                         onRightClicked: resultsPane.openContextMenu()
-                        showErrors: settings.showErrors
                         showWarnings: settings.showWarnings
                         showInfo: settings.showInfo
                     }
@@ -422,7 +418,6 @@ ApplicationWindow {
         id: settings
 
         property alias appearDark:   settingsPane.appearDark
-        property alias showErrors:   settingsPane.showErrors
         property alias showWarnings: settingsPane.showWarnings
         property alias showInfo:     settingsPane.showInfo
 
