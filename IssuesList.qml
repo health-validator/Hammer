@@ -7,7 +7,6 @@ ColumnLayout {
     id: rootComponent
     property string label        /** The label for the current collection of messages */
     property var    dataModel    /** Set this to the datamodel from the C# side */
-    property bool   showErrors   /** Show messages with severity 'error' or 'fatal' */
     property bool   showWarnings /** Show messages with severity 'warning' */
     property bool   showInfo     /** Show messages with severity 'informational' */
 
@@ -45,7 +44,7 @@ ColumnLayout {
             property int rightMargin: 15
 
             visible: {
-                if (modelData.severity === "error" && showErrors) {
+                if (modelData.severity === "error") {
                     return true
                 } else if (modelData.severity === "warning" && showWarnings) {
                     return true

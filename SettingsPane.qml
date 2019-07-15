@@ -10,7 +10,6 @@ Pane {
     id: settingsPane
 
     property alias appearDark:   darkAppearanceSwitch.checked
-    property alias showErrors:   showErrorsBox.checked
     property alias showWarnings: showWarningsBox.checked
     property alias showInfo:     showInfoBox.checked
 
@@ -58,7 +57,7 @@ Pane {
         }
 
         Text {
-            text: qsTr("Show me")
+            text: qsTr("Show errors and...")
             color: Universal.foreground
             font.pointSize: settingsPane.headerFontSize
             font.bold: true
@@ -66,24 +65,16 @@ Pane {
             topPadding: 10
         }
         RowLayout {
-            Layout.columnSpan: 3
-            CheckBox {
-                id: showErrorsBox
-                text: qsTr("Errors")
-                checked: true
-                Layout.fillWidth: true
-            }
+            Layout.columnSpan: 2
             CheckBox {
                 id: showWarningsBox
                 text: qsTr("Warnings")
                 checked: true
-                Layout.fillWidth: true
             }
             CheckBox {
                 id: showInfoBox
                 text: qsTr("Info")
                 checked: true
-                Layout.fillWidth: true
             }
         }
 
