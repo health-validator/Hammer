@@ -15,7 +15,7 @@ ColumnLayout {
     anchors.right: parent.right
 
     signal peekIssue(int lineNumber, int linePosition)
-    signal rightClicked()
+    signal rightClickedOnMessage(string message)
 
     Label {
         text: label
@@ -138,10 +138,10 @@ ColumnLayout {
                 cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onClicked: if (mouse.button === Qt.RightButton) {
-                               rootComponent.rightClicked()
-                           } else {
-                               rootComponent.peekIssue(modelData.lineNumber, modelData.linePosition)
-                           }
+                    rootComponent.rightClickedOnMessage(qsTr(`${modelData.text} (line ${modelData.lineNumber}:${modelData.linePosition})`))
+                } else {
+                    rootComponent.peekIssue(modelData.lineNumber, modelData.linePosition)
+                }
             }
         }
     }

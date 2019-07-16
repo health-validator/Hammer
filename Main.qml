@@ -269,20 +269,46 @@ ApplicationWindow {
         height: parent.height - actionButton.height
         x: resultsPane.width
 
+        // Context menu with the options to copy the validation report as
+        // Markdown or CSV, and optionally to copy a single message. To enable
+        // this option, call the openWithMessageOption(message) function.
         Menu {
             id: contextMenu
+
+            function openWithMessageOption(message) {
+                singleMessageItem.message = message
+                singleMessageItem.visible = true
+                open()
+            }
+            onAboutToHide: singleMessageItem.visible = false
+
+            MenuItem {
+                id: singleMessageItem
+                property string message: ""
+                visible: false // Normally hidden, unless explicitly shown using openWithMessageOption()
+
+                text: qsTr("Copy message")
+                onTriggered: {
+                    if (message != "") {
+                        appmodel.copyToClipboard(message)
+                        toast.show(qsTr("Copied message to clipboard"))
+                    }
+                }
+            }
             MenuItem {
                 text: qsTr("Copy report as CSV")
-                onTriggered: { appmodel.copyValidationReport(); toast.show(qsTr("Copied all results as a CSV")) }
+                onTriggered: {
+                    appmodel.copyValidationReportCsv()
+                    toast.show(qsTr("Copied all results as a CSV"))
+                }
             }
             MenuItem {
                 text: qsTr("Copy report as Markdown")
-                onTriggered: { appmodel.copyValidationReportMarkdown(); toast.show(qsTr("Copied as Markdown (works well in Zulip)")) }
+                onTriggered: {
+                    appmodel.copyValidationReportMarkdown();
+                    toast.show(qsTr("Copied as Markdown (works well in Zulip)"))
+                }
             }
-        }
-
-        function openContextMenu() {
-            contextMenu.open()
         }
 
         ColumnLayout {
@@ -307,7 +333,7 @@ ApplicationWindow {
                     showInfo: settings.showInfo
 
                     onClicked: errorsScrollView.contentItem.contentY = dotnetErrorList.y
-                    onRightClicked: if (!appmodel.validatingDotnet) resultsPane.openContextMenu()
+                    onRightClicked: if (!appmodel.validatingDotnet) contextMenu.open()
                 }
 
                 StatusBox {
@@ -322,7 +348,7 @@ ApplicationWindow {
                     showInfo: settings.showInfo
 
                     onClicked: errorsScrollView.contentItem.contentY = javaErrorList.y
-                    onRightClicked: if (!appmodel.validatingJava) resultsPane.openContextMenu()
+                    onRightClicked: if (!appmodel.validatingJava) contextMenu.open()
                 }
             }
 
@@ -356,7 +382,7 @@ ApplicationWindow {
                         label: ".NET"
                         dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
-                        onRightClicked: resultsPane.openContextMenu()
+                        onRightClickedOnMessage: contextMenu.openWithMessageOption(message)
                         showErrors: settings.showErrors
                         showWarnings: settings.showWarnings
                         showInfo: settings.showInfo
@@ -367,7 +393,7 @@ ApplicationWindow {
                         label: !appmodel.javaValidationCrashed ? "Java" : "Java (validation crashed, details below)"
                         dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)
                         onPeekIssue: parent.peekIssue(lineNumber, linePosition)
-                        onRightClicked: resultsPane.openContextMenu()
+                        onRightClickedOnMessage: contextMenu.openWithMessageOption(message)
                         showErrors: settings.showErrors
                         showWarnings: settings.showWarnings
                         showInfo: settings.showInfo

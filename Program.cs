@@ -467,6 +467,11 @@ class Program
         InstanceFormat = ResourceFormat.Unknown;
     }
 
+    public void copyToClipboard(string message)
+    {
+      Clipboard.SetText(message);
+    }
+
     public void CopyValidationReportCsv()
     {
       using (var writer = new StringWriter())
