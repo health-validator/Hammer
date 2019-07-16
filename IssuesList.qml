@@ -137,7 +137,11 @@ ColumnLayout {
                 cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onClicked: if (mouse.button === Qt.RightButton) {
-                    rootComponent.rightClickedOnMessage(qsTr(`${modelData.text} (line ${modelData.lineNumber}:${modelData.linePosition})`))
+                    var message = modelData.text
+                    if (modelData.lineNumber != 0) {
+                        message += qsTr(` (line ${modelData.lineNumber}:${modelData.linePosition})`)
+                    }
+                    rootComponent.rightClickedOnMessage(message)
                 } else {
                     rootComponent.peekIssue(modelData.lineNumber, modelData.linePosition)
                 }
