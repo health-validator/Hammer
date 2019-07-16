@@ -82,7 +82,7 @@ class Program
                 this.ActivateProperty(x => x.ScopeDirectory);
 
                 var directorySource = new CachedResolver(
-                  new DirectorySource(_scopeDirectory, new DirectorySourceSettings { IncludeSubDirectories = true }));
+                    new DirectorySource(_scopeDirectory, new DirectorySourceSettings { IncludeSubDirectories = true }));
 
                 // Finally, we combine both sources, so we will find profiles both from the core zip as well as from the directory.
                 // By mentioning the directory source first, anything in the user directory will override what is in the core zip.
@@ -228,10 +228,13 @@ class Program
             private ValidatorType _validatorType;
             [NotifySignal]
             public ValidatorType ValidatorType
-            { get => _validatorType; set => this.SetProperty(ref _validatorType, value); }
+            {
+                get => _validatorType;
+                set => this.SetProperty(ref _validatorType, value);
+            }
 
             private List<Issue> _issues
-              = new List<Issue>();
+                = new List<Issue>();
 
             [NotifySignal]
             public List<Issue> Issues
@@ -243,12 +246,18 @@ class Program
             private int _errorCount;
             [NotifySignal]
             public int ErrorCount
-            { get => _errorCount; set => this.SetProperty(ref _errorCount, value); }
+            {
+                get => _errorCount;
+                set => this.SetProperty(ref _errorCount, value);
+            }
 
             private int _warningCount;
             [NotifySignal]
             public int WarningCount
-            { get => _warningCount; set => this.SetProperty(ref _warningCount, value); }
+            {
+                get => _warningCount;
+                set => this.SetProperty(ref _warningCount, value);
+            }
         }
 
         // not a struct due to https://github.com/qmlnet/qmlnet/issues/135
@@ -310,15 +319,15 @@ class Program
                 _instanceFormat = value;
                 switch (_instanceFormat)
                 {
-                    case ResourceFormat.Xml:
-                        ValidateButtonText = "Validate (xml)";
-                        break;
-                    case ResourceFormat.Json:
-                        ValidateButtonText = "Validate (json)";
-                        break;
-                    case ResourceFormat.Unknown:
-                        ValidateButtonText = "Validate";
-                        break;
+                case ResourceFormat.Xml:
+                    ValidateButtonText = "Validate (xml)";
+                    break;
+                case ResourceFormat.Json:
+                    ValidateButtonText = "Validate (json)";
+                    break;
+                case ResourceFormat.Unknown:
+                    ValidateButtonText = "Validate";
+                    break;
                 }
             }
         }
@@ -338,7 +347,9 @@ class Program
                 convertedIssues.Add(simplifiedIssue);
 
                 var serializationDetails = GetPositionInfo(issue);
-                if (serializationDetails == null) { continue; }
+                if (serializationDetails == null) {
+                    continue;
+                }
 
                 simplifiedIssue.LineNumber = serializationDetails.LineNumber;
                 simplifiedIssue.LinePosition = serializationDetails.LinePosition;
@@ -351,9 +362,13 @@ class Program
         {
             IPositionInfo serializationDetails;
 
-            if (!issue.Location.Any()) { return null; }
+            if (!issue.Location.Any()) {
+                return null;
+            }
             var location = SanitizeLocation(issue.Location.First());
-            if (location == null) { return null; }
+            if (location == null) {
+                return null;
+            }
 
             List<ITypedElement> elementWithError = null;
             try
@@ -365,20 +380,22 @@ class Program
                 // if the FHIRPath is invalid, don't return position info for it
             }
 
-            if (elementWithError == null || !elementWithError.Any()) { return null; }
+            if (elementWithError == null || !elementWithError.Any()) {
+                return null;
+            }
 
             switch (InstanceFormat)
             {
-                case ResourceFormat.Json:
-                    serializationDetails = elementWithError.First().GetJsonSerializationDetails();
-                    break;
-                case ResourceFormat.Xml:
-                    serializationDetails = elementWithError.First().GetXmlSerializationDetails();
-                    break;
-                case ResourceFormat.Unknown:
-                    return null;
-                default:
-                    return null;
+            case ResourceFormat.Json:
+                serializationDetails = elementWithError.First().GetJsonSerializationDetails();
+                break;
+            case ResourceFormat.Xml:
+                serializationDetails = elementWithError.First().GetXmlSerializationDetails();
+                break;
+            case ResourceFormat.Unknown:
+                return null;
+            default:
+                return null;
             }
 
             return serializationDetails;
@@ -401,7 +418,9 @@ class Program
             }
 
             var matches = ExtractLocation(rawLocation);
-            if (!matches.Any()) { return null; }
+            if (!matches.Any()) {
+                return null;
+            }
             var location = matches.First().Groups[0].ToString().Trim();
             return location;
         }
@@ -423,9 +442,9 @@ class Program
 
             var filePath = text;
             filePath = filePath.RemovePrefix(RuntimeInformation
-              .IsOSPlatform(OSPlatform.Windows) ? "file:///" : "file://");
+                                             .IsOSPlatform(OSPlatform.Windows) ? "file:///" : "file://");
             filePath = filePath.Replace("\r", "", StringComparison.InvariantCulture)
-              .Replace("\n", "", StringComparison.InvariantCulture);
+                       .Replace("\n", "", StringComparison.InvariantCulture);
             filePath = Uri.UnescapeDataString(filePath);
             Console.WriteLine($"Loading '{filePath}'...");
 
@@ -455,9 +474,9 @@ class Program
 
             var filePath = text;
             filePath = filePath.RemovePrefix(RuntimeInformation
-              .IsOSPlatform(OSPlatform.Windows) ? "file:///" : "file://");
+                                             .IsOSPlatform(OSPlatform.Windows) ? "file:///" : "file://");
             filePath = filePath.Replace("\r", "", StringComparison.InvariantCulture)
-              .Replace("\n", "", StringComparison.InvariantCulture);
+                       .Replace("\n", "", StringComparison.InvariantCulture);
             filePath = Uri.UnescapeDataString(filePath);
             ScopeDirectory = filePath;
         }
@@ -486,35 +505,35 @@ class Program
         public void CopyValidationReportCsv()
         {
             using (var writer = new StringWriter())
-            using (var csv = new CsvWriter(writer))
-            {
-                // write fields out manually since we need to add the engine type column
-                csv.WriteField("Severity");
-                csv.WriteField("Text");
-                csv.WriteField("Location");
-                csv.WriteField("Validator engine");
-                csv.NextRecord();
-
-                foreach (var issue in DotnetIssues)
+                using (var csv = new CsvWriter(writer))
                 {
-                    csv.WriteField(issue.Severity);
-                    csv.WriteField(issue.Text);
-                    csv.WriteField(issue.Location);
-                    csv.WriteField(".NET");
+                    // write fields out manually since we need to add the engine type column
+                    csv.WriteField("Severity");
+                    csv.WriteField("Text");
+                    csv.WriteField("Location");
+                    csv.WriteField("Validator engine");
                     csv.NextRecord();
-                }
 
-                foreach (var issue in JavaIssues)
-                {
-                    csv.WriteField(issue.Severity);
-                    csv.WriteField(issue.Text);
-                    csv.WriteField(issue.Location);
-                    csv.WriteField("Java");
-                    csv.NextRecord();
-                }
+                    foreach (var issue in DotnetIssues)
+                    {
+                        csv.WriteField(issue.Severity);
+                        csv.WriteField(issue.Text);
+                        csv.WriteField(issue.Location);
+                        csv.WriteField(".NET");
+                        csv.NextRecord();
+                    }
 
-                Clipboard.SetText(writer.ToString());
-            }
+                    foreach (var issue in JavaIssues)
+                    {
+                        csv.WriteField(issue.Severity);
+                        csv.WriteField(issue.Text);
+                        csv.WriteField(issue.Location);
+                        csv.WriteField("Java");
+                        csv.NextRecord();
+                    }
+
+                    Clipboard.SetText(writer.ToString());
+                }
         }
 
         public void CopyValidationReportMarkdown()
@@ -529,8 +548,8 @@ class Program
                         Severity = issue.Severity,
                         Text = issue.Text,
                         Location = (issue.LineNumber == 0 && issue.LinePosition == 0) ?
-                        "" :
-                        $"{issue.Location} (line {issue.LineNumber}:{issue.LinePosition})"
+                                   "" :
+                                   $"{issue.Location} (line {issue.LineNumber}:{issue.LinePosition})"
                     });
                 }
 
@@ -592,12 +611,12 @@ class Program
                 if (InstanceFormat == ResourceFormat.Xml)
                 {
                     _parsedResource = FhirXmlNode.Parse(ResourceText, new FhirXmlParsingSettings { PermissiveParsing = true })
-                      .ToTypedElement(summaryProvider);
+                                      .ToTypedElement(summaryProvider);
                 }
                 else if (InstanceFormat == ResourceFormat.Json)
                 {
                     _parsedResource = FhirJsonNode.Parse(ResourceText, settings: new FhirJsonParsingSettings { AllowJsonComments = true })
-                      .ToTypedElement(summaryProvider);
+                                      .ToTypedElement(summaryProvider);
                 }
                 else
                 {
@@ -667,7 +686,7 @@ class Program
             var resourcePath = SerializeResource(ResourceText, InstanceFormat);
 
             var validatorPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location),
-              "org.hl7.fhir.validator.jar");
+                                             "org.hl7.fhir.validator.jar");
             var scopeArgument = string.IsNullOrEmpty(ScopeDirectory) ? "" : $" -ig \"{ScopeDirectory}\"";
             var outputJson = $"{Path.GetTempFileName()}.json";
             var finalArguments = $"-jar {validatorPath} -version 3.0 -tx \"{TerminologyService}\"{scopeArgument} -output {outputJson} {resourcePath}";
@@ -849,10 +868,16 @@ class Program
         public class CLIOptions
         {
             [Option('s', "scopedir", Required = false, HelpText = "Set the scope directory")]
-            public string ScopeDir { get; set; }
+            public string ScopeDir {
+                get;
+                set;
+            }
 
             [Value(0, MetaName = "resource_file", HelpText = "The resource file to validate")]
-            public string ResourceFile { get; set; }
+            public string ResourceFile {
+                get;
+                set;
+            }
         }
 
         /// <summary>
