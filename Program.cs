@@ -562,7 +562,7 @@ class Program
             {
                 report += $@"**.NET Validator**
 
-{ConvertToMarkdown(DotnetResult.Issues).ToMarkdownTable()}
+{ConvertToMarkdown(DotnetIssues).ToMarkdownTable()}
 
 ";
             }
@@ -571,7 +571,7 @@ class Program
             {
                 report += $@"** Java Validator**
 
-{ConvertToMarkdown(JavaResult.Issues).ToMarkdownTable()}
+{ConvertToMarkdown(JavaIssues).ToMarkdownTable()}
 
 ";
             }
