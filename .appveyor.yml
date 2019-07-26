@@ -5,8 +5,6 @@ clone_depth: 1
 
 install:
 - pwsh: >-
-    # To obtain this URL: go to https://dotnet.microsoft.com/download/dotnet-core/3.0,
-    # select download Windows binaries, then retrieve the zip from the following page
     $urlCurrent = "https://download.visualstudio.microsoft.com/download/pr/41e4c58f-3ac9-43f6-84b6-f57d2135331a/3691b61f15f1f5f844d687e542c4dc72/dotnet-sdk-3.0.100-preview7-012821-win-x64.zip"
 
     $env:DOTNET_INSTALL_DIR = "$env:LocalAppData\.dotnetsdk"
