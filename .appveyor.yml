@@ -2,9 +2,10 @@ version: 1.0.{build}
 image: Visual Studio 2017
 configuration: Release
 clone_depth: 1
+
 install:
 - pwsh: >-
-    $urlCurrent = "https://download.visualstudio.microsoft.com/download/pr/4e73514f-0646-4600-bdc2-38c90fc207b6/22ad70cbe1a254177e6d7b7f7e7425f8/dotnet-sdk-3.0.100-preview6-012264-win-x64.zip"
+    $urlCurrent = "https://download.visualstudio.microsoft.com/download/pr/41e4c58f-3ac9-43f6-84b6-f57d2135331a/3691b61f15f1f5f844d687e542c4dc72/dotnet-sdk-3.0.100-preview7-012821-win-x64.zip"
 
     $env:DOTNET_INSTALL_DIR = "$env:LocalAppData\.dotnetsdk"
 
@@ -17,6 +18,7 @@ install:
     Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory($tempFileCurrent, $env:DOTNET_INSTALL_DIR)
 
     $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
+
 cache:
   - '%LocalAppData%\NuGet\v3-cache'
   - '%USERPROFILE%\.m2'
