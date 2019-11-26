@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -24,6 +23,9 @@ using Qml.Net.Runtimes;
 using Hl7.FhirPath;
 using TextCopy;
 using Task = System.Threading.Tasks.Task;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
 
 class Program
 {
@@ -207,6 +209,12 @@ class Program
             set => this.SetProperty(ref _dotnetResult, value);
         }
         #endregion
+
+        private readonly string repo_org = "Mudlet";
+        // private readonly string repo_org = "health-validator";
+
+        private readonly string repo_name = "Mudlet";
+        // private readonly string repo_name = "Hammer";
 
         private ITypedElement _parsedResource;
 
@@ -852,6 +860,68 @@ class Program
             ValidatingDotnet = false;
             ValidatingJava = false;
         }
+
+        public async void CheckForUpdates()
+        {
+            var currentVersion = Assembly.GetEntryAssembly().GetName().Version;
+            Debug.WriteLine($"Currently running Hammer v{currentVersion}. Checking for updates...");
+
+            string tags = await GetRepoTags();
+            if (String.IsNullOrEmpty(tags)) {
+                return;
+            }
+
+            var latestVersion = GetLatestVersion(tags);
+
+            if (latestVersion == null) {
+                return;
+            }
+
+            if (latestVersion > currentVersion)
+            {
+                Console.WriteLine($"Newer version available: {latestVersion}");
+            } else {
+                Console.WriteLine($"No newer version available; latest released on Github is {latestVersion}.");
+            }
+        }
+
+        public Version GetLatestVersion(string repoTagsRaw)
+        {
+            var repoTags = JArray.Parse(repoTagsRaw);
+            var latestRelease = repoTags.First();
+
+            // string latestReleaseVersion = latestRelease.First(key => key == "name");
+            string latestReleaseVersion = "0.0.2";
+
+            Version latestVersion;
+            if (!Version.TryParse(latestReleaseVersion, out latestVersion)) {
+                Console.WriteLine($"Couldn't parse latest downloaded version '{latestReleaseVersion}' into structured data.");
+            }
+            return latestVersion;
+        }
+
+        public async Task<string> GetRepoTags()
+        {
+            var client = new HttpClient();
+            string url = $"https://api.github.com/repos/{repo_org}/{repo_name}/tags";
+
+            using (var requestMessage =
+            new HttpRequestMessage(HttpMethod.Get, url))
+            {
+                requestMessage.Headers.Add("User-Agent", $"{repo_org}/{repo_name}");
+                HttpResponseMessage response;
+                try {
+                    response = await client.SendAsync(requestMessage);
+                } catch (Exception exception) {
+                    Console.WriteLine($"Failed to download latest Hammer release tags: {exception.Message}");
+                    return null;
+                }
+
+                string content = await response.Content.ReadAsStringAsync();
+                return content;
+            }
+
+        }
     }
 
     /// <summary>
@@ -958,6 +1028,8 @@ class Program
                 // Once the GUI is loaded, we can start working with the AppModel
                 // instance.
                 cliParser.Process();
+
+                AppModel.Instance.CheckForUpdates();
 
                 return app.Exec();
             }
