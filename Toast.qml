@@ -60,6 +60,7 @@ Rectangle {
     Text {
         id: message
         color: "white"
+        linkColor: "lightblue"
         wrapMode: Text.Wrap
         horizontalAlignment: Text.AlignHCenter
         anchors {
@@ -68,6 +69,8 @@ Rectangle {
             right: parent.right
             margins: margin / 2
         }
+
+        onLinkActivated: Qt.openUrlExternally(link)
     }
 
     SequentialAnimation on opacity {
