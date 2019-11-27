@@ -417,7 +417,7 @@ class Program
 
         private static MatchCollection ExtractReleaseVersion(string rawVersion)
         {
-            const string pattern = @"Mudlet-(.+)$";
+            const string pattern = @"Hammer-(.+)$";
             return Regex.Matches(rawVersion, pattern);
         }
 
