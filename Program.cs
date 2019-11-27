@@ -211,7 +211,6 @@ class Program
         }
         #endregion
 
-
         private readonly string RepoOrg = "health-validator";
 
         private readonly string RepoName = "Hammer";
@@ -941,7 +940,6 @@ class Program
                 string content = await response.Content.ReadAsStringAsync();
                 return content;
             }
-
         }
     }
 
