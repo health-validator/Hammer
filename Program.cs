@@ -922,23 +922,25 @@ class Program
 
         public async Task<string> GetRepoTags()
         {
-            var client = new HttpClient();
-            string url = $"https://api.github.com/repos/{RepoOrg}/{RepoName}/tags";
-
-            using (var requestMessage =
-            new HttpRequestMessage(HttpMethod.Get, url))
+            using (var client = new HttpClient())
             {
-                requestMessage.Headers.Add("User-Agent", $"{RepoOrg}/{RepoName}");
-                HttpResponseMessage response;
-                try {
-                    response = await client.SendAsync(requestMessage);
-                } catch (Exception exception) {
-                    Console.WriteLine($"Failed to download latest Hammer release tags: {exception.Message}");
-                    return null;
-                }
+                string url = $"https://api.github.com/repos/{RepoOrg}/{RepoName}/tags";
 
-                string content = await response.Content.ReadAsStringAsync();
-                return content;
+                using (var requestMessage =
+                new HttpRequestMessage(HttpMethod.Get, url))
+                {
+                    requestMessage.Headers.Add("User-Agent", $"{RepoOrg}/{RepoName}");
+                    HttpResponseMessage response;
+                    try {
+                        response = await client.SendAsync(requestMessage);
+                    } catch (Exception exception) {
+                        Console.WriteLine($"Failed to download latest Hammer release tags: {exception.Message}");
+                        return null;
+                    }
+
+                    string content = await response.Content.ReadAsStringAsync();
+                    return content;
+                }
             }
         }
     }
