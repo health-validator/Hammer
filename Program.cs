@@ -30,6 +30,7 @@ using Newtonsoft.Json.Linq;
 class Program
 {
     [Signal("validationStarted")]
+    [Signal("updateAvailable", NetVariantType.String)]
     public class AppModel : IDisposable
     {
         private static AppModel _instance;
@@ -210,11 +211,10 @@ class Program
         }
         #endregion
 
-        private readonly string repo_org = "Mudlet";
-        // private readonly string repo_org = "health-validator";
 
-        private readonly string repo_name = "Mudlet";
-        // private readonly string repo_name = "Hammer";
+        private readonly string RepoOrg = "health-validator";
+
+        private readonly string RepoName = "Hammer";
 
         private ITypedElement _parsedResource;
 
@@ -413,6 +413,12 @@ class Program
         {
             const string pattern = @"([^\(]+)";
             return Regex.Matches(rawLocation, pattern);
+        }
+
+        private static MatchCollection ExtractReleaseVersion(string rawVersion)
+        {
+            const string pattern = @"Mudlet-(.+)$";
+            return Regex.Matches(rawVersion, pattern);
         }
 
         ///<summary>Trims Java FHIRpath of its position information, which isn't always correct
@@ -880,6 +886,7 @@ class Program
             if (latestVersion > currentVersion)
             {
                 Console.WriteLine($"Newer version available: {latestVersion}");
+                this.ActivateSignal("updateAvailable", latestVersion.ToString());
             } else {
                 Console.WriteLine($"No newer version available; latest released on Github is {latestVersion}.");
             }
@@ -888,10 +895,24 @@ class Program
         public Version GetLatestVersion(string repoTagsRaw)
         {
             var repoTags = JArray.Parse(repoTagsRaw);
+
+            if (!repoTags.Any()) {
+                Console.WriteLine($"No releases found over at {RepoOrg}/{RepoName}.");
+                return null;
+            }
+
             var latestRelease = repoTags.First();
 
-            // string latestReleaseVersion = latestRelease.First(key => key == "name");
-            string latestReleaseVersion = "0.0.2";
+            var item = latestRelease.Children<JProperty>().FirstOrDefault(p => p.Name == "name");
+            string latestReleaseTag = (string)item.Value;
+
+            var matches = ExtractReleaseVersion(latestReleaseTag);
+            if (!matches.Any())
+            {
+                Console.WriteLine($"Couldn't parse downloaded release tag '{latestReleaseTag}' to extract the version.");
+                return null;
+            }
+            var latestReleaseVersion = matches.First().Groups[1].ToString().Trim();
 
             Version latestVersion;
             if (!Version.TryParse(latestReleaseVersion, out latestVersion)) {
@@ -903,12 +924,12 @@ class Program
         public async Task<string> GetRepoTags()
         {
             var client = new HttpClient();
-            string url = $"https://api.github.com/repos/{repo_org}/{repo_name}/tags";
+            string url = $"https://api.github.com/repos/{RepoOrg}/{RepoName}/tags";
 
             using (var requestMessage =
             new HttpRequestMessage(HttpMethod.Get, url))
             {
-                requestMessage.Headers.Add("User-Agent", $"{repo_org}/{repo_name}");
+                requestMessage.Headers.Add("User-Agent", $"{RepoOrg}/{RepoName}");
                 HttpResponseMessage response;
                 try {
                     response = await client.SendAsync(requestMessage);
