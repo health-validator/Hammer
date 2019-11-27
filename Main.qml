@@ -23,6 +23,11 @@ ApplicationWindow {
 
     AppModel {
         id: appmodel
+
+        onUpdateAvailable: function(newversion) {
+            toast.show(qsTr(`New Hammer ${newversion} available! <a href="https://github.com/health-validator/Hammer/releases">Download update</a>`), 20000)
+        }
+
     }
 
     ToastManager {
