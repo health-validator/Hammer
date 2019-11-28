@@ -9,7 +9,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "enable-qml",
-      "program": "${workspaceFolder}/bin/Debug/netcoreapp2/Hammer.dll",
+      "program": "${workspaceFolder}/bin/Debug/netcoreapp2.2/Hammer.dll",
       "args": [],
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,

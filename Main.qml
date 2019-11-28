@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import appmodel 1.0
+// import appmodel 1.0
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
@@ -23,6 +23,11 @@ ApplicationWindow {
 
     AppModel {
         id: appmodel
+
+        onUpdateAvailable: function(newversion) {
+            toast.show(qsTr(`New Hammer ${newversion} available! <a href="https://github.com/health-validator/Hammer/releases">Download update</a>`), 20000)
+        }
+
     }
 
     ToastManager {
@@ -453,7 +458,7 @@ ApplicationWindow {
         property bool isWindowMaximized: false
         function updateWindowMaximized() {
             // Check only for maximized/windowed, ignore the minimalized state or hidden state on shutdown
-            if (window.visibility == Window.Maximized) { 
+            if (window.visibility == Window.Maximized) {
                 isWindowMaximized = true
             } else if (window.visibility == Window.Windowed) {
                 isWindowMaximized = false

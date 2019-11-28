@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <PackageId>Hammer.Validator</PackageId>
     <IsPackable>false</IsPackable>
-    <PackageVersion>0.0.1</PackageVersion>
+    <Version>0.0.1</Version>
     <Authors>Vadim Peretokin</Authors>
     <Description>A modern, cross-platform validator for FHIR®.</Description>
     <PackageProjectUrl>https://github.com/health-validator/Hammer</PackageProjectUrl>
