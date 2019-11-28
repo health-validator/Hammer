@@ -927,7 +927,7 @@ class Program
                 string url = $"https://api.github.com/repos/{RepoOrg}/{RepoName}/tags";
 
                 using (var requestMessage =
-                new HttpRequestMessage(HttpMethod.Get, url))
+                            new HttpRequestMessage(HttpMethod.Get, url))
                 {
                     requestMessage.Headers.Add("User-Agent", $"{RepoOrg}/{RepoName}");
                     HttpResponseMessage response;
