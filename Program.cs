@@ -876,7 +876,7 @@ class Program
                 return;
             }
 
-            var latestVersion = GetLatestVersion(tags);
+            var latestVersion = ExtractLatestVersion(tags);
 
             if (latestVersion == null) {
                 return;
@@ -891,7 +891,7 @@ class Program
             }
         }
 
-        public Version GetLatestVersion(string repoTagsRaw)
+        public Version ExtractLatestVersion(string repoTagsRaw)
         {
             var repoTags = JArray.Parse(repoTagsRaw);
 
