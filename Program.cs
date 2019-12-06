@@ -69,6 +69,14 @@ class Program
             set => this.SetProperty(ref _validateButtonText, value);
         }
 
+        private string _applicationVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
+        [NotifySignal]
+        public string ApplicationVersion
+        {
+            get => _applicationVersion;
+            set => this.SetProperty(ref _applicationVersion, value);
+        }
+
         private string _scopeDirectory;
         [NotifySignal]
         public string ScopeDirectory
@@ -868,8 +876,7 @@ class Program
 
         public async void CheckForUpdates()
         {
-            var currentVersion = Assembly.GetEntryAssembly().GetName().Version;
-            Debug.WriteLine($"Currently running Hammer v{currentVersion}. Checking for updates...");
+            Debug.WriteLine($"Currently running Hammer v{ApplicationVersion}. Checking for updates...");
 
             string tags = await GetRepoTags();
             if (String.IsNullOrEmpty(tags)) {
@@ -882,6 +889,7 @@ class Program
                 return;
             }
 
+            Version currentVersion = Version.Parse(ApplicationVersion);
             if (latestVersion > currentVersion)
             {
                 Console.WriteLine($"Newer version available: {latestVersion}");
