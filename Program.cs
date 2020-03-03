@@ -616,7 +616,7 @@ class Program
                     GenerateSnapshot = true,
                     EnableXsdValidation = true,
                     Trace = false,
-                    ResolveExteralReferences = true,
+                    ResolveExternalReferences = true,
                     TerminologyService = combinedTerminology
                 };
 
@@ -669,7 +669,7 @@ class Program
             }
         }
 
-        private string SerializeResource(string resourceText, ResourceFormat instanceFormat)
+        private static string SerializeResource(string resourceText, ResourceFormat instanceFormat)
         {
             var fileName = $"{Path.GetTempFileName()}.{(instanceFormat == ResourceFormat.Json ? "json" : "xml")}";
             File.WriteAllText(fileName, resourceText);
@@ -679,7 +679,7 @@ class Program
 
         // in case the Java validator crashes (which it can if it doesn't like something)
         // it won't produce an OperationOutcome for us. Take what we've got and make one ourselves
-        private OperationOutcome ConvertJavaStdout(string output)
+        private static OperationOutcome ConvertJavaStdout(string output)
         {
             var result = new OperationOutcome();
             using (var reader = new StringReader(output))
