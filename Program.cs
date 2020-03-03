@@ -26,6 +26,7 @@ using Task = System.Threading.Tasks.Task;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 class Program
 {
@@ -526,7 +527,7 @@ class Program
         public void CopyValidationReportCsv()
         {
             using (var writer = new StringWriter())
-                using (var csv = new CsvWriter(writer))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {
                     // write fields out manually since we need to add the engine type column
                     csv.WriteField("Severity");
