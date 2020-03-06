@@ -44,7 +44,7 @@ ColumnLayout {
             property int rightMargin: 15
 
             visible: {
-                if (modelData.severity === "error") {
+                if (modelData.severity === "error" || modelData.severity === "fatal") {
                     return true
                 } else if (modelData.severity === "warning" && showWarnings) {
                     return true
@@ -63,11 +63,13 @@ ColumnLayout {
 
                 gradient: Gradient {
                     GradientStop { position: 0.0
-                        color: modelData.severity === "error" ? "#c31432" :
+                        color: (modelData.severity === "error" || modelData.severity === "fatal")
+                                ? "#c31432" :
                                 modelData.severity === "warning" ? "#fe8c00" : "#007ec6"
                     }
                     GradientStop { position: 1.0
-                        color: modelData.severity === "error" ? "#240b36" :
+                        color: (modelData.severity === "error" || modelData.severity === "fatal")
+                                ? "#240b36" :
                                 modelData.severity === "warning" ? "#f83600" : "#007ec6"
                     }
                 }
