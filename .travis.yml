@@ -1,7 +1,7 @@
 language: csharp
 dist: xenial
 mono: none
-dotnet: 2.2
+dotnet: 3.1
 
 addons:
   apt:
@@ -24,7 +24,7 @@ script:
  - dotnet publish --configuration Release
 
 after_success:
- - cd bin/Release/netcoreapp2.2
+ - cd bin/Release/netcoreapp3.0
  - mv publish Hammer
  - tree .
  - mv Hammer/assets/run-hammer.sh Hammer/run-hammer.sh
@@ -40,7 +40,7 @@ deploy:
   provider: pages
   repo: health-validator/latest
   target_branch: master
-  local_dir: bin/Release/netcoreapp2.2/deploy
+  local_dir: bin/Release/netcoreapp3.0/deploy
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   keep_history: false
