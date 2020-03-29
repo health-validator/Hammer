@@ -21,26 +21,23 @@ install:
  - sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
 
 script:
- - dotnet publish --configuration Release
+ - dotnet publish --configuration Release --runtime linux-x64
+ - dotnet publish --configuration Release --runtime osx-x64
 
 after_success:
  - cd bin/Release/netcoreapp3.0
- - mv publish Hammer
  - tree .
- - mv Hammer/assets/run-hammer.sh Hammer/run-hammer.sh
- - mv Hammer/assets/run-hammer.bat Hammer/run-hammer.bat
- - rm -rf Hammer/assets
- - zip -r Hammer.zip Hammer
- - mkdir deploy/
- - cp Hammer.zip deploy/
- - DEPLOY_URL=$(curl --upload-file ./Hammer.zip https://transfer.sh/Hammer.zip)
- - echo -e "Zip is available for download at $DEPLOY_URL"
+ - zip -r Hammer-linux.zip linux-x64
+ - zip -r Hammer-osx.zip osx-x64
+ - rm -rf linux-x64/ osx-x64/
+ - DEPLOY_URL=$(curl --upload-file ./Hammer-linux.zip https://transfer.sh/Hammer-linux.zip)
+ - echo -e "Linux zip is available for download at $DEPLOY_URL"
 
 deploy:
   provider: pages
   repo: health-validator/latest
   target_branch: master
-  local_dir: bin/Release/netcoreapp3.0/deploy
+  local_dir: bin/Release/netcoreapp3.0
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   keep_history: false
