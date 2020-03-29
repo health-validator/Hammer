@@ -526,36 +526,36 @@ class Program
 
         public void CopyValidationReportCsv()
         {
-            using (var writer = new StringWriter())
-                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-                {
-                    // write fields out manually since we need to add the engine type column
-                    csv.WriteField("Severity");
-                    csv.WriteField("Text");
-                    csv.WriteField("Location");
-                    csv.WriteField("Validator engine");
-                    csv.NextRecord();
+            using var writer = new StringWriter();
+            using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
 
-                    foreach (var issue in DotnetIssues)
-                    {
-                        csv.WriteField(issue.Severity);
-                        csv.WriteField(issue.Text);
-                        csv.WriteField(issue.Location);
-                        csv.WriteField(".NET");
-                        csv.NextRecord();
-                    }
+             // write fields out manually since we need to add the engine type column
+            csv.WriteField("Severity");
+            csv.WriteField("Text");
+            csv.WriteField("Location");
+            csv.WriteField("Validator engine");
+            csv.NextRecord();
 
-                    foreach (var issue in JavaIssues)
-                    {
-                        csv.WriteField(issue.Severity);
-                        csv.WriteField(issue.Text);
-                        csv.WriteField(issue.Location);
-                        csv.WriteField("Java");
-                        csv.NextRecord();
-                    }
+            foreach (var issue in DotnetIssues)
+            {
+                csv.WriteField(issue.Severity);
+                csv.WriteField(issue.Text);
+                csv.WriteField(issue.Location);
+                csv.WriteField(".NET");
+                csv.NextRecord();
+            }
 
-                    Clipboard.SetText(writer.ToString());
-                }
+            foreach (var issue in JavaIssues)
+            {
+                csv.WriteField(issue.Severity);
+                csv.WriteField(issue.Text);
+                csv.WriteField(issue.Location);
+                csv.WriteField("Java");
+                csv.NextRecord();
+            }
+
+            Clipboard.SetText(writer.ToString());
+
         }
 
         public void CopyValidationReportMarkdown()
@@ -683,20 +683,19 @@ class Program
         private static OperationOutcome ConvertJavaStdout(string output)
         {
             var result = new OperationOutcome();
-            using (var reader = new StringReader(output))
+            using var reader = new StringReader(output);
+
+            for (var line = reader.ReadLine(); line != null; line = reader.ReadLine())
             {
-                for (var line = reader.ReadLine(); line != null; line = reader.ReadLine())
+                result.Issue.Add(new OperationOutcome.IssueComponent
                 {
-                    result.Issue.Add(new OperationOutcome.IssueComponent
+                    Severity = OperationOutcome.IssueSeverity.Error,
+                    Details = new CodeableConcept
                     {
-                        Severity = OperationOutcome.IssueSeverity.Error,
-                        Details = new CodeableConcept
-                        {
-                            Text = line
-                        },
-                        Code = OperationOutcome.IssueType.Processing
-                    });
-                }
+                        Text = line
+                    },
+                    Code = OperationOutcome.IssueType.Processing
+                });
             }
 
             return result;
@@ -719,64 +718,63 @@ class Program
             var sw = new Stopwatch();
             sw.Start();
             string validatorOutput, resultText;
-            using (var validator = new Process())
+            using var validator = new Process();
+
+            _validatorProcesses.Add(validator);
+
+            validator.StartInfo.FileName = "java";
+            validator.StartInfo.Arguments = finalArguments;
+            validator.StartInfo.UseShellExecute = false;
+            validator.StartInfo.RedirectStandardOutput = true;
+            validator.StartInfo.RedirectStandardError = true;
+            validator.StartInfo.CreateNoWindow = true;
+
+            try
             {
-                _validatorProcesses.Add(validator);
-
-                validator.StartInfo.FileName = "java";
-                validator.StartInfo.Arguments = finalArguments;
-                validator.StartInfo.UseShellExecute = false;
-                validator.StartInfo.RedirectStandardOutput = true;
-                validator.StartInfo.RedirectStandardError = true;
-                validator.StartInfo.CreateNoWindow = true;
-
-                try
+                validator.Start();
+                validatorOutput = validator.StandardOutput.ReadToEnd();
+                validatorOutput += validator.StandardError.ReadToEnd();
+                validator.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                result = new OperationOutcome();
+                if (ex.Message == "The system cannot find the file specified")
                 {
-                    validator.Start();
-                    validatorOutput = validator.StandardOutput.ReadToEnd();
-                    validatorOutput += validator.StandardError.ReadToEnd();
-                    validator.WaitForExit();
+                    result.Issue.Add(new OperationOutcome.IssueComponent
+                    {
+                        Severity = OperationOutcome.IssueSeverity.Error,
+                        Diagnostics = "Java could not be found. Is your Java installed and working correctly? See https://www.java.com/en/download/help/version_manual.xml",
+                        Code = OperationOutcome.IssueType.Exception
+                    });
                 }
-                catch (Exception ex)
+                else
                 {
-                    result = new OperationOutcome();
-                    if (ex.Message == "The system cannot find the file specified")
+                    result.Issue.Add(new OperationOutcome.IssueComponent
                     {
-                        result.Issue.Add(new OperationOutcome.IssueComponent
-                        {
-                            Severity = OperationOutcome.IssueSeverity.Error,
-                            Diagnostics = "Java could not be found. Is your Java installed and working correctly? See https://www.java.com/en/download/help/version_manual.xml",
-                            Code = OperationOutcome.IssueType.Exception
-                        });
-                    }
-                    else
-                    {
-                        result.Issue.Add(new OperationOutcome.IssueComponent
-                        {
-                            Severity = OperationOutcome.IssueSeverity.Error,
-                            Diagnostics = ex.Message,
-                            Code = OperationOutcome.IssueType.Exception
-                        });
-                    }
-
-                    sw.Stop();
-                    Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
-                    return result;
+                        Severity = OperationOutcome.IssueSeverity.Error,
+                        Diagnostics = ex.Message,
+                        Code = OperationOutcome.IssueType.Exception
+                    });
                 }
 
                 sw.Stop();
-                _validatorProcesses.Remove(validator);
-                token.ThrowIfCancellationRequested();
                 Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
-
-                if (validator.ExitCode != 0 || !File.Exists(outputJson))
-                {
-                    // JavaValidationCrashed = true;
-                    return ConvertJavaStdout(validatorOutput);
-                }
-
-                resultText = File.ReadAllText(outputJson);
+                return result;
             }
+
+            sw.Stop();
+            _validatorProcesses.Remove(validator);
+            token.ThrowIfCancellationRequested();
+            Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
+
+            if (validator.ExitCode != 0 || !File.Exists(outputJson))
+            {
+                // JavaValidationCrashed = true;
+                return ConvertJavaStdout(validatorOutput);
+            }
+
+            resultText = File.ReadAllText(outputJson);
 
             var parser = new FhirJsonParser();
             try
@@ -931,26 +929,21 @@ class Program
 
         public async Task<string> GetRepoTags()
         {
-            using (var client = new HttpClient())
-            {
-                string url = $"https://api.github.com/repos/{RepoOrg}/{RepoName}/tags";
+            using var client = new HttpClient();
+            string url = $"https://api.github.com/repos/{RepoOrg}/{RepoName}/tags";
 
-                using (var requestMessage =
-                new HttpRequestMessage(HttpMethod.Get, url))
-                {
-                    requestMessage.Headers.Add("User-Agent", $"{RepoOrg}/{RepoName}");
-                    HttpResponseMessage response;
-                    try {
-                        response = await client.SendAsync(requestMessage);
-                    } catch (Exception exception) {
-                        Console.WriteLine($"Failed to download latest Hammer release tags: {exception.Message}");
-                        return null;
-                    }
-
-                    string content = await response.Content.ReadAsStringAsync();
-                    return content;
-                }
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+            requestMessage.Headers.Add("User-Agent", $"{RepoOrg}/{RepoName}");
+            HttpResponseMessage response;
+            try {
+                response = await client.SendAsync(requestMessage);
+            } catch (Exception exception) {
+                Console.WriteLine($"Failed to download latest Hammer release tags: {exception.Message}");
+                return null;
             }
+
+            string content = await response.Content.ReadAsStringAsync();
+            return content;
         }
     }
 
@@ -1034,35 +1027,32 @@ class Program
         QQuickStyle.SetStyle("Universal");
         QCoreApplication.SetAttribute(ApplicationAttribute.EnableHighDpiScaling, true);
 
-        using (var app = new QGuiApplication(args))
+        using var app = new QGuiApplication(args);
+        using var engine = new QQmlApplicationEngine();
+
+        // We first need to register the AppModel type in QML in order to have
+        // an instance that we can work on programmatically.
+        Qml.Net.Qml.RegisterType<AppModel>("appmodel");
+
+        // Now we can check command line options to see if we should bail
+        // out before we start rendering the interface.
+        var cliParser = new CLIParser(args);
+        if (!cliParser.ParsedSuccessfully)
         {
-            using (var engine = new QQmlApplicationEngine())
-            {
-                // We first need to register the AppModel type in QML in order to have
-                // an instance that we can work on programmatically.
-                Qml.Net.Qml.RegisterType<AppModel>("appmodel");
-
-                // Now we can check command line options to see if we should bail
-                // out before we start rendering the interface.
-                var cliParser = new CLIParser(args);
-                if (!cliParser.ParsedSuccessfully)
-                {
-                    return 1;
-                }
-
-                // Now we can load the GUI
-                QCoreApplication.OrganizationDomain = "Hammer.mc";
-                QCoreApplication.OrganizationName = "Hammer";
-                engine.Load("Main.qml");
-
-                // Once the GUI is loaded, we can start working with the AppModel
-                // instance.
-                cliParser.Process();
-
-                AppModel.Instance.CheckForUpdates();
-
-                return app.Exec();
-            }
+            return 1;
         }
+
+        // Now we can load the GUI
+        QCoreApplication.OrganizationDomain = "Hammer.mc";
+        QCoreApplication.OrganizationName = "Hammer";
+        engine.Load("Main.qml");
+
+        // Once the GUI is loaded, we can start working with the AppModel
+        // instance.
+        cliParser.Process();
+
+        AppModel.Instance.CheckForUpdates();
+
+        return app.Exec();
     }
 }
