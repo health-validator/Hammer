@@ -66,7 +66,7 @@ Double-click `Hammer.exe`.
 
 ### macOS and Linux
 
-1. Install [.NET Core 2.2 Runtime](https://dotnet.microsoft.com/download)
+1. Install [.NET Core 3.1 Runtime](https://dotnet.microsoft.com/download)
 1. Launch Hammer: double-click `run-hammer.sh`
 
 ### Validating
