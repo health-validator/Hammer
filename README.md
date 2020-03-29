@@ -57,7 +57,7 @@ Experimental and not ready for production. Try it out and [give feedback](https:
 
 Download: [Windows](https://ci.appveyor.com/api/projects/vadi2/hammer/artifacts/bin/Release/netcoreapp3.0/win-x64/Hammer.zip?branch=master)
 
-Download: [macOS and Linux](https://health-validator.github.io/latest/Hammer.zip)
+Download: [macOS](https://health-validator.github.io/latest/Hammer-osx.zip) | [Linux](https://health-validator.github.io/latest/Hammer-linux.zip)
 
 ## How To Use
 
