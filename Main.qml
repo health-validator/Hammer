@@ -63,158 +63,182 @@ ApplicationWindow {
         }
     }
 
-
     Shortcut {
         sequence: "Ctrl+O"
         onActivated: { addResourcesPage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
     }
 
-    Page {
-        id: addResourcesPage
-        width: window.width
-        height: window.height - buttonsRow.height
-
-        Connections {
-            target: appmodel
-            onValidationStarted: addResourcesPage.state = "VALIDATION_RESULTS"
+    TabBar {
+        id: bar
+        width: parent.width
+        TabButton {
+            text: qsTr("Home")
         }
-
-        ScrollView {
-            id: addResourceScrollView
-            anchors.fill: parent
-            visible: textArea.state === "EXPANDED"
-            clip: true
+        TabButton {
+            text: qsTr("Discover")
         }
-
-        Label {
-            id: hammerLabel
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: 120
-            text: qsTr("🔨 Hammer")
-            font.bold: true
-            opacity: 0.6
-            font.pointSize: 36
-            font.family: "Apple Color Emoji"
-            visible: textArea.state === "MINIMAL"
+        TabButton {
+            text: qsTr("Activity")
         }
+    }
 
-        Row {
-            id: loadResourcesRow
-            y: hammerLabel.y + 80
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 10
+    StackLayout {
+        width: parent.width
+        currentIndex: bar.currentIndex
+        Page {
+            id: addResourcesPage
+            width: window.width
+            height: window.height - buttonsRow.height
 
-            Button {
-                id: loadResourceButton
-                text: qsTr("Choose an instance")
+            Connections {
+                target: appmodel
+                onValidationStarted: addResourcesPage.state = "VALIDATION_RESULTS"
+            }
+
+            ScrollView {
+                id: addResourceScrollView
+                anchors.fill: parent
+                visible: textArea.state === "EXPANDED"
+                clip: true
+            }
+
+            Label {
+                id: hammerLabel
+                anchors.horizontalCenter: parent.horizontalCenter
+                y: 120
+                text: qsTr("🔨 Hammer")
+                font.bold: true
+                opacity: 0.6
+                font.pointSize: 36
+                font.family: "Apple Color Emoji"
                 visible: textArea.state === "MINIMAL"
-                onClicked: resourcePicker.open()
+            }
 
-                FileDialog {
-                    id: resourcePicker
-                    title: "Select a FHIR resource to validate"
-                    folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
-                    onAccepted: appmodel.loadResourceFile(resourcePicker.file)
+            Row {
+                id: loadResourcesRow
+                y: hammerLabel.y + 80
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 10
+
+                Button {
+                    id: loadResourceButton
+                    text: qsTr("Choose an instance")
+                    visible: textArea.state === "MINIMAL"
+                    onClicked: resourcePicker.open()
+
+                    FileDialog {
+                        id: resourcePicker
+                        title: "Select a FHIR resource to validate"
+                        folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
+                        onAccepted: appmodel.loadResourceFile(resourcePicker.file)
+                    }
+
+                    ToolTip.text: qsTr("Ctrl+O (open), Ctrl+D (validate)")
+                    ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
                 }
 
-                ToolTip.text: qsTr("Ctrl+O (open), Ctrl+D (validate)")
-                ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
-            }
+                InstanceEditor {
+                    id: textArea
+                    instancePlaceholder: qsTr("or load it here")
+                    instanceText: appmodel.resourceText
+                    // ensure the tooltip isn't monospace, only the text
+                    fontName: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
 
-            InstanceEditor {
-                id: textArea
-                instancePlaceholder: qsTr("or load it here")
-                instanceText: appmodel.resourceText
-                // ensure the tooltip isn't monospace, only the text
-                fontName: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
+                    anchors.top: loadResourceButton.top
+                    anchors.bottom: loadResourceButton.bottom
 
-                anchors.top: loadResourceButton.top
-                anchors.bottom: loadResourceButton.bottom
+                    onParentChanged: textArea.forceActiveFocus()
 
-                onParentChanged: textArea.forceActiveFocus()
-
-                states: [
-                    State {
-                        name: "MINIMAL"; when: !appmodel.resourceText
-                        ParentChange {
-                            target: textArea
-                            parent: loadResourcesRow
-                            width: 300
-                            height: undefined
+                    states: [
+                        State {
+                            name: "MINIMAL"; when: !appmodel.resourceText
+                            ParentChange {
+                                target: textArea
+                                parent: loadResourcesRow
+                                width: 300
+                                height: undefined
+                            }
+                        },
+                        State {
+                            name: "EXPANDED"; when: appmodel.resourceText
+                            ParentChange {
+                                target: textArea
+                                parent: addResourceScrollView
+                                x: 0; y: 0
+                                width: addResourcesPage.width
+                                height: addResourcesPage.height
+                            }
                         }
-                    },
-                    State {
-                        name: "EXPANDED"; when: appmodel.resourceText
-                        ParentChange {
-                            target: textArea
-                            parent: addResourceScrollView
-                            x: 0; y: 0
-                            width: addResourcesPage.width
-                            height: addResourcesPage.height
-                        }
-                    }
-                ]
-                state: "MINIMAL"
+                    ]
+                    state: "MINIMAL"
 
-                transitions: Transition {
-                    ParentAnimation {
-                        NumberAnimation { properties: "x,y,width,height"; easing.type: Easing.InCubic; duration: 600 }
+                    transitions: Transition {
+                        ParentAnimation {
+                            NumberAnimation { properties: "x,y,width,height"; easing.type: Easing.InCubic; duration: 600 }
+                        }
                     }
                 }
+
             }
 
+            Text {
+                id: experimentalText
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                text: qsTr("Experimental")
+                enabled: false
+                z: 0
+                rotation: -45
+                opacity: 0.1
+                font.pixelSize: 96
+            }
+
+            states: [
+                State {
+                    name: "ENTERING_RESOURCE"
+                    PropertyChanges { target: addResourcesPage; x: 0 }
+                    PropertyChanges { target: resultsPane; x: resultsPane.width }
+                    PropertyChanges { target: settingsPane; y: window.height }
+                    PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
+                },
+                State {
+                    name: "VALIDATION_RESULTS"
+                    PropertyChanges { target: addResourcesPage; x: addResourcesPage.width * -1 }
+                    PropertyChanges { target: resultsPane; x: 0 }
+                    PropertyChanges { target: settingsPane; y: window.height }
+                    PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
+                },
+                State {
+                    name: "EDITING_SETTINGS"
+                    PropertyChanges { target: settingsPane; y: 0 }
+                    PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
+                }
+            ]
+            state: "ENTERING_RESOURCE"
+
+            transitions: [
+                Transition {
+                    from: "*"; to: "VALIDATION_RESULTS"
+                    NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
+                },
+                Transition {
+                    from: "*"; to: "ENTERING_RESOURCE"
+                    NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
+                    NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
+                },
+                Transition {
+                    from: "*"; to: "EDITING_SETTINGS"
+                    NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
+                }
+            ]
         }
 
-        Text {
-            id: experimentalText
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            text: qsTr("Experimental")
-            enabled: false
-            z: 0
-            rotation: -45
-            opacity: 0.1
-            font.pixelSize: 96
+        Item {
+            id: discoverTab
         }
-
-        states: [
-            State {
-                name: "ENTERING_RESOURCE"
-                PropertyChanges { target: addResourcesPage; x: 0 }
-                PropertyChanges { target: resultsPane; x: resultsPane.width }
-                PropertyChanges { target: settingsPane; y: window.height }
-                PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
-            },
-            State {
-                name: "VALIDATION_RESULTS"
-                PropertyChanges { target: addResourcesPage; x: addResourcesPage.width * -1 }
-                PropertyChanges { target: resultsPane; x: 0 }
-                PropertyChanges { target: settingsPane; y: window.height }
-                PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
-            },
-            State {
-                name: "EDITING_SETTINGS"
-                PropertyChanges { target: settingsPane; y: 0 }
-                PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
-            }
-        ]
-        state: "ENTERING_RESOURCE"
-
-        transitions: [
-            Transition {
-                from: "*"; to: "VALIDATION_RESULTS"
-                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
-            },
-            Transition {
-                from: "*"; to: "ENTERING_RESOURCE"
-                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
-                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
-            },
-            Transition {
-                from: "*"; to: "EDITING_SETTINGS"
-                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
-            }
-        ]
+        Item {
+            id: activityTab
+        }
     }
 
     RowLayout {
