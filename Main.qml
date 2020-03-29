@@ -83,12 +83,16 @@ ApplicationWindow {
     }
 
     StackLayout {
-        width: parent.width
         currentIndex: bar.currentIndex
+        id: addResourcesParent
+        width: parent.width
+        height: parent.height - buttonsRow.height - bar.height
+        anchors.top: bar.bottom
+
         Page {
             id: addResourcesPage
-            width: window.width
-            height: window.height - buttonsRow.height
+            anchors.fill: parent
+            background: Rectangle { color: "red" }
 
             Connections {
                 target: appmodel
@@ -196,14 +200,14 @@ ApplicationWindow {
             states: [
                 State {
                     name: "ENTERING_RESOURCE"
-                    PropertyChanges { target: addResourcesPage; x: 0 }
+                    PropertyChanges { target: addResourcesParent; x: 0 }
                     PropertyChanges { target: resultsPane; x: resultsPane.width }
                     PropertyChanges { target: settingsPane; y: window.height }
                     PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
                 },
                 State {
                     name: "VALIDATION_RESULTS"
-                    PropertyChanges { target: addResourcesPage; x: addResourcesPage.width * -1 }
+                    PropertyChanges { target: addResourcesParent; x: addResourcesParent.width * -1 }
                     PropertyChanges { target: resultsPane; x: 0 }
                     PropertyChanges { target: settingsPane; y: window.height }
                     PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
@@ -235,9 +239,15 @@ ApplicationWindow {
 
         Item {
             id: discoverTab
+            Rectangle {
+                anchors.fill: parent
+                color: "green" }
         }
         Item {
             id: activityTab
+            Rectangle {
+                anchors.fill: parent
+                color: "blue" }
         }
     }
 
@@ -462,9 +472,9 @@ ApplicationWindow {
 
     SettingsPane {
         id: settingsPane
-        height: addResourcesPage.height
+        height: addResourcesParent.height
         horizontalPadding: 40
-        width: addResourcesPage.width
+        width: addResourcesParent.width
         x: 0
         y: window.height
     }
