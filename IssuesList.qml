@@ -140,7 +140,7 @@ ColumnLayout {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onClicked: if (mouse.button === Qt.RightButton) {
                     var message = modelData.text
-                    if (modelData.lineNumber != 0) {
+                    if (modelData.lineNumber !== 0) {
                         message += qsTr(` (line ${modelData.lineNumber}:${modelData.linePosition})`)
                     }
                     rootComponent.rightClickedOnMessage(message)
