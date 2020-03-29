@@ -27,8 +27,8 @@ script:
 after_success:
  - cd bin/Release/netcoreapp3.0
  - tree .
- - zip -r Hammer-linux.zip linux-x64/publish
- - zip -r Hammer-osx.zip osx-x64/publish
+ - zip -r Hammer-linux.zip linux-x64/publish/*
+ - zip -r Hammer-osx.zip osx-x64/publish/*
  - rm -rf linux-x64/ osx-x64/
  - DEPLOY_URL=$(curl --upload-file ./Hammer-linux.zip https://transfer.sh/Hammer-linux.zip)
  - echo -e "Linux zip is available for download at $DEPLOY_URL"
