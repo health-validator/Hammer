@@ -20,6 +20,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <PublishReadyToRun>true</PublishReadyToRun>
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
   </PropertyGroup>
 
