@@ -19,7 +19,13 @@
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <!-- Travis builds on Linux so OSX runtime optimisation isn't possible -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RuntimeIdentifier)' != 'osx-x64' ">
+    <PublishReadyToRun>true</PublishReadyToRun>
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
   </PropertyGroup>
 
