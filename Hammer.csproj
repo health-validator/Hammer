@@ -23,7 +23,8 @@
     <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <!-- Travis builds on Linux so OSX runtime optimisation isn't possible -->
+  <PropertyGroup Condition=" '$(Platform)' != 'osx' ">
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
   </PropertyGroup>
