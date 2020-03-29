@@ -71,6 +71,8 @@ ApplicationWindow {
     TabBar {
         id: bar
         width: parent.width
+        visible: false
+
         TabButton {
             text: qsTr("Home")
         }
@@ -80,14 +82,15 @@ ApplicationWindow {
         TabButton {
             text: qsTr("Activity")
         }
+
     }
 
     StackLayout {
         currentIndex: bar.currentIndex
         id: addResourcesParent
         width: parent.width
-        height: parent.height - buttonsRow.height - bar.height
-        anchors.top: bar.bottom
+        height: parent.height - buttonsRow.height - (bar.visible? bar.height : 0)
+        anchors.top: bar.visible ? bar.bottom : parent.top
 
         Page {
             id: addResourcesPage
