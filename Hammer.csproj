@@ -47,7 +47,7 @@
     <PackageReference Include="Qml.Net.OSXBinaries" Version="0.10.1" />
     <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.10.1" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="TextCopy" Version="3.0.2" />
+    <PackageReference Include="TextCopy" Version="4.1.0" />
     <PackageReference Include="CommandLineParser" Version="2.7.82" />
     <PackageReference Include="ToMarkdownTable" Version="0.2.1-alpha0003" />
   </ItemGroup>
