@@ -36,6 +36,8 @@ before_build:
         cd %APPVEYOR_BUILD_FOLDER%
 
         java -jar org.hl7.fhir.validator.jar
+        
+        @powershell -Command "ls"
 
         @powershell -Command "get-content Main.qml | %{$_ -replace \"// import appmodel 1.0\", \"import appmodel 1.0\"}"
         
