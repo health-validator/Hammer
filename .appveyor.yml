@@ -24,6 +24,8 @@ cache:
   - '%USERPROFILE%\.m2'
 
 before_build:
+    - ps: (get-content Main.qml) | %{$_ -replace '// import appmodel 1.0', 'import appmodel 1.0'} | set-content Main.qml
+    
     - cmd: >-
         git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
 
@@ -36,8 +38,6 @@ before_build:
         cd %APPVEYOR_BUILD_FOLDER%
 
         java -jar org.hl7.fhir.validator.jar
-
-        @powershell -Command "get-content Main.qml | %{$_ -replace \"// import appmodel 1.0\", \"import appmodel 1.0\"}"
 
 build_script:
 - cmd: >-
