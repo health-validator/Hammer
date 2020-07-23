@@ -38,6 +38,8 @@ before_build:
         java -jar org.hl7.fhir.validator.jar
 
         @powershell -Command "get-content Main.qml | %{$_ -replace \"// import appmodel 1.0\", \"import appmodel 1.0\"}"
+        
+        @powershell -Command "gc -TotalCount 10 Main.qml"
 
 build_script:
 - cmd: >-
