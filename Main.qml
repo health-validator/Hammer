@@ -76,7 +76,10 @@ ApplicationWindow {
 
         Connections {
             target: appmodel
-            onValidationStarted: addResourcesPage.state = "VALIDATION_RESULTS"
+
+            function onValidationStarted() {
+                addResourcesPage.state = "VALIDATION_RESULTS"
+            }
         }
 
         ScrollView {
