@@ -129,7 +129,7 @@ ApplicationWindow {
 
                 Button {
                     id: loadResourceButton
-                    text: qsTr("Choose an instance")
+                    text: qsTr("Choose instance(s)")
                     visible: textArea.state === "MINIMAL"
                     onClicked: resourcePicker.open()
 
