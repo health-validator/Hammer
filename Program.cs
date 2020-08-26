@@ -21,6 +21,7 @@ using Hl7.Fhir.Validation;
 using Hl7.FhirPath;
 using Qml.Net;
 using Qml.Net.Runtimes;
+using Qml.Net.Extensions;
 using TextCopy;
 using Task = System.Threading.Tasks.Task;
 using System.Globalization;
@@ -421,7 +422,10 @@ class Program {
             return location;
         }
 
-        public bool LoadResourceFile (string text) {
+        public bool LoadResourceFile (INetJsValue rawFiles) {
+            List<string> files = rawFiles.AsList<string>();
+
+            var text = "blah";
             if (text == null) {
                 Console.Error.WriteLine ("LoadResourceFile: no text passed");
                 return false;
@@ -588,7 +592,7 @@ class Program {
                     _parsedResource = FhirJsonNode.Parse (ResourceText, settings : new FhirJsonParsingSettings { AllowJsonComments = true })
                         .ToTypedElement (summaryProvider);
                 } else {
-                    throw new Exception ("This resource format isn't recognised");
+                    throw new Exception ("This resource format isn't recognized");
                 }
 
                 result = validator.Validate (_parsedResource);
@@ -901,9 +905,11 @@ class Program {
                 }
                 if (result.ResourceFile != null) {
                     var resourceUri = new System.Uri (System.IO.Path.GetFullPath (result.ResourceFile));
-                    if (AppModel.Instance.LoadResourceFile (resourceUri.ToString ())) {
-                        AppModel.Instance.StartValidation ();
-                    }
+                    // FIXME: "Cannot initialize type 'List' with a collection initializer because it does not implement 'System.Collections.IEnumerable'
+                    // ?!!
+                    // if (AppModel.Instance.LoadResourceFile (new List { resourceUri.ToString () })) {
+                    //     AppModel.Instance.StartValidation ();
+                    // }
                 }
 
                 AppModel.Instance.AnimateQml = true;

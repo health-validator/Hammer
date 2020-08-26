@@ -135,9 +135,19 @@ ApplicationWindow {
 
                     FileDialog {
                         id: resourcePicker
-                        title: "Select a FHIR resource to validate"
+                        title: "Select FHIR resource(s) to validate"
                         folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
-                        onAccepted: appmodel.loadResourceFile(resourcePicker.file)
+                        onAccepted: {console.log(convertUriToString(resourcePicker.files)); appmodel.loadResourceFile(convertUriToString(resourcePicker.files))}
+                        fileMode: FileDialog.OpenFiles
+
+                        function convertUriToString(files) {
+                            var stringFiles = [];
+                            for (var i  = 0; i < files.length; i++) {
+                                stringFiles.push(files[i].toString());
+                            }
+
+                            return stringFiles;
+                        }
                     }
 
                     ToolTip.text: qsTr("Ctrl+O (open), Ctrl+D (validate)")
