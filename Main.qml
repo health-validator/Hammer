@@ -137,7 +137,7 @@ ApplicationWindow {
                         id: resourcePicker
                         title: "Select FHIR resource(s) to validate"
                         folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
-                        onAccepted: {console.log(convertUriToString(resourcePicker.files)); appmodel.loadResourceFile(convertUriToString(resourcePicker.files))}
+                        onAccepted: appmodel.loadResourceFile(convertUriToString(resourcePicker.files))
                         fileMode: FileDialog.OpenFiles
 
                         function convertUriToString(files) {

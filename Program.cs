@@ -20,8 +20,8 @@ using Hl7.Fhir.Utility;
 using Hl7.Fhir.Validation;
 using Hl7.FhirPath;
 using Qml.Net;
-using Qml.Net.Runtimes;
 using Qml.Net.Extensions;
+using Qml.Net.Runtimes;
 using TextCopy;
 using Task = System.Threading.Tasks.Task;
 using System.Globalization;
@@ -423,36 +423,43 @@ class Program {
         }
 
         public bool LoadResourceFile (INetJsValue rawFiles) {
-            List<string> files = rawFiles.AsList<string>();
+            List<string> fileNames = rawFiles.AsList<string> ();
 
-            var text = "blah";
-            if (text == null) {
-                Console.Error.WriteLine ("LoadResourceFile: no text passed");
+            if (fileNames.Count == 0) {
+                Console.Error.WriteLine ("LoadResourceFile: no files passed");
                 return false;
             }
 
-            // input already pruned - accept as-is
-            if (!text.StartsWith ("file://", StringComparison.InvariantCulture)) {
-                ResourceText = text;
-                return true;
-            }
+            foreach (var fileName in fileNames) {
+                var filePath = fileName;
+                var resource = new LoadedResource ();
 
-            var filePath = text;
-            filePath = filePath.RemovePrefix (RuntimeInformation
-                .IsOSPlatform (OSPlatform.Windows) ? "file:///" : "file://");
-            filePath = filePath.Replace ("\r", "", StringComparison.InvariantCulture)
-                .Replace ("\n", "", StringComparison.InvariantCulture);
-            filePath = Uri.UnescapeDataString (filePath);
-            Console.WriteLine ($"Loading '{filePath}'...");
+                // input already pruned - accept as-is
+                if (!filePath.StartsWith ("file://", StringComparison.InvariantCulture)) {
+                    resource.Text = filePath;
+                    LoadedResources.Add (resource);
+                    return true;
+                }
 
-            if (!File.Exists (filePath)) {
-                Console.WriteLine ($"File to load doesn't actually exist: {filePath}");
-                return false;
-            }
+                filePath = filePath.RemovePrefix (RuntimeInformation
+                    .IsOSPlatform (OSPlatform.Windows) ? "file:///" : "file://");
+                filePath = filePath.Replace ("\r", "", StringComparison.InvariantCulture)
+                    .Replace ("\n", "", StringComparison.InvariantCulture);
+                filePath = Uri.UnescapeDataString (filePath);
+                Console.WriteLine ($"Loading '{filePath}'...");
+                resource.OriginalFilename = filePath;
 
-            ResourceText = File.ReadAllText (filePath);
-            if (ScopeDirectory == null) {
-                ScopeDirectory = Path.GetDirectoryName (filePath);
+                if (!File.Exists (filePath)) {
+                    Console.WriteLine ($"File to load doesn't actually exist: {filePath}");
+                    return false;
+                }
+
+                resource.Text = File.ReadAllText (filePath);
+                resource.Name = Path.GetFileName(filePath);
+                if (ScopeDirectory == null) {
+                    ScopeDirectory = Path.GetDirectoryName (filePath);
+                }
+                LoadedResources.Add (resource);
             }
 
             return true;
