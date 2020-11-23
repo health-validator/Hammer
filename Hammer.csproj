@@ -32,7 +32,7 @@
   <ItemGroup>
 
     <PackageReference Include="CsvHelper" Version="16.1.0" />
-    <PackageReference Include="Hl7.Fhir.ElementModel" Version="1.9.0" />
+    <PackageReference Include="Hl7.Fhir.ElementModel" Version="2.0.0" />
     <PackageReference Include="Hl7.Fhir.Serialization" Version="1.9.0" />
     <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="1.9.0" />
     <PackageReference Include="Hl7.Fhir.STU3" Version="1.9.0" />
