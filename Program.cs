@@ -528,7 +528,8 @@ class Program {
         public OperationOutcome ValidateWithDotnet (CancellationToken token) {
             Console.WriteLine ("Beginning .NET validation");
             try {
-                var externalTerminology = new ExternalTerminologyService (new FhirClient (TerminologyService));
+                using var fhirClient = new FhirClient (TerminologyService);
+                var externalTerminology = new ExternalTerminologyService (fhirClient);
                 var localTerminology = new LocalTerminologyService (_combinedSourceAsync ?? _coreSourceAsync);
                 var summaryProvider = new Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_combinedSource ?? _coreSource);
                 var combinedTerminology = new FallbackTerminologyService (localTerminology, externalTerminology);
