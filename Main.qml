@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-// import appmodel 1.0
+import appmodel 1.0
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
@@ -89,31 +89,36 @@ ApplicationWindow {
         buttons: bar.children
     }
 
-    Column {
+    ListView {
         id: bar
         visible: true
         anchors.top: parent.top
         anchors.left: parent.left
-        property int currentIndex: 0
+        // width: childrenRect.width
+        implicitWidth: contentItem.childrenRect.width
+        height: parent.height
+
+        add: Transition {
+            NumberAnimation { property: "opacity"; from: 0; to: 1.0; duration: 6000 }
+            NumberAnimation { property: "scale"; from: 0; to: 1.0; duration: 6000 }
+        }
 
         Connections {
             target: appmodel
-            onResourcesLoaded: resourcesRepeater.model = Net.toListModel(appmodel.loadedResources)
+            onResourcesLoaded: {
+                bar.model = Net.toListModel(appmodel.loadedResources)
+                console.log(`${bar.count} elements, current index: ${bar.currentIndex}`)
+            }
         }
 
-        Repeater {
-            id: resourcesRepeater
-            model: Net.toListModel(appmodel.loadedResources)
-
-            TabButton {
-                text: modelData.name
-                onClicked: bar.currentIndex = index
-            }
+        delegate: TabButton {
+            text: modelData.name
+            // onClicked: bar.currentIndex = index
         }
     }
 
     StackLayout {
-        currentIndex: bar.currentIndex
+        currentIndex: bar.currentIndex + 1
         id: addResourcesParent
         width: parent.width
         height: parent.height - buttonsRow.height
