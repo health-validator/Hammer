@@ -113,7 +113,6 @@ ApplicationWindow {
             model: Net.toListModel(appmodel.loadedResources)
 
             TabButton {
-                checked: true
                 text: modelData.name
                 onClicked: bar.currentIndex = 0
             }
