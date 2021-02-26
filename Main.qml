@@ -68,21 +68,49 @@ ApplicationWindow {
         onActivated: { addResourcesPage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
     }
 
-    TabBar {
+    // TabBar {
+    //     id: bar
+    //     width: parent.width
+    //     visible: true
+
+    //     TabButton {
+    //         text: qsTr("Home")
+    //     }
+    //     TabButton {
+    //         text: qsTr("Discover")
+    //     }
+    //     TabButton {
+    //         text: qsTr("Activity")
+    //     }
+
+    // }
+
+    ButtonGroup {
+        buttons: bar.children
+    }
+
+    Column {
         id: bar
-        width: parent.width
-        visible: false
+        visible: true
+        anchors.top: parent.top
+        anchors.left: parent.left
+        property int currentIndex: 1
 
-        TabButton {
-            text: qsTr("Home")
-        }
-        TabButton {
-            text: qsTr("Discover")
-        }
-        TabButton {
-            text: qsTr("Activity")
+        RadioButton {
+            checked: true
+            text: qsTr("DAB")
+            onClicked: bar.currentIndex = 0
         }
 
+        RadioButton {
+            text: qsTr("FM")
+            onClicked: bar.currentIndex = 1
+        }
+
+        RadioButton {
+            text: qsTr("AM")
+            onClicked: bar.currentIndex = 2
+        }
     }
 
     StackLayout {
@@ -90,7 +118,8 @@ ApplicationWindow {
         id: addResourcesParent
         width: parent.width
         height: parent.height - buttonsRow.height - (bar.visible? bar.height : 0)
-        anchors.top: bar.visible ? bar.bottom : parent.top
+        anchors.top: parent.top
+        anchors.left: bar.right
 
         Page {
             id: addResourcesPage
