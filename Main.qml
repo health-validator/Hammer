@@ -94,22 +94,29 @@ ApplicationWindow {
         visible: true
         anchors.top: parent.top
         anchors.left: parent.left
-        property int currentIndex: 1
+        property int currentIndex: 0
 
-        RadioButton {
-            checked: true
-            text: qsTr("DAB")
-            onClicked: bar.currentIndex = 0
+        Shortcut {
+            sequence: "Ctrl+M"
+            onActivated: {
+                resourcesRepeater.model = Net.toListModel(appmodel.loadedResources)
+            }
         }
 
-        RadioButton {
-            text: qsTr("FM")
-            onClicked: bar.currentIndex = 1
+        Connections {
+            target: appmodel
+            onResourcesLoaded: resourcesRepeater.model = Net.toListModel(appmodel.loadedResources)
         }
 
-        RadioButton {
-            text: qsTr("AM")
-            onClicked: bar.currentIndex = 2
+        Repeater {
+            id: resourcesRepeater
+            model: Net.toListModel(appmodel.loadedResources)
+
+            TabButton {
+                checked: true
+                text: modelData.name
+                onClicked: bar.currentIndex = 0
+            }
         }
     }
 

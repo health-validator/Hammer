@@ -30,6 +30,7 @@ using Newtonsoft.Json.Linq;
 
 class Program {
     [Signal ("validationStarted")]
+    [Signal ("resourcesLoaded")]
     [Signal ("updateAvailable", NetVariantType.String)]
     public class AppModel : IDisposable {
         private static AppModel _instance;
@@ -431,6 +432,8 @@ class Program {
                 return false;
             }
 
+            LoadedResources.Clear ();
+
             foreach (var fileName in fileNames) {
                 var filePath = fileName;
                 var resource = new LoadedResource ();
@@ -456,12 +459,13 @@ class Program {
                 }
 
                 resource.Text = File.ReadAllText (filePath);
-                resource.Name = Path.GetFileName(filePath);
+                resource.Name = Path.GetFileName (filePath);
                 if (ScopeDirectory == null) {
                     ScopeDirectory = Path.GetDirectoryName (filePath);
                 }
                 LoadedResources.Add (resource);
             }
+            this.ActivateSignal ("resourcesLoaded");
 
             return true;
         }
