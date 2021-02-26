@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import appmodel 1.0
+// import appmodel 1.0
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
@@ -98,8 +98,8 @@ ApplicationWindow {
 
         Component.onCompleted: bar.currentIndex = 0
 
-        add: Transition {
-            NumberAnimation { property: "opacity"; from: 0; to: 1.0; duration: 6000 }
+        populate: Transition {
+            NumberAnimation { properties: "x,y"; duration: 1000 }
         }
 
         Connections {
