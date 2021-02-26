@@ -91,34 +91,34 @@ ApplicationWindow {
 
     ListView {
         id: bar
-        visible: true
         anchors.top: parent.top
         anchors.left: parent.left
-        // width: childrenRect.width
         implicitWidth: contentItem.childrenRect.width
-        height: parent.height
+        height: parent.height - buttonsRow.height
+
+        Component.onCompleted: bar.currentIndex = 0
 
         add: Transition {
             NumberAnimation { property: "opacity"; from: 0; to: 1.0; duration: 6000 }
-            NumberAnimation { property: "scale"; from: 0; to: 1.0; duration: 6000 }
         }
 
         Connections {
             target: appmodel
             onResourcesLoaded: {
                 bar.model = Net.toListModel(appmodel.loadedResources)
+                bar.currentIndex = 0
                 console.log(`${bar.count} elements, current index: ${bar.currentIndex}`)
             }
         }
 
         delegate: TabButton {
             text: modelData.name
-            // onClicked: bar.currentIndex = index
+            onClicked: bar.currentIndex = index
         }
     }
 
     StackLayout {
-        currentIndex: bar.currentIndex + 1
+        currentIndex: bar.currentIndex
         id: addResourcesParent
         width: parent.width
         height: parent.height - buttonsRow.height
