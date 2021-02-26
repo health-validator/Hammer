@@ -114,7 +114,7 @@ ApplicationWindow {
 
             TabButton {
                 text: modelData.name
-                onClicked: bar.currentIndex = 0
+                onClicked: bar.currentIndex = index
             }
         }
     }
