@@ -123,7 +123,7 @@ ApplicationWindow {
         currentIndex: bar.currentIndex
         id: addResourcesParent
         width: parent.width
-        height: parent.height - buttonsRow.height - (bar.visible? bar.height : 0)
+        height: parent.height - buttonsRow.height
         anchors.top: parent.top
         anchors.left: bar.right
 
