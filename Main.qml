@@ -96,13 +96,6 @@ ApplicationWindow {
         anchors.left: parent.left
         property int currentIndex: 0
 
-        Shortcut {
-            sequence: "Ctrl+M"
-            onActivated: {
-                resourcesRepeater.model = Net.toListModel(appmodel.loadedResources)
-            }
-        }
-
         Connections {
             target: appmodel
             onResourcesLoaded: resourcesRepeater.model = Net.toListModel(appmodel.loadedResources)
