@@ -26,7 +26,6 @@ using TextCopy;
 using Task = System.Threading.Tasks.Task;
 using System.Globalization;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 
 class Program {
@@ -51,8 +50,10 @@ class Program {
         }
 
         private readonly IResourceResolver _coreSource = new CachedResolver (ZipSource.CreateValidationSource ());
+        private readonly IAsyncResourceResolver _coreSourceAsync = new CachedResolver (ZipSource.CreateValidationSource ());
 
         private IResourceResolver _combinedSource;
+        private IAsyncResourceResolver _combinedSourceAsync;
 
         // ReSharper disable MemberCanBePrivate.Global
         #region QML-accessible properties
@@ -569,8 +570,9 @@ class Program {
         public OperationOutcome ValidateWithDotnet (CancellationToken token) {
             Console.WriteLine ("Beginning .NET validation");
             try {
-                var externalTerminology = new ExternalTerminologyService (new FhirClient (TerminologyService));
-                var localTerminology = new LocalTerminologyService (_combinedSource ?? _coreSource);
+                using var fhirClient = new FhirClient (TerminologyService);
+                var externalTerminology = new ExternalTerminologyService (fhirClient);
+                var localTerminology = new LocalTerminologyService (_combinedSourceAsync ?? _coreSourceAsync);
                 var summaryProvider = new Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_combinedSource ?? _coreSource);
                 var combinedTerminology = new FallbackTerminologyService (localTerminology, externalTerminology);
 
