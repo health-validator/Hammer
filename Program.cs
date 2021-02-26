@@ -486,7 +486,6 @@ class Program {
             }
 
             Clipboard.SetText (writer.ToString ());
-
         }
 
         public void CopyValidationReportMarkdown () {
