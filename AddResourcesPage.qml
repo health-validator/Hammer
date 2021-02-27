@@ -65,7 +65,7 @@ Page {
 
         InstanceEditor {
             id: textArea
-            instancePlaceholder: qsTr("or load iaddResourcesPaget here")
+            instancePlaceholder: qsTr("or load it here")
             instanceText: appmodel.resourceText
             // ensure the tooltip isn't monospace, only the text
             fontName: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
