@@ -451,7 +451,7 @@ class Program {
                 filePath = filePath.Replace ("\r", "", StringComparison.InvariantCulture)
                     .Replace ("\n", "", StringComparison.InvariantCulture);
                 filePath = Uri.UnescapeDataString (filePath);
-                Console.WriteLine ($"Loading '{filePath}'...");
+                // Console.WriteLine ($"Loading '{filePath}'...");
                 resource.OriginalFilename = filePath;
 
                 if (!File.Exists (filePath)) {
