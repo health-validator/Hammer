@@ -52,13 +52,6 @@ Page {
             visible: textArea.state === "MINIMAL"
             onClicked: resourcePicker.open()
 
-            FileDialog {
-                id: resourcePicker
-                title: "Select a FHIR resource to validate"
-                folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
-                onAccepted: appmodel.loadResourceFile(resourcePicker.file)
-            }
-
             ToolTip.text: qsTr("Ctrl+O (open), Ctrl+D (validate)")
             ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
         }

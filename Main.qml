@@ -63,6 +63,13 @@ ApplicationWindow {
         }
     }
 
+    FileDialog {
+        id: resourcePicker
+        title: "Select a FHIR resource to validate"
+        folder: appmodel.scopeDirectory ? "file://" + appmodel.scopeDirectory : StandardPaths.standardLocations(StandardPaths.DesktopLocation)[0]
+        onAccepted: appmodel.loadResourceFile(resourcePicker.file)
+    }
+
     Shortcut {
         sequence: "Ctrl+O"
         onActivated: { addResourcesPage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
