@@ -85,23 +85,6 @@ ApplicationWindow {
         onActivated: { addResourcesPage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
     }
 
-    // TabBar {
-    //     id: bar
-    //     width: parent.width
-    //     visible: true
-
-    //     TabButton {
-    //         text: qsTr("Home")
-    //     }
-    //     TabButton {
-    //         text: qsTr("Discover")
-    //     }
-    //     TabButton {
-    //         text: qsTr("Activity")
-    //     }
-
-    // }
-
     ButtonGroup {
         buttons: bar.children
     }
