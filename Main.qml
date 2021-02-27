@@ -98,6 +98,22 @@ ApplicationWindow {
 
         Component.onCompleted: bar.currentIndex = 0
 
+        Connections {
+            target: appmodel
+            onResourcesLoaded: {
+                bar.model = Net.toListModel(appmodel.loadedResources)
+                bar.currentIndex = 0
+            }
+        }
+
+        // has to be manually updated since we're loading data through Net.toListModel
+        onCurrentIndexChanged: addResourcesParent.currentIndex = currentIndex
+
+        delegate: TabButton {
+            text: modelData.name
+            onClicked: bar.currentIndex = index
+        }
+
         populate: Transition {
             id: trans
             SequentialAnimation {
@@ -128,24 +144,11 @@ ApplicationWindow {
                 }
             }
         }
-
-        Connections {
-            target: appmodel
-            onResourcesLoaded: {
-                bar.model = Net.toListModel(appmodel.loadedResources)
-                bar.currentIndex = 0
-            }
-        }
-
-        delegate: TabButton {
-            text: modelData.name
-            onClicked: bar.currentIndex = index
-        }
     }
 
     ListView {
-        currentIndex: bar.currentIndex
         id: addResourcesParent
+        currentIndex: bar.currentIndex
         width: parent.width
         height: parent.height - buttonsRow.height
         anchors.top: parent.top
@@ -154,7 +157,14 @@ ApplicationWindow {
         interactive: true
         snapMode: ListView.SnapOneItem
 
-	   delegate: AddResourcesPage {
+        Component.onCompleted: addResourcesParent.currentIndex = 0
+
+        onCurrentIndexChanged: {
+            bar.currentIndex = currentIndex
+            console.log(`current index ${currentIndex} `)
+        }
+
+	    delegate: AddResourcesPage {
 	        id: addResourcesPage
 	        state: "ENTERING_RESOURCE"
 	        width: window.width
@@ -168,9 +178,12 @@ ApplicationWindow {
             onResourcesLoaded: {
                 addResourcesParent.model = Net.toListModel(appmodel.loadedResources)
                 addResourcesParent.currentIndex = 0
-                console.log("setup addResourcesParent")
             }
         }
+
+        // displaced: Transition {
+        //     NumberAnimation { properties: "x,y"; duration: 1000 }
+        // }
     }
 
     RowLayout {
