@@ -98,9 +98,36 @@ ApplicationWindow {
 
         Component.onCompleted: bar.currentIndex = 0
 
-        populate: Transition {
-            NumberAnimation { properties: "x,y"; duration: 1000 }
-        }
+            populate: Transition {
+                        id: trans
+                        SequentialAnimation {
+                            NumberAnimation {
+                                properties: "opacity";
+                                from: 1
+                                to: 0
+                                duration: 0
+                            }
+                            PauseAnimation {
+                                duration: (trans.ViewTransition.index -
+                                           trans.ViewTransition.targetIndexes[0]) * 20
+                            }
+                            ParallelAnimation {
+                                NumberAnimation {
+                                    properties: "opacity";
+                                    from: 0
+                                    to: 1
+                                    duration: 600
+                                    easing.type: Easing.OutCubic
+                                }
+                                NumberAnimation {
+                                    properties: "y";
+                                    from: trans.ViewTransition.destination.y + 50
+                                    duration: 620
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+                        }
+                    }
 
         Connections {
             target: appmodel
