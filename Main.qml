@@ -160,31 +160,33 @@ ApplicationWindow {
         }
     }
 
-    StackLayout {
+    ListView {
         currentIndex: bar.currentIndex
         id: addResourcesParent
         width: parent.width
         height: parent.height - buttonsRow.height
         anchors.top: parent.top
         anchors.left: bar.right
+        keyNavigationEnabled: true
+        interactive: true
+        snapMode: ListView.SnapOneItem
 
-	   AddResourcesPage {
+	   delegate: AddResourcesPage {
 	        id: addResourcesPage
 	        state: "ENTERING_RESOURCE"
 	        width: window.width
+            name: modelData.name
+            resourceText: modelData.text
+            originalFilename: modelData.originalFilename
 	    }
 
-        Item {
-            id: discoverTab
-            Rectangle {
-                anchors.fill: parent
-                color: "green" }
-        }
-        Item {
-            id: activityTab
-            Rectangle {
-                anchors.fill: parent
-                color: "blue" }
+        Connections {
+            target: appmodel
+            onResourcesLoaded: {
+                addResourcesParent.model = Net.toListModel(appmodel.loadedResources)
+                addResourcesParent.currentIndex = 0
+                console.log("setup addResourcesParent")
+            }
         }
     }
 

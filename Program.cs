@@ -268,6 +268,7 @@ class Program {
                 set => this.SetProperty (ref _text, value);
             }
 
+            // unique property which identifies the resource.
             private string _originalFilename;
             [NotifySignal]
             public string OriginalFilename {

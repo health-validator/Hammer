@@ -1,6 +1,5 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-// import appmodel 1.0
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
@@ -10,8 +9,13 @@ import Qt.labs.platform 1.1
 import Qt.labs.settings 1.0
 
 Page {
+    property string name
+    property string originalFilename
+    property string resourceText // text can be edited post-vallidation
+
     id: addResourcesPage
     height: window.height - buttonsRow.height
+
 
     Connections {
         target: appmodel
@@ -59,9 +63,9 @@ Page {
         InstanceEditor {
             id: textArea
             instancePlaceholder: qsTr("or load it here")
-            instanceText: appmodel.resourceText
+            instanceText: resourceText
             // ensure the tooltip isn't monospace, only the text
-            fontName: appmodel.resourceText ? monospaceFont.name : "Ubuntu"
+            fontName: resourceText ? monospaceFont.name : "Ubuntu"
 
             anchors.top: loadResourceButton.top
             anchors.bottom: loadResourceButton.bottom
@@ -70,7 +74,7 @@ Page {
 
             states: [
                 State {
-                    name: "MINIMAL"; when: !appmodel.resourceText
+                    name: "MINIMAL"; when: !resourceText
                     ParentChange {
                         target: textArea
                         parent: loadResourcesRow
@@ -79,7 +83,7 @@ Page {
                     }
                 },
                 State {
-                    name: "EXPANDED"; when: appmodel.resourceText
+                    name: "EXPANDED"; when: resourceText
                     ParentChange {
                         target: textArea
                         parent: addResourceScrollView
