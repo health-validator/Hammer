@@ -107,7 +107,7 @@ ApplicationWindow {
         }
 
         // has to be manually updated since we're loading data through Net.toListModel
-        onCurrentIndexChanged: addResourcesParent.currentIndex = currentIndex
+        onCurrentIndexChanged: addResourcesParent.positionViewAtIndex(currentIndex, ListView.Beginning)
 
         delegate: TabButton {
             text: modelData.name
@@ -161,7 +161,7 @@ ApplicationWindow {
 
         onCurrentIndexChanged: {
             bar.currentIndex = currentIndex
-            console.log(`current index ${currentIndex} `)
+            console.log(`addResourcesParent current index ${currentIndex} `)
         }
 
 	    delegate: AddResourcesPage {
