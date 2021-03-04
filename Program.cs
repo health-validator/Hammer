@@ -460,7 +460,7 @@ class Program {
                 }
 
                 resource.Text = File.ReadAllText (filePath);
-                resource.Name = Path.GetFileName (filePath);
+                resource.Name = Path.GetFileNameWithoutExtension (filePath);
                 if (ScopeDirectory == null) {
                     ScopeDirectory = Path.GetDirectoryName (filePath);
                 }
