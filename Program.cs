@@ -30,7 +30,7 @@ using Newtonsoft.Json.Linq;
 
 class Program {
     [Signal ("validationStarted")]
-    [Signal ("resourcesLoaded")]
+    [Signal ("resourcesLoaded", NetVariantType.Int)]
     [Signal ("updateAvailable", NetVariantType.String)]
     public class AppModel : IDisposable {
         private static AppModel _instance;
@@ -466,7 +466,7 @@ class Program {
                 }
                 LoadedResources.Add (resource);
             }
-            this.ActivateSignal ("resourcesLoaded");
+            this.ActivateSignal ("resourcesLoaded", LoadedResources.Count);
 
             return true;
         }
