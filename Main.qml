@@ -81,7 +81,7 @@ ApplicationWindow {
                        if (drop.proposedAction == Qt.MoveAction || drop.proposedAction == Qt.CopyAction) {
                            appmodel.loadResourceFile(drop.text)
                            drop.acceptProposedAction()
-                           resourcesPage.state = "ENTERING_RESOURCE"
+                           resourcePage.state = "ENTERING_RESOURCE"
                        }
                    }
     }
@@ -112,7 +112,7 @@ ApplicationWindow {
 
     Shortcut {
         sequence: "Ctrl+O"
-        onActivated: { resourcesPage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
+        onActivated: { resourcePage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
     }
 
     ButtonGroup {
@@ -197,8 +197,8 @@ ApplicationWindow {
             console.log(`resourcesview current index ${currentIndex} `)
         }
 
-	    delegate: ResourcesPage {
-	        id: resourcesPage
+	    delegate: ResourcePage {
+	        id: resourcePage
 	        state: "ENTERING_RESOURCE"
 	        width: window.width
             name: modelData.name

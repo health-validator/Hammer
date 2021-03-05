@@ -13,7 +13,7 @@ Page {
     property string originalFilename
     property string resourceText // text can be edited post-vallidation
 
-    id: resourcesPage
+    id: resourcePage
     height: window.height - buttonsRow.height
 
 
@@ -21,7 +21,7 @@ Page {
         target: appmodel
 
         function onValidationStarted() {
-            resourcesPage.state = "VALIDATION_RESULTS"
+            resourcePage.state = "VALIDATION_RESULTS"
         }
     }
 
@@ -88,8 +88,8 @@ Page {
                         target: textArea
                         parent: addResourceScrollView
                         x: 0; y: 0
-                        width: resourcesPage.width
-                        height: resourcesPage.height
+                        width: resourcePage.width
+                        height: resourcePage.height
                     }
                 }
             ]
@@ -121,15 +121,15 @@ Page {
                     return
                 }
 
-                if (resourcesPage.state === "ENTERING_RESOURCE"
-                        || (resourcesPage.state === "VALIDATION_RESULTS"
+                if (resourcePage.state === "ENTERING_RESOURCE"
+                        || (resourcePage.state === "VALIDATION_RESULTS"
                             && resultsPageEditor.state === "VISIBLE")) {
                     appmodel.startValidation()
                 } else {
-                    if (resourcesPage.state === "VALIDATION_RESULTS") {
+                    if (resourcePage.state === "VALIDATION_RESULTS") {
                         appmodel.cancelValidation()
                     }
-                    resourcesPage.state = "ENTERING_RESOURCE"
+                    resourcePage.state = "ENTERING_RESOURCE"
                 }
             }
 
@@ -153,13 +153,13 @@ Page {
     states: [
         State {
             name: "ENTERING_RESOURCE"
-            PropertyChanges { target: resourcesPage; x: 0 }
+            PropertyChanges { target: resourcePage; x: 0 }
             PropertyChanges { target: resultsPane; x: resultsPane.width }
             PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
         },
         State {
             name: "VALIDATION_RESULTS"
-            PropertyChanges { target: resourcesPage; x: resourcesPage.width * -1 }
+            PropertyChanges { target: resourcePage; x: resourcePage.width * -1 }
             PropertyChanges { target: resultsPane; x: 0 }
             PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
         }
