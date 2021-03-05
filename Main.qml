@@ -86,32 +86,35 @@ ApplicationWindow {
     }
 
     ButtonGroup {
-        buttons: bar.children
+        buttons: tabsview.children
     }
 
     ListView {
-        id: bar
+        id: tabsview
         anchors.top: parent.top
         anchors.left: parent.left
         implicitWidth: contentItem.childrenRect.width
         height: parent.height - buttonsRow.height
 
-        Component.onCompleted: bar.currentIndex = 0
+        Component.onCompleted: tabsview.currentIndex = 0
 
         Connections {
             target: appmodel
             onResourcesLoaded: {
-                bar.model = Net.toListModel(appmodel.loadedResources)
-                bar.currentIndex = 0
+                tabsview.model = Net.toListModel(appmodel.loadedResources)
+                tabsview.currentIndex = 0
             }
         }
 
         // has to be manually updated since we're loading data through Net.toListModel
-        onCurrentIndexChanged: addResourcesParent.positionViewAtIndex(currentIndex, ListView.Beginning)
+        // onCurrentIndexChanged: resourcesview.positionViewAtIndex(currentIndex, ListView.Beginning)
+        onCurrentIndexChanged: resourcesview.currentIndex = currentIndex
 
         delegate: TabButton {
+            id: control
             text: modelData.name
-            onClicked: bar.currentIndex = index
+            width: 250
+            onClicked: tabsview.currentIndex = index
         }
 
         populate: Transition {
@@ -147,21 +150,21 @@ ApplicationWindow {
     }
 
     ListView {
-        id: addResourcesParent
-        currentIndex: bar.currentIndex
+        id: resourcesview
+        currentIndex: tabsview.currentIndex
         width: parent.width
         height: parent.height - buttonsRow.height
         anchors.top: parent.top
-        anchors.left: bar.right
+        anchors.left: tabsview.right
         keyNavigationEnabled: true
         interactive: true
         snapMode: ListView.SnapOneItem
 
-        Component.onCompleted: addResourcesParent.currentIndex = 0
+        Component.onCompleted: resourcesview.currentIndex = 0
 
         onCurrentIndexChanged: {
-            bar.currentIndex = currentIndex
-            console.log(`addResourcesParent current index ${currentIndex} `)
+            tabsview.currentIndex = currentIndex
+            console.log(`resourcesview current index ${currentIndex} `)
         }
 
 	    delegate: AddResourcesPage {
@@ -176,8 +179,8 @@ ApplicationWindow {
         Connections {
             target: appmodel
             onResourcesLoaded: {
-                addResourcesParent.model = Net.toListModel(appmodel.loadedResources)
-                addResourcesParent.currentIndex = 0
+                resourcesview.model = Net.toListModel(appmodel.loadedResources)
+                resourcesview.currentIndex = 0
             }
         }
 
@@ -245,9 +248,9 @@ ApplicationWindow {
 
     SettingsPane {
         id: settingsPane
-        height: addResourcesParent.height
+        height: resourcesview.height
         horizontalPadding: 40
-        width: addResourcesParent.width
+        width: resourcesview.width
         x: 0
         y: window.height
     }
