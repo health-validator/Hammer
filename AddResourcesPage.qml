@@ -121,19 +121,12 @@ Page {
             name: "ENTERING_RESOURCE"
             PropertyChanges { target: addResourcesPage; x: 0 }
             PropertyChanges { target: resultsPane; x: resultsPane.width }
-            PropertyChanges { target: settingsPane; y: window.height }
             PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
         },
         State {
             name: "VALIDATION_RESULTS"
             PropertyChanges { target: addResourcesPage; x: addResourcesPage.width * -1 }
             PropertyChanges { target: resultsPane; x: 0 }
-            PropertyChanges { target: settingsPane; y: window.height }
-            PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
-        },
-        State {
-            name: "EDITING_SETTINGS"
-            PropertyChanges { target: settingsPane; y: 0 }
             PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
         }
     ]
@@ -145,10 +138,6 @@ Page {
         Transition {
             from: "*"; to: "ENTERING_RESOURCE"
             NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
-            NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
-        },
-        Transition {
-            from: "*"; to: "EDITING_SETTINGS"
             NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
         }
     ]

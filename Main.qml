@@ -21,6 +21,36 @@ ApplicationWindow {
     property int tooltipDelay: 1500
     property int animationDuration: appmodel.animateQml ? 1000 : 0
 
+    StateGroup {
+        id: hammerState
+
+        states: [
+            State {
+                name: "MAIN_WORKFLOW"
+                PropertyChanges { target: resourcesview; x: 0 }
+                PropertyChanges { target: resultsPane; x: resultsPane.width }
+                PropertyChanges { target: settingsPane; y: window.height }
+                PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
+            },
+            State {
+                name: "EDITING_SETTINGS"
+                PropertyChanges { target: settingsPane; y: 0 }
+                PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
+            }
+        ]
+        transitions: [
+            Transition {
+                from: "*"; to: "MAIN_WORKFLOW"
+                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
+            },
+            Transition {
+                from: "*"; to: "EDITING_SETTINGS"
+                NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
+            }
+        ]
+        state: "MAIN_WORKFLOW"
+    }
+
     AppModel {
         id: appmodel
 
@@ -199,7 +229,7 @@ ApplicationWindow {
             id: settingsButton
             text: "☰"
 
-            onClicked: addResourcesPage.state = "EDITING_SETTINGS"
+            onClicked: hammerState.state = "EDITING_SETTINGS"
             ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             ToolTip.text: qsTr(`Open settings`)
         }
@@ -207,7 +237,7 @@ ApplicationWindow {
         Button {
             id: loadNewInstanceButton
             text: "📂"
-            visible: textArea.state === "EXPANDED"
+            // visible: textArea.state === "EXPANDED"
 
             onClicked: resourcePicker.open()
 
@@ -219,10 +249,15 @@ ApplicationWindow {
             id: actionButton
             // this should be set declaratively
             text: appmodel.validateButtonText
-            visible: appmodel.resourceText || addResourcesPage.state === "EDITING_SETTINGS"
+            visible: appmodel.resourceText || hammerState.state === "EDITING_SETTINGS"
             Layout.fillWidth: true
 
             onClicked: {
+                if (hammerState.state === "EDITING_SETTINGS") {
+                    hammerState.state = "MAIN_WORKFLOW"
+                    return
+                }
+
                 if (addResourcesPage.state === "ENTERING_RESOURCE"
                         || (addResourcesPage.state === "VALIDATION_RESULTS"
                             && resultsPageEditor.state === "VISIBLE")) {
