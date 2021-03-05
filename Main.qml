@@ -28,7 +28,7 @@ ApplicationWindow {
             State {
                 name: "MAIN_WORKFLOW"
                 PropertyChanges { target: resourcesview; x: 0 }
-                PropertyChanges { target: resultsPane; x: resultsPane.width }
+                // PropertyChanges { target: resultsPane; x: resultsPane.width }
                 PropertyChanges { target: settingsPane; y: window.height }
                 PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
             },
@@ -81,7 +81,7 @@ ApplicationWindow {
                        if (drop.proposedAction == Qt.MoveAction || drop.proposedAction == Qt.CopyAction) {
                            appmodel.loadResourceFile(drop.text)
                            drop.acceptProposedAction()
-                           addResourcesPage.state = "ENTERING_RESOURCE"
+                           resourcesPage.state = "ENTERING_RESOURCE"
                        }
                    }
     }
@@ -112,7 +112,7 @@ ApplicationWindow {
 
     Shortcut {
         sequence: "Ctrl+O"
-        onActivated: { addResourcesPage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
+        onActivated: { resourcesPage.state = "ENTERING_RESOURCE"; resourcePicker.open() }
     }
 
     ButtonGroup {
@@ -197,8 +197,8 @@ ApplicationWindow {
             console.log(`resourcesview current index ${currentIndex} `)
         }
 
-	    delegate: AddResourcesPage {
-	        id: addResourcesPage
+	    delegate: ResourcesPage {
+	        id: resourcesPage
 	        state: "ENTERING_RESOURCE"
 	        width: window.width
             name: modelData.name
@@ -223,7 +223,7 @@ ApplicationWindow {
         id: buttonsRow
         x: 0
         y: parent.height - height
-        width: window.width
+        // width: window.width
 
         Button {
             id: settingsButton
@@ -244,41 +244,6 @@ ApplicationWindow {
             ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             ToolTip.text: qsTr(`Open new instance (Ctrl+O)`)
         }
-
-        Button {
-            id: actionButton
-            // this should be set declaratively
-            text: appmodel.validateButtonText
-            visible: appmodel.resourceText || hammerState.state === "EDITING_SETTINGS"
-            Layout.fillWidth: true
-
-            onClicked: {
-                if (hammerState.state === "EDITING_SETTINGS") {
-                    hammerState.state = "MAIN_WORKFLOW"
-                    return
-                }
-
-                if (addResourcesPage.state === "ENTERING_RESOURCE"
-                        || (addResourcesPage.state === "VALIDATION_RESULTS"
-                            && resultsPageEditor.state === "VISIBLE")) {
-                    appmodel.startValidation()
-                } else {
-                    if (addResourcesPage.state === "VALIDATION_RESULTS") {
-                        appmodel.cancelValidation()
-                    }
-                    addResourcesPage.state = "ENTERING_RESOURCE"
-                }
-            }
-
-            ToolTip.visible: hovered && appmodel.scopeDirectory
-            ToolTip.text: qsTr(`Scope: ${appmodel.scopeDirectory}\nTerminology: ${appmodel.terminologyService}`)
-        }
-    }
-
-    ResultsPane {
-        id: resultsPane
-        width: window.width
-        x: resultsPane.width
     }
 
     SettingsPane {

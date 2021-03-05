@@ -13,7 +13,7 @@ Page {
     property string originalFilename
     property string resourceText // text can be edited post-vallidation
 
-    id: addResourcesPage
+    id: resourcesPage
     height: window.height - buttonsRow.height
 
 
@@ -21,7 +21,7 @@ Page {
         target: appmodel
 
         function onValidationStarted() {
-            addResourcesPage.state = "VALIDATION_RESULTS"
+            resourcesPage.state = "VALIDATION_RESULTS"
         }
     }
 
@@ -88,8 +88,8 @@ Page {
                         target: textArea
                         parent: addResourceScrollView
                         x: 0; y: 0
-                        width: addResourcesPage.width
-                        height: addResourcesPage.height
+                        width: resourcesPage.width
+                        height: resourcesPage.height
                     }
                 }
             ]
@@ -102,6 +102,40 @@ Page {
             }
         }
 
+        ResultsPane {
+            id: resultsPane
+            width: window.width
+            x: resultsPane.width
+        }
+
+        Button {
+            id: actionButton
+            // this should be set declaratively
+            text: appmodel.validateButtonText
+            visible: appmodel.resourceText || hammerState.state === "EDITING_SETTINGS"
+            Layout.fillWidth: true
+
+            onClicked: {
+                if (hammerState.state === "EDITING_SETTINGS") {
+                    hammerState.state = "MAIN_WORKFLOW"
+                    return
+                }
+
+                if (resourcesPage.state === "ENTERING_RESOURCE"
+                        || (resourcesPage.state === "VALIDATION_RESULTS"
+                            && resultsPageEditor.state === "VISIBLE")) {
+                    appmodel.startValidation()
+                } else {
+                    if (resourcesPage.state === "VALIDATION_RESULTS") {
+                        appmodel.cancelValidation()
+                    }
+                    resourcesPage.state = "ENTERING_RESOURCE"
+                }
+            }
+
+            ToolTip.visible: hovered && appmodel.scopeDirectory
+            ToolTip.text: qsTr(`Scope: ${appmodel.scopeDirectory}\nTerminology: ${appmodel.terminologyService}`)
+        }
     }
 
     Text {
@@ -119,13 +153,13 @@ Page {
     states: [
         State {
             name: "ENTERING_RESOURCE"
-            PropertyChanges { target: addResourcesPage; x: 0 }
+            PropertyChanges { target: resourcesPage; x: 0 }
             PropertyChanges { target: resultsPane; x: resultsPane.width }
             PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
         },
         State {
             name: "VALIDATION_RESULTS"
-            PropertyChanges { target: addResourcesPage; x: addResourcesPage.width * -1 }
+            PropertyChanges { target: resourcesPage; x: resourcesPage.width * -1 }
             PropertyChanges { target: resultsPane; x: 0 }
             PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
         }
