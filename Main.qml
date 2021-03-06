@@ -26,11 +26,25 @@ ApplicationWindow {
 
         states: [
             State {
-                name: "MAIN_WORKFLOW"
+                name: "WELCOME_SCREEN"
                 PropertyChanges { target: resourcesview; x: 0 }
                 // PropertyChanges { target: resultsPane; x: resultsPane.width }
                 PropertyChanges { target: settingsPane; y: window.height }
                 PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
+            },
+            State {
+                name: "SINGLE_RESOURCE"
+                // PropertyChanges { target: resourcesview; x: 0 }
+                // // PropertyChanges { target: resultsPane; x: resultsPane.width }
+                // PropertyChanges { target: settingsPane; y: window.height }
+                // PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
+            },
+            State {
+                name: "MULTIPLE_RESOURCES"
+                // PropertyChanges { target: resourcesview; x: 0 }
+                // // PropertyChanges { target: resultsPane; x: resultsPane.width }
+                // PropertyChanges { target: settingsPane; y: window.height }
+                // PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
             },
             State {
                 name: "EDITING_SETTINGS"
