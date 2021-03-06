@@ -32,7 +32,7 @@ class Program {
     [Signal ("updateAvailable", NetVariantType.String)]
     public class AppModel : IDisposable {
         private static AppModel _instance;
-        public static AppModel Instance => _instance ?? (_instance = new AppModel ());
+        public static AppModel Instance => _instance ??= new AppModel ();
 
         public static bool HasInstance => _instance != null;
 
@@ -49,10 +49,8 @@ class Program {
         }
 
         private readonly IResourceResolver _coreSource = new CachedResolver (ZipSource.CreateValidationSource ());
-        private readonly IAsyncResourceResolver _coreSourceAsync = new CachedResolver (ZipSource.CreateValidationSource ());
 
         private IResourceResolver _combinedSource;
-        private IAsyncResourceResolver _combinedSourceAsync;
 
         // ReSharper disable MemberCanBePrivate.Global
         #region QML-accessible properties
@@ -122,7 +120,7 @@ class Program {
             }
         }
 
-        private string _terminologyService = "http://tx.fhir.org";
+        private string _terminologyService = "https://tx.fhir.org/r3";
         [NotifySignal]
         public string TerminologyService {
             get => _terminologyService;
@@ -530,7 +528,7 @@ class Program {
             try {
                 using var fhirClient = new FhirClient (TerminologyService);
                 var externalTerminology = new ExternalTerminologyService (fhirClient);
-                var localTerminology = new LocalTerminologyService (_combinedSourceAsync ?? _coreSourceAsync);
+                var localTerminology = new LocalTerminologyService (_combinedSource.AsAsync () ?? _coreSource.AsAsync ());
                 var summaryProvider = new Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_combinedSource ?? _coreSource);
                 var combinedTerminology = new FallbackTerminologyService (localTerminology, externalTerminology);
 
