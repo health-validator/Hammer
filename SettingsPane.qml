@@ -34,8 +34,6 @@ Pane {
             model: ["STU3", "R4"]
             onActivated: {
                 appmodel.fhirVersion = currentText
-                // FIXME: window binding for the fhirVersion didn't seem to work, requires an imperactive approach here
-                window.title = qsTr(`Hammer experimental ${appmodel.fhirVersion} ${appmodel.applicationVersion}`)
             }
         }
 

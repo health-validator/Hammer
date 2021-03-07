@@ -130,7 +130,7 @@ class Program {
                 }
 
                 _terminologyService = value;
-                this.ActivateProperty (x => x._terminologyService);
+                this.ActivateProperty (x => x.TerminologyService);
             }
         }
 
@@ -158,7 +158,7 @@ class Program {
                 }
 
                 _fhirVersion = value;
-                this.ActivateProperty (x => x._fhirVersion);
+                this.ActivateProperty (x => x.FhirVersion);
             }
         }
 
@@ -635,14 +635,14 @@ class Program {
         }
 
         public OperationOutcome ValidateWithJava (CancellationToken token) {
-            Console.WriteLine ("Beginning Java validation");
             var resourcePath = SerializeResource (ResourceText, InstanceFormat);
 
             var validatorPath = Path.Combine (Path.GetDirectoryName (Assembly.GetEntryAssembly ()?.Location),
                 "org.hl7.fhir.validator.jar");
             var scopeArgument = string.IsNullOrEmpty (ScopeDirectory) ? "" : $" -ig \"{ScopeDirectory}\"";
             var outputJson = $"{Path.GetTempFileName()}.json";
-            var finalArguments = $"-jar {validatorPath} -version 3.0 -tx \"{TerminologyService}\"{scopeArgument} -output {outputJson} {resourcePath}";
+            var finalArguments = $"-jar {validatorPath} -version {(FhirVersion == "STU3"  ? "3.0" : "4.0")} -tx \"{TerminologyService}\"{scopeArgument} -output {outputJson} {resourcePath}";
+            Console.WriteLine ($"Beginning Java validation: java {finalArguments}");
 
             OperationOutcome result;
 
