@@ -22,6 +22,24 @@ Pane {
         rowSpacing: 10
 
         Text {
+            text: qsTr("Validating with FHIR")
+            color: Universal.foreground
+            font.pointSize: settingsPane.headerFontSize
+            font.bold: true
+            Layout.fillWidth: true; Layout.columnSpan: 3
+            topPadding: 10
+        }
+        ComboBox {
+            id: fhirVersionCombobox
+            model: ["STU3", "R4"]
+            onActivated: {
+                appmodel.fhirVersion = currentText
+                // FIXME: window binding for the fhirVersion didn't seem to work, requires an imperactive approach here
+                window.title = qsTr(`Hammer experimental ${appmodel.fhirVersion} ${appmodel.applicationVersion}`)
+            }
+        }
+
+        Text {
             text: qsTr("Scope")
             color: Universal.foreground
             font.pointSize: settingsPane.headerFontSize

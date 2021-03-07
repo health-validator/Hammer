@@ -32,7 +32,7 @@ class Program {
     [Signal ("updateAvailable", NetVariantType.String)]
     public class AppModel : IDisposable {
         private static AppModel _instance;
-        public static AppModel Instance => _instance ??= new AppModel ();
+        public static AppModel Instance => _instance ?? (_instance = new AppModel ());
 
         public static bool HasInstance => _instance != null;
 
@@ -131,6 +131,34 @@ class Program {
 
                 _terminologyService = value;
                 this.ActivateProperty (x => x._terminologyService);
+            }
+        }
+
+        // TODO replace with Firely SDK enum. Can be STU3 or R4
+        // TODO also map to the terminologyService and java validator command line properly
+        private string _fhirVersion = "STU3";
+        [NotifySignal]
+        public string FhirVersion {
+            get => _fhirVersion;
+            set {
+                if (_fhirVersion == value) {
+                    return;
+                }
+
+                if (TerminologyService.EndsWith ("r3", StringComparison.CurrentCultureIgnoreCase) ||
+                    TerminologyService.EndsWith ("r4", StringComparison.CurrentCultureIgnoreCase)) {
+                    TerminologyService = TerminologyService.Remove (TerminologyService.Length - 2);
+
+                    TerminologyService = value
+                    switch {
+                        "STU3" => TerminologyService + "r3",
+                        "R4" => TerminologyService + "r4",
+                        _ => TerminologyService,
+                    };
+                }
+
+                _fhirVersion = value;
+                this.ActivateProperty (x => x._fhirVersion);
             }
         }
 
