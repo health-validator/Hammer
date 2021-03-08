@@ -1,4 +1,7 @@
-﻿using System;
+﻿extern alias stu3;
+extern alias r4;
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,12 +15,13 @@ using CommandLine;
 using CsvHelper;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
-using Hl7.Fhir.Rest;
+using stu3::Hl7.Fhir.Rest;
+using r4::Hl7.Fhir.Rest;
 using Hl7.Fhir.Serialization;
-using Hl7.Fhir.Specification.Source;
-using Hl7.Fhir.Specification.Terminology;
+using stu3::Hl7.Fhir.Specification.Source;
+using stu3::Hl7.Fhir.Specification.Terminology;
 using Hl7.Fhir.Utility;
-using Hl7.Fhir.Validation;
+using stu3::Hl7.Fhir.Validation;
 using Hl7.FhirPath;
 using Qml.Net;
 using Qml.Net.Runtimes;
@@ -48,9 +52,15 @@ class Program {
             GC.SuppressFinalize (this);
         }
 
-        private readonly IResourceResolver _coreSource = new CachedResolver (ZipSource.CreateValidationSource ());
+        public enum ResourceFormat {
+            Xml = 1,
+            Json = 2,
+            Unknown = 3
+        }
 
-        private IResourceResolver _combinedSource;
+        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSource = new Hl7.Fhir.Specification.Source.CachedResolver (ZipSource.CreateValidationSource ());
+
+        private Hl7.Fhir.Specification.Source.IResourceResolver _combinedSource;
 
         // ReSharper disable MemberCanBePrivate.Global
         #region QML-accessible properties
@@ -82,12 +92,12 @@ class Program {
                 _scopeDirectory = value;
                 this.ActivateProperty (x => x.ScopeDirectory);
 
-                var directorySource = new CachedResolver (
+                var directorySource = new Hl7.Fhir.Specification.Source.CachedResolver (
                     new DirectorySource (_scopeDirectory, new DirectorySourceSettings { IncludeSubDirectories = true }));
 
                 // Finally, we combine both sources, so we will find profiles both from the core zip as well as from the directory.
                 // By mentioning the directory source first, anything in the user directory will override what is in the core zip.
-                _combinedSource = new MultiResolver (directorySource, _coreSource);
+                _combinedSource = new Hl7.Fhir.Specification.Source.MultiResolver (directorySource, _coreSource);
             }
         }
 
@@ -554,13 +564,13 @@ class Program {
         public OperationOutcome ValidateWithDotnet (CancellationToken token) {
             Console.WriteLine ("Beginning .NET validation");
             try {
-                using var fhirClient = new FhirClient (TerminologyService);
-                var externalTerminology = new ExternalTerminologyService (fhirClient);
-                var localTerminology = new LocalTerminologyService (_combinedSource.AsAsync () ?? _coreSource.AsAsync ());
-                var summaryProvider = new Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_combinedSource ?? _coreSource);
-                var combinedTerminology = new FallbackTerminologyService (localTerminology, externalTerminology);
+                using var fhirClient = new stu3.Hl7.Fhir.Rest.FhirClient (TerminologyService);
+                var externalTerminology = new stu3.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService (fhirClient);
+                var localTerminology = new stu3.Hl7.Fhir.Specification.Terminology.LocalTerminologyService (_combinedSource.AsAsync () ?? _coreSource.AsAsync ());
+                var summaryProvider = new stu3.Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_combinedSource ?? _coreSource);
+                var combinedTerminology = new stu3.Hl7.Fhir.Specification.Terminology.FallbackTerminologyService (localTerminology, externalTerminology);
 
-                var settings = new ValidationSettings {
+                var settings = new stu3.Hl7.Fhir.Validation.ValidationSettings {
                     ResourceResolver = _combinedSource ?? _coreSource,
                     GenerateSnapshot = true,
                     EnableXsdValidation = true,
@@ -569,7 +579,7 @@ class Program {
                     TerminologyService = combinedTerminology
                 };
 
-                var validator = new Validator (settings);
+                var validator = new stu3.Hl7.Fhir.Validation.Validator (settings);
                 // validator.OnExternalResolutionNeeded += onGetExampleResource;
 
                 // In this case we use an XmlReader as input, but the validator has
@@ -698,7 +708,7 @@ class Program {
 
             resultText = File.ReadAllText (outputJson);
 
-            var parser = new FhirJsonParser ();
+            var parser = new stu3.Hl7.Fhir.Serialization.FhirJsonParser ();
             try {
                 result = parser.Parse<OperationOutcome> (resultText);
             } catch (FormatException fe) {
