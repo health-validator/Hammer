@@ -22,6 +22,7 @@ using stu3::Hl7.Fhir.Specification.Source;
 using stu3::Hl7.Fhir.Specification.Terminology;
 using Hl7.Fhir.Utility;
 using stu3::Hl7.Fhir.Validation;
+using Hl7.Fhir.Specification.Source;
 using Hl7.FhirPath;
 using Qml.Net;
 using Qml.Net.Runtimes;
