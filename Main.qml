@@ -279,9 +279,10 @@ ApplicationWindow {
                     return
                 }
 
-                if (resourcePage.state === "ENTERING_RESOURCE"
-                        || (resourcePage.state === "VALIDATION_RESULTS"
-                            && resultsPageEditor.state === "VISIBLE")) {
+                if (hammerState.state === "SINGLE_RESOURCE" &&
+                    (singleResourcePage.state === "ENTERING_RESOURCE"
+                        || (singleResourcePage.state === "VALIDATION_RESULTS"
+                            && resultsPageEditor.state === "VISIBLE"))) {
                     appmodel.startValidation()
                 } else {
                     if (resourcePage.state === "VALIDATION_RESULTS") {
