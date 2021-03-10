@@ -140,7 +140,11 @@ ApplicationWindow {
 
         Connections {
             target: appmodel
-            onResourcesLoaded: {
+            function onResourcesLoaded (count) {
+                if (count < 2) {
+                    return
+                }
+
                 tabsview.model = Net.toListModel(appmodel.loadedResources)
                 tabsview.currentIndex = 0
             }
@@ -229,7 +233,11 @@ ApplicationWindow {
 
         Connections {
             target: appmodel
-            onResourcesLoaded: {
+            function onResourcesLoaded (count) {
+                if (count < 2) {
+                    return
+                }
+
                 multipleResourcesView.model = Net.toListModel(appmodel.loadedResources)
                 multipleResourcesView.currentIndex = 0
             }
