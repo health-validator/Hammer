@@ -29,7 +29,7 @@ using System.Net.Http;
 using Newtonsoft.Json.Linq;
 
 class Program {
-    [Signal ("validationStarted")]
+    [Signal ("validationStarted", NetVariantType.Int)]
     [Signal ("resourcesLoaded", NetVariantType.Int)]
     [Signal ("updateAvailable", NetVariantType.String)]
     public class AppModel : IDisposable {
@@ -274,6 +274,20 @@ class Program {
             public string OriginalFilename {
                 get => _originalFilename;
                 set => this.SetProperty (ref _originalFilename, value);
+            }
+
+            private bool _validatingDotnet;
+            [NotifySignal]
+            public bool ValidatingDotnet {
+                get => _validatingDotnet;
+                set => this.SetProperty (ref _validatingDotnet, value);
+            }
+
+            private bool _validatingJava;
+            [NotifySignal]
+            public bool ValidatingJava {
+                get => _validatingJava;
+                set => this.SetProperty (ref _validatingJava, value);
             }
         }
 
@@ -734,12 +748,12 @@ class Program {
             return result;
         }
 
-        public async void StartValidation () {
+        public async void StartValidation (int resourceIndex = 0) {
             CancelValidation ();
             ResetResults ();
-            ValidatingDotnet = true;
-            ValidatingJava = true;
-            this.ActivateSignal ("validationStarted");
+            LoadedResources[resourceIndex].ValidatingDotnet = true;
+            LoadedResources[resourceIndex].ValidatingJava = true;
+            this.ActivateSignal ("validationStarted", resourceIndex);
 
             // Create a new CancellationTokenSource that can be used to signal to the
             // tasks that we want to cancel them.
