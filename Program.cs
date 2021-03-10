@@ -18,11 +18,12 @@ using Hl7.Fhir.Model;
 using stu3::Hl7.Fhir.Rest;
 using r4::Hl7.Fhir.Rest;
 using Hl7.Fhir.Serialization;
-using stu3::Hl7.Fhir.Specification.Source;
+using Hl7.Fhir.Specification.Source;
 using stu3::Hl7.Fhir.Specification.Terminology;
+using r4::Hl7.Fhir.Specification.Terminology;
 using Hl7.Fhir.Utility;
 using stu3::Hl7.Fhir.Validation;
-using Hl7.Fhir.Specification.Source;
+using r4::Hl7.Fhir.Validation;
 using Hl7.FhirPath;
 using Qml.Net;
 using Qml.Net.Runtimes;
@@ -59,9 +60,9 @@ class Program {
             Unknown = 3
         }
 
-        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSource = new Hl7.Fhir.Specification.Source.CachedResolver (ZipSource.CreateValidationSource ());
+        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSource = new Hl7.Fhir.Specification.Source.CachedResolver (stu3.Hl7.Fhir.Specification.Source.ZipSource.CreateValidationSource ());
 
-        private Hl7.Fhir.Specification.Source.IResourceResolver _combinedSource;
+        // private Hl7.Fhir.Specification.Source.IResourceResolver _combinedSource;
 
         // ReSharper disable MemberCanBePrivate.Global
         #region QML-accessible properties
@@ -94,11 +95,11 @@ class Program {
                 this.ActivateProperty (x => x.ScopeDirectory);
 
                 var directorySource = new Hl7.Fhir.Specification.Source.CachedResolver (
-                    new DirectorySource (_scopeDirectory, new DirectorySourceSettings { IncludeSubDirectories = true }));
+                    new stu3.Hl7.Fhir.Specification.Source.DirectorySource (_scopeDirectory, new stu3.Hl7.Fhir.Specification.Source.DirectorySourceSettings { IncludeSubDirectories = true }));
 
                 // Finally, we combine both sources, so we will find profiles both from the core zip as well as from the directory.
                 // By mentioning the directory source first, anything in the user directory will override what is in the core zip.
-                _combinedSource = new Hl7.Fhir.Specification.Source.MultiResolver (directorySource, _coreSource);
+                // _combinedSource = new Hl7.Fhir.Specification.Source.MultiResolver (directorySource, _coreSource);
             }
         }
 
@@ -567,12 +568,12 @@ class Program {
             try {
                 using var fhirClient = new stu3.Hl7.Fhir.Rest.FhirClient (TerminologyService);
                 var externalTerminology = new stu3.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService (fhirClient);
-                var localTerminology = new stu3.Hl7.Fhir.Specification.Terminology.LocalTerminologyService (_combinedSource.AsAsync () ?? _coreSource.AsAsync ());
-                var summaryProvider = new stu3.Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_combinedSource ?? _coreSource);
+                var localTerminology = new stu3.Hl7.Fhir.Specification.Terminology.LocalTerminologyService (_coreSource.AsAsync ());
+                var summaryProvider = new stu3.Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_coreSource);
                 var combinedTerminology = new stu3.Hl7.Fhir.Specification.Terminology.FallbackTerminologyService (localTerminology, externalTerminology);
 
                 var settings = new stu3.Hl7.Fhir.Validation.ValidationSettings {
-                    ResourceResolver = _combinedSource ?? _coreSource,
+                    ResourceResolver = _coreSource,
                     GenerateSnapshot = true,
                     EnableXsdValidation = true,
                     Trace = false,
@@ -583,8 +584,6 @@ class Program {
                 var validator = new stu3.Hl7.Fhir.Validation.Validator (settings);
                 // validator.OnExternalResolutionNeeded += onGetExampleResource;
 
-                // In this case we use an XmlReader as input, but the validator has
-                // overloads for using POCO's too
                 Stopwatch sw = new Stopwatch ();
                 OperationOutcome result;
 
@@ -593,11 +592,12 @@ class Program {
                     _parsedResource = FhirXmlNode.Parse (ResourceText, new FhirXmlParsingSettings { PermissiveParsing = true })
                         .ToTypedElement (summaryProvider);
                 } else if (InstanceFormat == ResourceFormat.Json) {
-                    _parsedResource = FhirJsonNode.Parse (ResourceText, settings : new FhirJsonParsingSettings { AllowJsonComments = true })
-                        .ToTypedElement (summaryProvider);
+                    ISourceNode node = FhirJsonNode.Parse (ResourceText, settings : new FhirJsonParsingSettings { AllowJsonComments = true });
+                    _parsedResource = node.ToTypedElement (summaryProvider);
                 } else {
                     throw new Exception ("This resource format isn't recognised");
                 }
+                Console.WriteLine ($"resource: {_parsedResource.ToString()}");
 
                 result = validator.Validate (_parsedResource);
                 sw.Stop ();
