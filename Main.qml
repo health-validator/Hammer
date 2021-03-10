@@ -27,15 +27,15 @@ ApplicationWindow {
         states: [
             State {
                 name: "SINGLE_RESOURCE"
-                PropertyChanges { target: singleResourcePage; x: 0 }
-                PropertyChanges { target: resourcesview; y: window.height }
+                PropertyChanges { target: singleResourcePage; visible: true }
+                PropertyChanges { target: multipleResourcesView; visible: false }
                 // PropertyChanges { target: resultsPane; x: resultsPane.width }
                 PropertyChanges { target: settingsPane; y: window.height }
                 PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
             },
             State {
                 name: "MULTIPLE_RESOURCES"
-                // PropertyChanges { target: resourcesview; x: 0 }
+                // PropertyChanges { target: multipleResourcesView; x: 0 }
                 // // PropertyChanges { target: resultsPane; x: resultsPane.width }
                 // PropertyChanges { target: settingsPane; y: window.height }
                 // PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
@@ -145,8 +145,8 @@ ApplicationWindow {
         }
 
         // has to be manually updated since we're loading data through Net.toListModel
-        // onCurrentIndexChanged: resourcesview.positionViewAtIndex(currentIndex, ListView.Beginning)
-        onCurrentIndexChanged: resourcesview.currentIndex = currentIndex
+        // onCurrentIndexChanged: multipleResourcesView.positionViewAtIndex(currentIndex, ListView.Beginning)
+        onCurrentIndexChanged: multipleResourcesView.currentIndex = currentIndex
 
         delegate: TabButton {
             id: control
@@ -194,10 +194,11 @@ ApplicationWindow {
         name: modelData.name
         resourceText: modelData.text
         originalFilename: modelData.originalFilename
+        resourcePicker: resourcePicker
     }
 
     ListView {
-        id: resourcesview
+        id: multipleResourcesView
         currentIndex: tabsview.currentIndex
         width: parent.width
         height: parent.height - buttonsRow.height
@@ -207,11 +208,11 @@ ApplicationWindow {
         interactive: true
         snapMode: ListView.SnapOneItem
 
-        Component.onCompleted: resourcesview.currentIndex = 0
+        Component.onCompleted: multipleResourcesView.currentIndex = 0
 
         onCurrentIndexChanged: {
             tabsview.currentIndex = currentIndex
-            console.log(`resourcesview current index ${currentIndex} `)
+            console.log(`multipleResourcesView current index ${currentIndex} `)
         }
 
 	    delegate: ResourcePage {
@@ -221,13 +222,14 @@ ApplicationWindow {
             name: modelData.name
             resourceText: modelData.text
             originalFilename: modelData.originalFilename
+            resourcePicker: resourcePicker
 	    }
 
         Connections {
             target: appmodel
             onResourcesLoaded: {
-                resourcesview.model = Net.toListModel(appmodel.loadedResources)
-                resourcesview.currentIndex = 0
+                multipleResourcesView.model = Net.toListModel(appmodel.loadedResources)
+                multipleResourcesView.currentIndex = 0
             }
         }
 
@@ -265,9 +267,9 @@ ApplicationWindow {
 
     SettingsPane {
         id: settingsPane
-        height: resourcesview.height
+        height: multipleResourcesView.height
         horizontalPadding: 40
-        width: resourcesview.width
+        width: multipleResourcesView.width
         x: 0
         y: window.height
     }

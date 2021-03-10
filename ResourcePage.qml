@@ -13,9 +13,10 @@ Page {
     property string originalFilename
     property string resourceText // text can be edited post-vallidation
 
+    property FileDialog resourcePicker
+
     id: resourcePage
     height: window.height - buttonsRow.height
-
 
     Connections {
         target: appmodel
