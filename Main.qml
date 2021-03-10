@@ -19,7 +19,7 @@ ApplicationWindow {
     Universal.theme: settings.appearDark ? Universal.Dark : Universal.Light
 
     property int tooltipDelay: 1500
-    property int animationDuration: appmodel.animateQml ? 1000 : 0
+    property int animationDuration: appmodel.animateQml ? 700 : 0
 
     StateGroup {
         id: hammerState
