@@ -61,6 +61,13 @@ ApplicationWindow {
         state: "SINGLE_RESOURCE"
     }
 
+    Connections {
+        target: appmodel
+        function onResourcesLoaded (count) {
+            hammerState.state = (count < 2) ? "SINGLE_RESOURCE" : "MULTIPLE_RESOURCES"
+        }
+    }
+
     AppModel {
         id: appmodel
 
