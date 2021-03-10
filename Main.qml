@@ -49,8 +49,9 @@ ApplicationWindow {
         ]
         transitions: [
             Transition {
-                from: "*"; to: "MAIN_WORKFLOW"
+                from: "*"; to: "SINGLE_RESOURCE"
                 NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
+                NumberAnimation { property: "y"; easing.type: Easing.InBack; duration: animationDuration }
             },
             Transition {
                 from: "*"; to: "EDITING_SETTINGS"
@@ -274,7 +275,7 @@ ApplicationWindow {
 
             onClicked: {
                 if (hammerState.state === "EDITING_SETTINGS") {
-                    hammerState.state = "MAIN_WORKFLOW"
+                    hammerState.state = "SINGLE_RESOURCE"
                     return
                 }
 
