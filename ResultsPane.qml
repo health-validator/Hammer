@@ -54,6 +54,8 @@ Pane {
         }
     }
 
+    Component.onCompleted: console.log(`resultsPane x: ${x}`)
+
     ColumnLayout {
         id: errorsColumn
         anchors.fill: parent

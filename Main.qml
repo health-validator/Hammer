@@ -308,8 +308,9 @@ ApplicationWindow {
                 if (hammerState.state === "SINGLE_RESOURCE" &&
                     (singleResourcePage.state === "ENTERING_RESOURCE"
                         || (singleResourcePage.state === "VALIDATION_RESULTS"
-                            && resultsPageEditor.state === "VISIBLE"))) {
-                    appmodel.startValidation()
+                          //  && resultsPageEditor.state === "VISIBLE"
+                        ))) {
+                    appmodel.startValidation(0)
                 } else {
                     if (resourcePage.state === "VALIDATION_RESULTS") {
                         appmodel.cancelValidation()
