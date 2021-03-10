@@ -204,10 +204,21 @@ ApplicationWindow {
         id: singleResourcePage
         state: "ENTERING_RESOURCE"
         width: window.width
-        name: modelData.name
-        resourceText: modelData.text
-        originalFilename: modelData.originalFilename
         resourcePicker: resourcePicker
+
+        Connections {
+            target: appmodel
+            function onResourcesLoaded (count) {
+                if (count >= 2) {
+                    return
+                }
+
+                let model = Net.toListModel(appmodel.loadedResources)
+                singleResourcePage.name = model.at(0).name
+                singleResourcePage.resourceText = model.at(0).text
+                singleResourcePage.originalFilename = model.at(0).originalFilename
+            }
+        }
     }
 
     ListView {
