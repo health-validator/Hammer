@@ -243,7 +243,7 @@ ApplicationWindow {
         id: buttonsRow
         x: 0
         y: parent.height - height
-        // width: window.width
+        width: window.width
 
         Button {
             id: settingsButton
@@ -263,6 +263,35 @@ ApplicationWindow {
 
             ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             ToolTip.text: qsTr(`Open new instance (Ctrl+O)`)
+        }
+
+        Button {
+            id: actionButton
+            // this should be set declaratively
+            text: appmodel.validateButtonText
+            visible: appmodel.resourceText || hammerState.state === "EDITING_SETTINGS"
+            Layout.fillWidth: true
+
+            onClicked: {
+                if (hammerState.state === "EDITING_SETTINGS") {
+                    hammerState.state = "MAIN_WORKFLOW"
+                    return
+                }
+
+                if (resourcePage.state === "ENTERING_RESOURCE"
+                        || (resourcePage.state === "VALIDATION_RESULTS"
+                            && resultsPageEditor.state === "VISIBLE")) {
+                    appmodel.startValidation()
+                } else {
+                    if (resourcePage.state === "VALIDATION_RESULTS") {
+                        appmodel.cancelValidation()
+                    }
+                    resourcePage.state = "ENTERING_RESOURCE"
+                }
+            }
+
+            ToolTip.visible: hovered && appmodel.scopeDirectory
+            ToolTip.text: qsTr(`Scope: ${appmodel.scopeDirectory}\nTerminology: ${appmodel.terminologyService}`)
         }
     }
 
