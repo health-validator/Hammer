@@ -29,16 +29,17 @@ ApplicationWindow {
                 name: "SINGLE_RESOURCE"
                 PropertyChanges { target: singleResourcePage; visible: true }
                 PropertyChanges { target: multipleResourcesView; visible: false }
-                // PropertyChanges { target: resultsPane; x: resultsPane.width }
+                PropertyChanges { target: tabsview; visible: false }
                 PropertyChanges { target: settingsPane; y: window.height }
                 PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
             },
             State {
                 name: "MULTIPLE_RESOURCES"
-                // PropertyChanges { target: multipleResourcesView; x: 0 }
-                // // PropertyChanges { target: resultsPane; x: resultsPane.width }
-                // PropertyChanges { target: settingsPane; y: window.height }
-                // PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
+                PropertyChanges { target: singleResourcePage; visible: false }
+                PropertyChanges { target: multipleResourcesView; visible: true }
+                PropertyChanges { target: tabsview; visible: true }
+                PropertyChanges { target: settingsPane; y: window.height }
+                PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
             },
             State {
                 name: "EDITING_SETTINGS"
