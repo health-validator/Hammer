@@ -60,7 +60,9 @@ class Program {
             Unknown = 3
         }
 
-        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSource = new Hl7.Fhir.Specification.Source.CachedResolver (new stu3.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (GetApplicationLocation (), "specification_Fhir3_0.zip")));
+        // this only gets populated on use, so it's OK to setup beforehand
+        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceStu3 = new Hl7.Fhir.Specification.Source.CachedResolver (new stu3.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (GetApplicationLocation (), "specification_Fhir3_0.zip")));
+        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceR4 = new Hl7.Fhir.Specification.Source.CachedResolver (new stu3.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (GetApplicationLocation (), "specification_Fhir4_0.zip")));
 
         private Hl7.Fhir.Specification.Source.IResourceResolver _combinedSource;
 
@@ -87,19 +89,27 @@ class Program {
         public string ScopeDirectory {
             get => _scopeDirectory;
             set {
-                if (_scopeDirectory == value) {
-                    return;
-                }
-
                 _scopeDirectory = value;
                 this.ActivateProperty (x => x.ScopeDirectory);
 
-                var directorySource = new Hl7.Fhir.Specification.Source.CachedResolver (
-                    new stu3.Hl7.Fhir.Specification.Source.DirectorySource (_scopeDirectory, new stu3.Hl7.Fhir.Specification.Source.DirectorySourceSettings { IncludeSubDirectories = true }));
+                if (_scopeDirectory == null) {
+                    Console.WriteLine ($"_scopedir is null?");
+                    return;
+                }
 
-                // Finally, we combine both sources, so we will find profiles both from the core zip as well as from the directory.
-                // By mentioning the directory source first, anything in the user directory will override what is in the core zip.
-                _combinedSource = new Hl7.Fhir.Specification.Source.MultiResolver (directorySource, _coreSource);
+                if (FhirVersion == "STU3") {
+                    var directorySource = new CachedResolver (
+                        new stu3.Hl7.Fhir.Specification.Source.DirectorySource (_scopeDirectory, new stu3.Hl7.Fhir.Specification.Source.DirectorySourceSettings { IncludeSubDirectories = true }));
+
+                    // Finally, we combine both sources, so we will find profiles both from the core zip as well as from the directory.
+                    // By mentioning the directory source first, anything in the user directory will override what is in the core zip.
+                    _combinedSource = new Hl7.Fhir.Specification.Source.MultiResolver (directorySource, _coreSourceStu3);
+                } else {
+                    var directorySource = new CachedResolver (
+                        new r4.Hl7.Fhir.Specification.Source.DirectorySource (_scopeDirectory, new r4.Hl7.Fhir.Specification.Source.DirectorySourceSettings { IncludeSubDirectories = true }));
+                    _combinedSource = new Hl7.Fhir.Specification.Source.MultiResolver (directorySource, _coreSourceR4);
+                }
+                Console.WriteLine ($"_combinedSource reset in scopedirectory for {FhirVersion}");
             }
         }
 
@@ -171,6 +181,9 @@ class Program {
 
                 _fhirVersion = value;
                 this.ActivateProperty (x => x.FhirVersion);
+
+                // reset stu3/r4 spec + folder we're validating against
+                ScopeDirectory = ScopeDirectory;
             }
         }
 
@@ -563,42 +576,73 @@ class Program {
             Clipboard.SetText (report);
         }
 
+        private stu3.Hl7.Fhir.Validation.Validator CreateValidatorStu3 (stu3.Hl7.Fhir.Rest.FhirClient fhirClient) {
+            var externalTerminology = new stu3.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService (fhirClient);
+            var localTerminology = new stu3.Hl7.Fhir.Specification.Terminology.LocalTerminologyService (_combinedSource.AsAsync () ?? _coreSourceStu3.AsAsync ());
+            var combinedTerminology = new stu3.Hl7.Fhir.Specification.Terminology.FallbackTerminologyService (localTerminology, externalTerminology);
+
+            var settings = new stu3.Hl7.Fhir.Validation.ValidationSettings {
+                ResourceResolver = _combinedSource ?? _coreSourceStu3,
+                GenerateSnapshot = true,
+                EnableXsdValidation = true,
+                Trace = false,
+                ResolveExternalReferences = true,
+                TerminologyService = combinedTerminology
+            };
+
+            return new stu3.Hl7.Fhir.Validation.Validator (settings);
+        }
+
+        private r4.Hl7.Fhir.Validation.Validator CreateValidatorR4 (r4.Hl7.Fhir.Rest.FhirClient fhirClient) {
+            var externalTerminology = new r4.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService (fhirClient);
+            var localTerminology = new r4.Hl7.Fhir.Specification.Terminology.LocalTerminologyService (_combinedSource.AsAsync () ?? _coreSourceR4.AsAsync ());
+            var combinedTerminology = new r4.Hl7.Fhir.Specification.Terminology.FallbackTerminologyService (localTerminology, externalTerminology);
+
+            var settings = new r4.Hl7.Fhir.Validation.ValidationSettings {
+                ResourceResolver = _combinedSource ?? _coreSourceR4,
+                GenerateSnapshot = true,
+                EnableXsdValidation = true,
+                Trace = false,
+                ResolveExternalReferences = true,
+                TerminologyService = combinedTerminology
+            };
+
+            return new r4.Hl7.Fhir.Validation.Validator (settings);
+        }
+
         public OperationOutcome ValidateWithDotnet (CancellationToken token) {
             Console.WriteLine ("Beginning .NET validation");
             try {
-                using var fhirClient = new stu3.Hl7.Fhir.Rest.FhirClient (TerminologyService);
-                var externalTerminology = new stu3.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService (fhirClient);
-                var localTerminology = new stu3.Hl7.Fhir.Specification.Terminology.LocalTerminologyService (_combinedSource.AsAsync () ?? _coreSource.AsAsync ());
-                var summaryProvider = new stu3.Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_combinedSource ?? _coreSource);
-                var combinedTerminology = new stu3.Hl7.Fhir.Specification.Terminology.FallbackTerminologyService (localTerminology, externalTerminology);
-
-                var settings = new stu3.Hl7.Fhir.Validation.ValidationSettings {
-                    ResourceResolver = _combinedSource ?? _coreSource,
-                    GenerateSnapshot = true,
-                    EnableXsdValidation = true,
-                    Trace = false,
-                    ResolveExternalReferences = true,
-                    TerminologyService = combinedTerminology
-                };
-
-                var validator = new stu3.Hl7.Fhir.Validation.Validator (settings);
-                // validator.OnExternalResolutionNeeded += onGetExampleResource;
-
-                Stopwatch sw = new Stopwatch ();
                 OperationOutcome result;
 
+                Stopwatch sw = new Stopwatch ();
                 sw.Start ();
+
+                ISourceNode untyped;
                 if (InstanceFormat == ResourceFormat.Xml) {
-                    _parsedResource = FhirXmlNode.Parse (ResourceText, new FhirXmlParsingSettings { PermissiveParsing = true })
-                        .ToTypedElement (summaryProvider);
+                    untyped = FhirXmlNode.Parse (ResourceText, new FhirXmlParsingSettings { PermissiveParsing = true });
                 } else if (InstanceFormat == ResourceFormat.Json) {
-                    _parsedResource = FhirJsonNode.Parse (ResourceText, settings : new FhirJsonParsingSettings { AllowJsonComments = true })
-                        .ToTypedElement (summaryProvider);
+                    untyped = FhirJsonNode.Parse (ResourceText, settings : new FhirJsonParsingSettings { AllowJsonComments = true });
                 } else {
                     throw new Exception ("This resource format isn't recognised");
                 }
 
-                result = validator.Validate (_parsedResource);
+                if (FhirVersion == "STU3") {
+                    var summaryProviderStu3 = new stu3.Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_combinedSource ?? _coreSourceStu3);
+                    _parsedResource = untyped.ToTypedElement (summaryProviderStu3);
+
+                    using var fhirClient = new stu3.Hl7.Fhir.Rest.FhirClient (TerminologyService);
+                    var validator = CreateValidatorStu3 (fhirClient);
+                    result = validator.Validate (_parsedResource);
+                } else {
+                    var summaryProviderR4 = new r4.Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_combinedSource ?? _coreSourceR4);
+                    _parsedResource = untyped.ToTypedElement (summaryProviderR4);
+
+                    using var fhirClient = new r4.Hl7.Fhir.Rest.FhirClient (TerminologyService);
+                    var validator = CreateValidatorR4 (fhirClient);
+                    result = validator.Validate (_parsedResource);
+                }
+
                 sw.Stop ();
                 token.ThrowIfCancellationRequested ();
                 Console.WriteLine ($".NET validation performed in {sw.ElapsedMilliseconds}ms");
