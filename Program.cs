@@ -62,7 +62,7 @@ class Program {
 
         private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSource = new Hl7.Fhir.Specification.Source.CachedResolver (new stu3.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (GetApplicationLocation (), "specification_Fhir3_0.zip")));
 
-        // private Hl7.Fhir.Specification.Source.IResourceResolver _combinedSource;
+        private Hl7.Fhir.Specification.Source.IResourceResolver _combinedSource;
 
         // ReSharper disable MemberCanBePrivate.Global
         #region QML-accessible properties
@@ -99,7 +99,7 @@ class Program {
 
                 // Finally, we combine both sources, so we will find profiles both from the core zip as well as from the directory.
                 // By mentioning the directory source first, anything in the user directory will override what is in the core zip.
-                // _combinedSource = new Hl7.Fhir.Specification.Source.MultiResolver (directorySource, _coreSource);
+                _combinedSource = new Hl7.Fhir.Specification.Source.MultiResolver (directorySource, _coreSource);
             }
         }
 
@@ -568,12 +568,12 @@ class Program {
             try {
                 using var fhirClient = new stu3.Hl7.Fhir.Rest.FhirClient (TerminologyService);
                 var externalTerminology = new stu3.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService (fhirClient);
-                var localTerminology = new stu3.Hl7.Fhir.Specification.Terminology.LocalTerminologyService (_coreSource.AsAsync ());
-                var summaryProvider = new stu3.Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_coreSource);
+                var localTerminology = new stu3.Hl7.Fhir.Specification.Terminology.LocalTerminologyService (_combinedSource.AsAsync () ?? _coreSource.AsAsync ());
+                var summaryProvider = new stu3.Hl7.Fhir.Specification.StructureDefinitionSummaryProvider (_combinedSource ?? _coreSource);
                 var combinedTerminology = new stu3.Hl7.Fhir.Specification.Terminology.FallbackTerminologyService (localTerminology, externalTerminology);
 
                 var settings = new stu3.Hl7.Fhir.Validation.ValidationSettings {
-                    ResourceResolver = _coreSource,
+                    ResourceResolver = _combinedSource ?? _coreSource,
                     GenerateSnapshot = true,
                     EnableXsdValidation = true,
                     Trace = false,
@@ -592,12 +592,11 @@ class Program {
                     _parsedResource = FhirXmlNode.Parse (ResourceText, new FhirXmlParsingSettings { PermissiveParsing = true })
                         .ToTypedElement (summaryProvider);
                 } else if (InstanceFormat == ResourceFormat.Json) {
-                    ISourceNode node = FhirJsonNode.Parse (ResourceText, settings : new FhirJsonParsingSettings { AllowJsonComments = true });
-                    _parsedResource = node.ToTypedElement (summaryProvider);
+                    _parsedResource = FhirJsonNode.Parse (ResourceText, settings : new FhirJsonParsingSettings { AllowJsonComments = true })
+                        .ToTypedElement (summaryProvider);
                 } else {
                     throw new Exception ("This resource format isn't recognised");
                 }
-                Console.WriteLine ($"resource: {_parsedResource.ToString()}");
 
                 result = validator.Validate (_parsedResource);
                 sw.Stop ();
