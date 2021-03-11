@@ -60,7 +60,7 @@ class Program {
             Unknown = 3
         }
 
-        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSource = new Hl7.Fhir.Specification.Source.CachedResolver (stu3.Hl7.Fhir.Specification.Source.ZipSource.CreateValidationSource ());
+        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSource = new Hl7.Fhir.Specification.Source.CachedResolver (new stu3.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (GetApplicationLocation (), "specification_Fhir3_0.zip")));
 
         // private Hl7.Fhir.Specification.Source.IResourceResolver _combinedSource;
 
@@ -645,11 +645,14 @@ class Program {
             return result;
         }
 
+        private static string GetApplicationLocation () {
+            return Path.GetDirectoryName (Assembly.GetEntryAssembly ()?.Location);
+        }
+
         public OperationOutcome ValidateWithJava (CancellationToken token) {
             var resourcePath = SerializeResource (ResourceText, InstanceFormat);
 
-            var validatorPath = Path.Combine (Path.GetDirectoryName (Assembly.GetEntryAssembly ()?.Location),
-                "org.hl7.fhir.validator.jar");
+            var validatorPath = Path.Combine (GetApplicationLocation (), "org.hl7.fhir.validator.jar");
             var scopeArgument = string.IsNullOrEmpty (ScopeDirectory) ? "" : $" -ig \"{ScopeDirectory}\"";
             var outputJson = $"{Path.GetTempFileName()}.json";
             var finalArguments = $"-jar {validatorPath} -version {(FhirVersion == "STU3"  ? "3.0" : "4.0")} -tx \"{TerminologyService}\"{scopeArgument} -output {outputJson} {resourcePath}";
