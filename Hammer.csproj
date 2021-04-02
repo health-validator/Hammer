@@ -36,7 +36,7 @@
     <PackageReference Include="Hl7.Fhir.Serialization" Version="3.0.0" />
     <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="3.0.0" />
     <PackageReference Include="Hl7.Fhir.STU3" Version="3.0.0" />
-    <PackageReference Include="Hl7.Fhir.Support" Version="3.0.0" />
+    <PackageReference Include="Hl7.Fhir.Support" Version="3.1.0" />
     <PackageReference Include="Hl7.FhirPath" Version="3.0.0" />
 
     <PackageReference Include="Microsoft.CodeQuality.Analyzers" Version="3.3.2" />
