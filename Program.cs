@@ -104,12 +104,13 @@ class Program {
                     // Finally, we combine both sources, so we will find profiles both from the core zip as well as from the directory.
                     // By mentioning the directory source first, anything in the user directory will override what is in the core zip.
                     _combinedSource = new Hl7.Fhir.Specification.Source.MultiResolver (directorySource, _coreSourceStu3);
+                    Console.WriteLine ($"_combinedSource uses stu3");
                 } else {
                     var directorySource = new CachedResolver (
                         new r4.Hl7.Fhir.Specification.Source.DirectorySource (_scopeDirectory, new r4.Hl7.Fhir.Specification.Source.DirectorySourceSettings { IncludeSubDirectories = true }));
                     _combinedSource = new Hl7.Fhir.Specification.Source.MultiResolver (directorySource, _coreSourceR4);
+                    Console.WriteLine ($"_combinedSource uses r4");
                 }
-                Console.WriteLine ($"_combinedSource reset in scopedirectory for {FhirVersion}");
             }
         }
 
@@ -657,6 +658,10 @@ class Program {
                         Diagnostics = $"{ex.GetType().Name}: {ex.Message}",
                         Code = OperationOutcome.IssueType.Exception
                 });
+
+                TextWriter errorWriter = Console.Error;
+                errorWriter.WriteLine (ex.Message);
+                errorWriter.WriteLine (ex.StackTrace);
 
                 return result;
             }
