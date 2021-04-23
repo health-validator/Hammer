@@ -62,7 +62,7 @@ class Program {
 
         // this only gets populated on use, so it's OK to setup beforehand
         private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceStu3 = new Hl7.Fhir.Specification.Source.CachedResolver (new stu3.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (GetApplicationLocation (), "specification_Fhir3_0.zip")));
-        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceR4 = new Hl7.Fhir.Specification.Source.CachedResolver (new stu3.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (GetApplicationLocation (), "specification_Fhir4_0.zip")));
+        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceR4 = new Hl7.Fhir.Specification.Source.CachedResolver (new r4.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (GetApplicationLocation (), "specification_Fhir4_0.zip")));
 
         private Hl7.Fhir.Specification.Source.IResourceResolver _combinedSource;
 
