@@ -54,7 +54,7 @@
     <PackageReference Include="CsvHelper" Version="27.0.1" />
     <PackageReference Include="Microsoft.CodeQuality.Analyzers" Version="3.3.2" />
     <PackageReference Include="Microsoft.NetCore.Analyzers" Version="3.3.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Qml.Net" Version="0.11.0" />
     <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.11.0" />
     <PackageReference Include="Qml.Net.OSXBinaries" Version="0.11.0" />
