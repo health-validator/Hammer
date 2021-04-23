@@ -29,16 +29,29 @@
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
   </PropertyGroup>
 
+  <Target Name="AddPackageAliases" BeforeTargets="ResolveReferences" Outputs="%(PackageReference.Identity)">
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)'=='Hl7.Fhir.STU3.Core' Or '%(FileName)'=='Hl7.Fhir.STU3.Specification'">
+        <Aliases>stu3</Aliases>
+      </ReferencePath>
+      <ReferencePath Condition="'%(FileName)'=='Hl7.Fhir.R4.Core' Or '%(FileName)'=='Hl7.Fhir.R4.Specification'">
+        <Aliases>r4</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>
+
   <ItemGroup>
+    <PackageReference Include="Hl7.Fhir.ElementModel" Version="3.1.0" />
+    <PackageReference Include="Hl7.Fhir.Serialization" Version="3.1.0" />
+    <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="3.1.0" GeneratePathProperty="true" ExcludeAssets="contentFiles" />
+    <PackageReference Include="Hl7.Fhir.Specification.R4" Version="3.1.0" GeneratePathProperty="true" ExcludeAssets="contentFiles" />
+    <PackageReference Include="Hl7.Fhir.STU3" Version="3.1.0" />
+    <PackageReference Include="Hl7.Fhir.R4" Version="3.1.0" />
+    <PackageReference Include="Hl7.Fhir.Support" Version="3.1.0" />
+    <PackageReference Include="Hl7.FhirPath" Version="3.1.0" />
+    <PackageReference Include="Hl7.Fhir.Support.Poco" Version="3.1.0" />
 
     <PackageReference Include="CsvHelper" Version="26.1.0" />
-    <PackageReference Include="Hl7.Fhir.ElementModel" Version="3.0.0" />
-    <PackageReference Include="Hl7.Fhir.Serialization" Version="3.0.0" />
-    <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="3.0.0" />
-    <PackageReference Include="Hl7.Fhir.STU3" Version="3.0.0" />
-    <PackageReference Include="Hl7.Fhir.Support" Version="3.0.0" />
-    <PackageReference Include="Hl7.FhirPath" Version="3.0.0" />
-
     <PackageReference Include="Microsoft.CodeQuality.Analyzers" Version="3.3.2" />
     <PackageReference Include="Microsoft.NetCore.Analyzers" Version="3.3.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
@@ -50,6 +63,35 @@
     <PackageReference Include="TextCopy" Version="3.0.2" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="ToMarkdownTable" Version="0.2.1-alpha0003" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="errataFhir3.0.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="errataFhir4.0.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="$(PkgHl7_Fhir_Specification_STU3)\contentFiles\any\any\specification.zip">
+      <Link>specification_Fhir3_0.zip</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      <Pack>false</Pack>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="$(PkgHl7_Fhir_Specification_R4)\contentFiles\any\any\specification.zip">
+      <Link>specification_Fhir4_0.zip</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      <Pack>false</Pack>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
