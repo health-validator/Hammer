@@ -1,0 +1,51 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: CsvHelper
+    versions:
+    - 21.3.0
+    - 22.1.0
+    - 22.1.1
+    - 22.1.2
+    - 23.0.0
+    - 24.0.1
+    - 27.0.0
+  - dependency-name: Hl7.Fhir.STU3
+    versions:
+    - 2.0.3
+    - 3.0.0
+    - 3.1.0
+  - dependency-name: Hl7.Fhir.Serialization
+    versions:
+    - 2.0.3
+    - 3.0.0
+    - 3.1.0
+  - dependency-name: Hl7.FhirPath
+    versions:
+    - 2.0.3
+    - 3.0.0
+    - 3.1.0
+  - dependency-name: Hl7.Fhir.Specification.STU3
+    versions:
+    - 2.0.3
+    - 3.0.0
+    - 3.1.0
+  - dependency-name: Hl7.Fhir.ElementModel
+    versions:
+    - 2.0.3
+    - 3.0.0
+    - 3.1.0
+  - dependency-name: Hl7.Fhir.Support
+    versions:
+    - 2.0.3
+    - 3.0.0
+    - 3.1.0
+  - dependency-name: TextCopy
+    versions:
+    - 4.2.1
+    - 4.3.0
