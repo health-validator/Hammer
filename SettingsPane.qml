@@ -22,6 +22,22 @@ Pane {
         rowSpacing: 10
 
         Text {
+            text: qsTr("Validating with FHIR")
+            color: Universal.foreground
+            font.pointSize: settingsPane.headerFontSize
+            font.bold: true
+            Layout.fillWidth: true; Layout.columnSpan: 3
+            topPadding: 10
+        }
+        ComboBox {
+            id: fhirVersionCombobox
+            model: ["STU3", "R4"]
+            onActivated: {
+                appmodel.fhirVersion = currentText
+            }
+        }
+
+        Text {
             text: qsTr("Scope")
             color: Universal.foreground
             font.pointSize: settingsPane.headerFontSize

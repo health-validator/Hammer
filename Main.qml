@@ -14,7 +14,7 @@ ApplicationWindow {
     Component.onCompleted: settings.isWindowMaximized ? showMaximized() : showNormal()
     width: 640; height: 650
     minimumWidth: 550; minimumHeight: 300
-    title: qsTr(`Hammer STU3 ${appmodel.applicationVersion}`)
+    title: qsTr(`Hammer experimental ${appmodel.fhirVersion} ${appmodel.applicationVersion}`)
 
     Universal.theme: settings.appearDark ? Universal.Dark : Universal.Light
 
