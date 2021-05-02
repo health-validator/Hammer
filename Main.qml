@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import appmodel 1.0
+// import appmodel 1.0
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
@@ -169,9 +169,8 @@ ApplicationWindow {
 
             TextMetrics {
                 id: textMetrics
-                font.family: "Arial"
                 elide: Text.ElideMiddle
-                elideWidth: 100
+                elideWidth: control.width
                 text: modelData.name
             }
         }
@@ -247,15 +246,15 @@ ApplicationWindow {
             console.log(`multipleResourcesView current index ${currentIndex} `)
         }
 
-	    delegate: ResourcePage {
-	        id: resourcePage
-	        state: "ENTERING_RESOURCE"
-	        width: window.width
+        delegate: ResourcePage {
+            id: resourcePage
+            state: "ENTERING_RESOURCE"
+            width: window.width
             name: modelData.name
             resourceText: modelData.text
             originalFilename: modelData.originalFilename
             resourcePicker: resourcePicker
-	    }
+        }
 
         Connections {
             target: appmodel
