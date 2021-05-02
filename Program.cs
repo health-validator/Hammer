@@ -1031,7 +1031,18 @@ class Program {
     }
 
     static int Main (string[] args) {
+
+#if DEBUG
+        const String devDirectory = "/media/vadi/SSDer/Programs/qt-runtimes/output/qt-5.15.1-04d1a8b-linux-x64-runtime";
+        if (Directory.Exists(devDirectory)) {
+            RuntimeManager.ConfigureRuntimeDirectory(devDirectory);
+            Console.WriteLine($"Using custom runtime: {devDirectory}");
+        } else {
+            RuntimeManager.DiscoverOrDownloadSuitableQtRuntime ();
+        }
+#else
         RuntimeManager.DiscoverOrDownloadSuitableQtRuntime ();
+#endif
 
         QQuickStyle.SetStyle ("Universal");
         QCoreApplication.SetAttribute (ApplicationAttribute.EnableHighDpiScaling, true);
