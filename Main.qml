@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-// import appmodel 1.0
+import appmodel 1.0
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
@@ -163,9 +163,17 @@ ApplicationWindow {
 
         delegate: TabButton {
             id: control
-            text: modelData.name
+            text: textMetrics.elidedText
             width: 250
             onClicked: tabsview.currentIndex = index
+
+            TextMetrics {
+                id: textMetrics
+                font.family: "Arial"
+                elide: Text.ElideMiddle
+                elideWidth: 100
+                text: modelData.name
+            }
         }
 
         populate: Transition {
