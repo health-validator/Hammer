@@ -238,6 +238,9 @@ ApplicationWindow {
         keyNavigationEnabled: true
         interactive: true
         snapMode: ListView.SnapOneItem
+        highlightFollowsCurrentItem: true
+        highlightMoveDuration: 600
+        highlightMoveVelocity: -1
 
         Component.onCompleted: multipleResourcesView.currentIndex = 0
 
