@@ -11,7 +11,7 @@ import Qt.labs.settings 1.0
 Page {
     property string name
     property string originalFilename
-    property string resourceText // text can be edited post-vallidation
+    property string resourceText // text can be edited post-validation
 
     property FileDialog resourcePicker
 
