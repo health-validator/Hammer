@@ -1,0 +1,13 @@
+Must:
+* windows: have Qt runtime in download
+* zip and installer on windows (check with rene)
+
+Research:
+* single file publish on Linux crashes (qmlnet problem)
+* single file publish with all data included fails to load Qt UI (fixable?)
+
+ideas:
+* just zip for windows with qt runtime included?
+* check how it works on macos
+* figure out a working way on linux: maybe appimage to bundle a normal publication, framework independant but not single file?
+    * or just a zip to start with
