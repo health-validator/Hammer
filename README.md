@@ -112,8 +112,6 @@ Credit to [Markdownify](https://github.com/amitmerchant1990/electron-markdownify
 - [Simplifier](https://simplifier.net/) - The FHIR hub
 - [Vonk](https://fire.ly/products/vonk) - Production-grade FHIR server
 
-Need FHIR consulting? [I'm available](https://fire.ly/services/).
-
 ## License
 
 MIT
