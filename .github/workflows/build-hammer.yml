@@ -69,7 +69,7 @@ jobs:
         dotnet publish --configuration Release --runtime win-x64
 
     - name: Publish as an artifact
-    - uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2
       with:
         name: hammer
         path: bin/Release/**/publish/
