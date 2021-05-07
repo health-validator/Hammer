@@ -50,17 +50,26 @@ jobs:
         cd $GITHUB_WORKSPACE
         java -jar org.hl7.fhir.validator.jar
         
-    - name: Ensure Main.qml is suitable for deployment
-      run: sed -i '' 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
-      
     - name: (Linux) Build Hammer
       if: runner.os == 'Linux'
-      run: dotnet publish --configuration Release --runtime linux-x64
+      run: |
+        sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
+        dotnet publish --configuration Release --runtime linux-x64
       
     - name: (macOS) Build Hammer
       if: runner.os == 'macOS'
-      run: dotnet publish --configuration Release --runtime osx-x64
+      run: |      
+        sed -i '' 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
+        dotnet publish --configuration Release --runtime osx-x64
 
     - name: (Windows) Build Hammer
       if: runner.os == 'Windows'
-      run: dotnet publish --configuration Release --runtime win-x64
+      run: |      
+        sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
+        dotnet publish --configuration Release --runtime win-x64
+
+    - name: Publish as an artifact
+    - uses: actions/upload-artifact@v2
+      with:
+        name: hammer
+        path: bin/Release/**/publish/
