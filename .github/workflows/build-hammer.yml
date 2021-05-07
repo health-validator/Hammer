@@ -26,7 +26,7 @@ jobs:
       run: |
         cd org.hl7.fhir.core
         git rev-parse HEAD
-        mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
+        mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli --no-transfer-progress
         mv org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli*-SNAPSHOT.jar $GITHUB_WORKSPACE/org.hl7.fhir.validator.jar
         cd $GITHUB_WORKSPACE
         java -jar org.hl7.fhir.validator.jar
