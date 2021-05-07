@@ -1,0 +1,47 @@
+name: .NET
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+        
+    - name: Clone Java validator
+      run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
+    
+    - name: Build Java validator
+      run:
+        cd org.hl7.fhir.core
+        git rev-parse HEAD
+        mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
+        mv org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli*-SNAPSHOT.jar $GITHUB_WORKSPACE/org.hl7.fhir.validator.jar
+        cd $GITHUB_WORKSPACE
+        java -jar org.hl7.fhir.validator.jar
+        
+    - name: Ensure Main.qml is suitable for deployment
+      run: sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
+      
+    - name: (Linux) Build Hammer
+      if: runner.os == 'Linux'
+      run: dotnet publish --configuration Release --runtime linux-x64
+      
+    - name: (macOS) Build Hammer
+      if: runner.os == 'macOS'
+      run: dotnet publish --configuration Release --runtime win-x64
+
+    - name: (Windows) Build Hammer
+      if: runner.os == 'Windows'
+      run: dotnet publish --configuration Release --runtime osx-x64
