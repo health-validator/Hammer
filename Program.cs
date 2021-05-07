@@ -690,7 +690,7 @@ class Program {
             return result;
         }
 
-        private static string GetApplicationLocation () {
+        public static string GetApplicationLocation () {
             return Path.GetDirectoryName (Assembly.GetEntryAssembly ()?.Location);
         }
 
@@ -968,7 +968,14 @@ class Program {
     }
 
     static int Main (string[] args) {
-        RuntimeManager.DiscoverOrDownloadSuitableQtRuntime ();
+        var qtRuntime = Path.Combine(AppModel.GetApplicationLocation(), "qt-runtime");
+        if (Directory.Exists(qtRuntime)) {
+            Console.WriteLine("Using embedded Qt runtime");
+            RuntimeManager.ConfigureRuntimeDirectory(qtRuntime);
+        } else {
+            Console.WriteLine("Couldn't find Qt runtime, downloading one");
+            RuntimeManager.DiscoverOrDownloadSuitableQtRuntime ();
+        }
 
         QQuickStyle.SetStyle ("Universal");
         QCoreApplication.SetAttribute (ApplicationAttribute.EnableHighDpiScaling, true);
