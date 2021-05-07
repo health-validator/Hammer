@@ -80,6 +80,7 @@ jobs:
       run: |
         curl --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
         file qt-runtime.tar.gz
+        cat qt-runtime.tar.gz
         tar -xvf qt-runtime.tar.gz bin/Release/net5.0/${{matrix.dotnet-platform}}/publish/qt-runtime/
 
     - name: Publish as an artifact
