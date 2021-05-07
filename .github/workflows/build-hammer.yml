@@ -23,7 +23,7 @@ jobs:
       run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
     
     - name: Build Java validator
-      run: >-
+      run: |
         cd org.hl7.fhir.core
         git rev-parse HEAD
         mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli
