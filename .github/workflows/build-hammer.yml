@@ -16,10 +16,16 @@ jobs:
         include:
           - os: ubuntu-20.04
             buildname: 'linux'
+            qt-version: '5.15.1-7fc8b10'
+            qmlnet-identifier: 'linux-x64-runtime'
           - os: macos-10.15
             buildname: 'macos'
+            qt-version: '5.15.1-7fc8b10'
+            qmlnet-identifier: 'osx-x64-runtime'
           - os: windows-2019
             buildname: 'windows'
+            qt-version: '5.15.1-7fc8b10'
+            qmlnet-identifier: 'win-x64-runtime'
 
     steps:
     - uses: actions/checkout@v2
@@ -67,6 +73,11 @@ jobs:
         mv org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli*-SNAPSHOT.jar $GITHUB_WORKSPACE/org.hl7.fhir.validator.jar
         cd $GITHUB_WORKSPACE
         java -jar org.hl7.fhir.validator.jar
+
+    - name: Download runtime
+      shell: bash
+      run: |
+
 
     - name: Publish as an artifact
       uses: actions/upload-artifact@v2
