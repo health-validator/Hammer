@@ -27,7 +27,7 @@ jobs:
     - name: Build Java validator
       run: |
         cd org.hl7.fhir.core
-        git rev-parse HEAD
+        echo "Git revision of the validator code: $(git rev-parse HEAD)"
         mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli --no-transfer-progress
         mv org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli*-SNAPSHOT.jar $GITHUB_WORKSPACE/org.hl7.fhir.validator.jar
         cd $GITHUB_WORKSPACE
