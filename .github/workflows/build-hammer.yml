@@ -59,8 +59,8 @@ jobs:
       
     - name: (macOS) Build Hammer
       if: runner.os == 'macOS'
-      run: dotnet publish --configuration Release --runtime win-x64
+      run: dotnet publish --configuration Release --runtime osx-x64
 
     - name: (Windows) Build Hammer
       if: runner.os == 'Windows'
-      run: dotnet publish --configuration Release --runtime osx-x64
+      run: dotnet publish --configuration Release --runtime win-x64
