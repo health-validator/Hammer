@@ -41,6 +41,7 @@ jobs:
       run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
         
     - name: Build Java validator
+      shell: bash
       run: |
         cd org.hl7.fhir.core
         echo "Git revision of the validator code: $(git rev-parse HEAD)"
