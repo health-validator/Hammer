@@ -78,10 +78,9 @@ jobs:
     - name: Download runtime
       shell: bash
       run: |
-        curl --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
+        curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
         file qt-runtime.tar.gz
-        cat qt-runtime.tar.gz
-        tar -xvf qt-runtime.tar.gz bin/Release/net5.0/${{matrix.dotnet-platform}}/publish/qt-runtime/
+        tar -xf qt-runtime.tar.gz bin/Release/net5.0/${{matrix.dotnet-platform}}/publish/qt-runtime/
 
     - name: Publish as an artifact
       uses: actions/upload-artifact@v2
