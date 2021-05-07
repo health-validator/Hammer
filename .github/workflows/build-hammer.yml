@@ -17,15 +17,15 @@ jobs:
           - os: ubuntu-20.04
             buildname: 'linux'
             qt-version: '5.15.1-7fc8b10'
-            qmlnet-identifier: 'linux-x64-runtime'
+            dotnet-platform: 'linux-x64'
           - os: macos-10.15
             buildname: 'macos'
             qt-version: '5.15.1-7fc8b10'
-            qmlnet-identifier: 'osx-x64-runtime'
+            dotnet-platform: 'osx-x64'
           - os: windows-2019
             buildname: 'windows'
             qt-version: '5.15.1-7fc8b10'
-            qmlnet-identifier: 'win-x64-runtime'
+            dotnet-platform: 'win-x64'
 
     steps:
     - uses: actions/checkout@v2
@@ -47,19 +47,19 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
-        dotnet publish --configuration Release --runtime linux-x64
+        dotnet publish --configuration Release --runtime ${{matrix.dotnet-platform}}
 
     - name: (macOS) Build Hammer
       if: runner.os == 'macOS'
       run: |
         sed -i '' 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
-        dotnet publish --configuration Release --runtime osx-x64
+        dotnet publish --configuration Release --runtime ${{matrix.dotnet-platform}}
 
     - name: (Windows) Build Hammer
       if: runner.os == 'Windows'
       run: |
         sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
-        dotnet publish --configuration Release --runtime win-x64
+        dotnet publish --configuration Release --runtime ${{matrix.dotnet-platform}}
 
     - name: Clone Java validator
       run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
