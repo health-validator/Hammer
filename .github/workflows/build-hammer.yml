@@ -1,0 +1,75 @@
+name: .NET
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{matrix.buildname}}
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            buildname: 'linux'
+          - os: macos-10.15
+            buildname: 'macos'
+          - os: windows-2019
+            buildname: 'windows'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Restore maven cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+        
+    - name: Clone Java validator
+      run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
+        
+    - name: Build Java validator
+      shell: bash
+      run: |
+        cd org.hl7.fhir.core
+        echo "Git revision of the validator code: $(git rev-parse HEAD)"
+        mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli --no-transfer-progress
+        mv org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli*-SNAPSHOT.jar $GITHUB_WORKSPACE/org.hl7.fhir.validator.jar
+        cd $GITHUB_WORKSPACE
+        java -jar org.hl7.fhir.validator.jar
+        
+    - name: (Linux) Build Hammer
+      if: runner.os == 'Linux'
+      run: |
+        sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
+        dotnet publish --configuration Release --runtime linux-x64
+      
+    - name: (macOS) Build Hammer
+      if: runner.os == 'macOS'
+      run: |      
+        sed -i '' 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
+        dotnet publish --configuration Release --runtime osx-x64
+
+    - name: (Windows) Build Hammer
+      if: runner.os == 'Windows'
+      run: |      
+        sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
+        dotnet publish --configuration Release --runtime win-x64
+
+    - name: Publish as an artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: hammer-${{matrix.buildname}}
+        path: bin/Release/**/publish/
