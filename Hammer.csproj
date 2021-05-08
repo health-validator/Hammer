@@ -25,6 +25,7 @@
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux')) and '$(Configuration)' == 'Release'">
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
+    <!-- single file does not work: https://github.com/qmlnet/qmlnet/issues/238 -->
     <PublishSingleFile>false</PublishSingleFile>
     <!-- <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract> -->
   </PropertyGroup>
