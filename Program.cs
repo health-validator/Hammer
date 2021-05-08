@@ -987,7 +987,7 @@ class Program {
             Console.WriteLine("Using embedded Qt runtime");
             RuntimeManager.ConfigureRuntimeDirectory(qtRuntime);
         } else {
-            Console.WriteLine("Couldn't find Qt runtime, downloading one");
+            Console.WriteLine("No Qt runtime bundled, using a default one");
             RuntimeManager.DiscoverOrDownloadSuitableQtRuntime ();
         }
 
