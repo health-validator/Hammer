@@ -22,7 +22,7 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Linux|AnyCPU'">
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
     <PublishSingleFile>false</PublishSingleFile>
@@ -30,14 +30,13 @@
   </PropertyGroup>
 
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Win64|AnyCPU'">
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
-  <!-- uncertain if this is correct -->
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release OSX64|AnyCPU'">
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
     <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
