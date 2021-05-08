@@ -34,7 +34,7 @@ jobs:
             qt-version: '5.15.1-7fc8b10'
             dotnet-platform: 'win-x64'
             dotnet-version: 'net5.0'
-            deployment-platform: 'win'
+            deployment-platform: 'windows'
 
     steps:
     - uses: actions/checkout@v2
@@ -114,14 +114,14 @@ jobs:
       with:
         path: artifacts
 
-    # - name: Deploy to a preview link
-    #   uses: marvinpinto/action-automatic-releases@v1.2.0
-    #   with:
-    #     repo_token: ${{secrets.GITHUB_TOKEN}}
-    #     automatic_release_tag: latest
-    #     prerelease: true
-    #     title: Development Build
-    #     files: publish/Hammer-${{matrix.deployment-platform}}.zip
-
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    - name: Deploy to a preview link
+      uses: marvinpinto/action-automatic-releases@v1.2.0
+      with:
+        repo_token: ${{secrets.GITHUB_TOKEN}}
+        automatic_release_tag: latest
+        prerelease: true
+        title: Development Build
+        files: |
+          publish/hammer-linux/Hammer-linux.zip
+          publish/hammer-linux/Hammer-windows.zip
+          publish/hammer-linux/Hammer-macos.zip
