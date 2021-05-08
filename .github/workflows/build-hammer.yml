@@ -122,6 +122,6 @@ jobs:
         prerelease: true
         title: Development Build
         files: |
-          publish/hammer-linux/Hammer-linux.zip
-          publish/hammer-linux/Hammer-windows.zip
-          publish/hammer-linux/Hammer-macos.zip
+          artifacts/hammer-linux/Hammer-linux.zip
+          artifacts/hammer-linux/Hammer-windows.zip
+          artifacts/hammer-linux/Hammer-macos.zip
