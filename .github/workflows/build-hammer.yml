@@ -93,9 +93,12 @@ jobs:
         name: hammer-${{matrix.buildname}}
         path: bin/Release/**/publish/
 
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+
     - name: Zip up for a preview link
       shell: bash
-      run: 7z a -t zip -mx9 publish/Hammer-${{matrix.deployment-platform}}.zip bin/Release/**/publish/ && ls publish/
+      run: 7z a -tzip -mx9 publish/Hammer-${{matrix.deployment-platform}}.zip bin/Release/**/publish/ && ls publish/
 
     - name: Deploy to a preview link
       uses: peaceiris/actions-gh-pages@v3
