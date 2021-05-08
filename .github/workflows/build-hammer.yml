@@ -102,13 +102,12 @@ jobs:
       run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
 
     - name: Deploy to a preview link
-      uses: peaceiris/actions-gh-pages@v3
       # TODO debug
       # if: github.event_name == 'push'
+    - uses: marvinpinto/action-automatic-releases@1.2.0
       with:
-        personal_token: ${{secrets.DEPLOYMENT_TOKEN}}
-        publish_dir: publish
-        external_repository: health-validator/latest
-        publish_branch: main
-        keep_files: true
-        force_orphan: true
+        repo_token: ${{secrets.GITHUB_TOKEN}}
+        automatic_release_tag: latest
+        prerelease: true
+        title: Development Build
+        files: $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
