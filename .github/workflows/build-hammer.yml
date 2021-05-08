@@ -96,6 +96,6 @@ jobs:
         personal_token: ${{secrets.DEPLOYMENT_TOKEN}}
         publish_dir: bin/Release/**/publish/
         external_repository: health-validator/latest
-        publish_branch: master
+        publish_branch: main
         keep_files: true
         force_orphan: true
