@@ -1,4 +1,4 @@
-name: .NET
+name: Build Hammer
 
 on:
   push:
@@ -17,15 +17,24 @@ jobs:
           - os: ubuntu-20.04
             buildname: 'linux'
             qt-version: '5.15.1-7fc8b10'
+            # .NET platform identifier
             dotnet-platform: 'linux-x64'
+            # .NET platform version:
+            dotnet-version: 'net5.0'
+            # used for the resulting zip or executable
+            deployment-platform: 'linux'
           - os: macos-10.15
             buildname: 'macos'
             qt-version: '5.15.1-7fc8b10'
             dotnet-platform: 'osx-x64'
+            dotnet-version: 'net5.0'
+            deployment-platform: 'macos'
           - os: windows-2019
             buildname: 'windows'
             qt-version: '5.15.1-7fc8b10'
             dotnet-platform: 'win-x64'
+            dotnet-version: 'net5.0'
+            deployment-platform: 'windows'
 
     steps:
     - uses: actions/checkout@v2
@@ -79,11 +88,38 @@ jobs:
       shell: bash
       run: |
         curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
-        mkdir -p bin/Release/net5.0/${{matrix.dotnet-platform}}/publish/qt-runtime
-        tar -xf qt-runtime.tar.gz -C bin/Release/net5.0/${{matrix.dotnet-platform}}/publish/qt-runtime
+        mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
+        tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
-    - name: Publish as an artifact
+    - name: Zip up artifact
+      shell: bash
+      run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
+
+    - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: hammer-${{matrix.buildname}}
-        path: bin/Release/**/publish/
+        path: publish/*
+
+
+  upload_artifacts:
+    name: Upload to pre-release
+    runs-on: ubuntu-20.04
+    needs: build
+    if: github.event_name == 'push'
+
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        path: artifacts
+
+    - name: Deploy to a preview link
+      uses: marvinpinto/action-automatic-releases@v1.2.0
+      with:
+        repo_token: ${{secrets.GITHUB_TOKEN}}
+        prerelease: true
+        title: Latest in-development build
+        files: |
+          artifacts/hammer-linux/Hammer-linux.zip
+          artifacts/hammer-windows/Hammer-windows.zip
+          artifacts/hammer-macos/Hammer-macos.zip
