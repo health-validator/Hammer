@@ -24,7 +24,7 @@
 
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux')) and '$(Configuration)' == 'Release'">
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-    <SelfContained>false</SelfContained>
+    <SelfContained>true</SelfContained>
     <PublishSingleFile>false</PublishSingleFile>
     <!-- <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract> -->
   </PropertyGroup>
@@ -39,7 +39,7 @@
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) and '$(Configuration)' == 'Release'">
     <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
-    <PublishSingleFile>true</PublishSingleFile>
+    <PublishSingleFile>false</PublishSingleFile>
   </PropertyGroup>
 
   <Target Name="AddPackageAliases" BeforeTargets="ResolveReferences" Outputs="%(PackageReference.Identity)">
