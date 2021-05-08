@@ -30,7 +30,6 @@
     <!-- <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract> -->
   </PropertyGroup>
 
-
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows')) and '$(Configuration)' == 'Release'">
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>

@@ -61,8 +61,8 @@ class Program {
         }
 
         // this only gets populated on use, so it's OK to setup beforehand
-        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceStu3 = new Hl7.Fhir.Specification.Source.CachedResolver (new stu3.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (Extensions.GetExecutablePath (), "specification_Fhir3_0.zip")));
-        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceR4 = new Hl7.Fhir.Specification.Source.CachedResolver (new r4.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (Extensions.GetExecutablePath (), "specification_Fhir4_0.zip")));
+        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceStu3 = new Hl7.Fhir.Specification.Source.CachedResolver (new stu3.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (Extensions.GetApplicationLocation (), "specification_Fhir3_0.zip")));
+        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceR4 = new Hl7.Fhir.Specification.Source.CachedResolver (new r4.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (Extensions.GetApplicationLocation (), "specification_Fhir4_0.zip")));
 
         private Hl7.Fhir.Specification.Source.IResourceResolver _combinedSource;
 
@@ -695,22 +695,35 @@ class Program {
             [System.Runtime.InteropServices.DllImport("kernel32.dll")]
             static extern uint GetModuleFileName(IntPtr hModule, System.Text.StringBuilder lpFilename, int nSize);
             const int MAX_PATH = 255;
-            public static string GetExecutablePath() {
+            // reports the location of our application when running from Hammer.exe and the like
+            private static string GetExecutablePath() {
                 if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) {
                     var sb = new System.Text.StringBuilder(MAX_PATH);
                     GetModuleFileName(IntPtr.Zero, sb, MAX_PATH);
                     return Path.GetDirectoryName(sb.ToString());
                 }
                 else {
-                    return System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                    return Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
                 }
+            }
+
+            // reports the location of our application when running from Hammer.dll
+            private static string GetDllPath () {
+                return Path.GetDirectoryName (Assembly.GetEntryAssembly ()?.Location);
+            }
+
+            public static string GetApplicationLocation() {
+                string executablePath = GetExecutablePath();
+                string dllPath = GetDllPath();
+
+                return (File.Exists(Path.Combine(executablePath, "Main.qml"))) ? executablePath : dllPath;
             }
         }
 
         public OperationOutcome ValidateWithJava (CancellationToken token) {
             var resourcePath = SerializeResource (ResourceText, InstanceFormat);
 
-            var validatorPath = Path.Combine (Extensions.GetExecutablePath (), "org.hl7.fhir.validator.jar");
+            var validatorPath = Path.Combine (Extensions.GetApplicationLocation (), "org.hl7.fhir.validator.jar");
             var scopeArgument = string.IsNullOrEmpty (ScopeDirectory) ? "" : $" -ig \"{ScopeDirectory}\"";
             var outputJson = $"{Path.GetTempFileName()}.json";
             var finalArguments = $"-jar {validatorPath} -version {(FhirVersion == "STU3"  ? "3.0" : "4.0")} -tx \"{TerminologyService}\"{scopeArgument} -output {outputJson} {resourcePath}";
@@ -981,7 +994,7 @@ class Program {
     }
 
     static int Main (string[] args) {
-        var qtRuntime = Path.Combine(AppModel.Extensions.GetExecutablePath(), "qt-runtime");
+        var qtRuntime = Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime");
         if (Directory.Exists(qtRuntime)) {
             Console.WriteLine($"Using embedded Qt runtime from {qtRuntime}");
             RuntimeManager.ConfigureRuntimeDirectory(qtRuntime);
@@ -1010,7 +1023,7 @@ class Program {
         // Now we can load the GUI
         QCoreApplication.OrganizationDomain = "Hammer.mc";
         QCoreApplication.OrganizationName = "Hammer";
-        engine.Load ("Main.qml");
+        engine.Load (Path.Combine(AppModel.Extensions.GetApplicationLocation(), "Main.qml"));
 
         // Once the GUI is loaded, we can start working with the AppModel
         // instance.
