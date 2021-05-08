@@ -120,8 +120,8 @@ jobs:
         repo_token: ${{secrets.GITHUB_TOKEN}}
         automatic_release_tag: latest
         prerelease: true
-        title: Development Build
+        title: Latest in-development build
         files: |
           artifacts/hammer-linux/Hammer-linux.zip
-          artifacts/hammer-linux/Hammer-windows.zip
-          artifacts/hammer-linux/Hammer-macos.zip
+          artifacts/hammer-windows/Hammer-windows.zip
+          artifacts/hammer-macos/Hammer-macos.zip
