@@ -91,38 +91,37 @@ jobs:
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
-    - name: Publish as an artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: hammer-${{matrix.buildname}}
-        path: bin/Release/**/publish/
-
-    - name: Zip up for a preview link
-      # TODO debug
-      # if: github.event_name == 'push'
+    - name: Zip up artifact
       shell: bash
       run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
 
-    - name: Deploy to a preview link
-      # TODO debug
-      # if: github.event_name == 'push'
-      uses: marvinpinto/action-automatic-releases@v1.2.0
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
       with:
-        repo_token: ${{secrets.GITHUB_TOKEN}}
-        automatic_release_tag: latest
-        prerelease: true
-        title: Development Build
-        files: publish/Hammer-${{matrix.deployment-platform}}.zip
+        name: hammer-${{matrix.buildname}}
+        path: publish/*
+
 
   upload_artifacts:
     name: Upload to pre-release
     runs-on: ubuntu-20.04
     needs: build
+    # TODO debug
+    # if: github.event_name == 'push'
 
     steps:
     - uses: actions/download-artifact@v2
       with:
         path: artifacts
+
+    # - name: Deploy to a preview link
+    #   uses: marvinpinto/action-automatic-releases@v1.2.0
+    #   with:
+    #     repo_token: ${{secrets.GITHUB_TOKEN}}
+    #     automatic_release_tag: latest
+    #     prerelease: true
+    #     title: Development Build
+    #     files: publish/Hammer-${{matrix.deployment-platform}}.zip
 
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
