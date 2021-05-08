@@ -981,13 +981,12 @@ class Program {
     }
 
     static int Main (string[] args) {
-        Console.WriteLine($"App location: {AppModel.Extensions.GetExecutablePath()}");
         var qtRuntime = Path.Combine(AppModel.Extensions.GetExecutablePath(), "qt-runtime");
         if (Directory.Exists(qtRuntime)) {
-            Console.WriteLine("Using embedded Qt runtime");
+            Console.WriteLine($"Using embedded Qt runtime from {qtRuntime}");
             RuntimeManager.ConfigureRuntimeDirectory(qtRuntime);
         } else {
-            Console.WriteLine("No Qt runtime bundled, using a default one");
+            Console.WriteLine($"Qt runtime not present in {qtRuntime}, using a default one");
             RuntimeManager.DiscoverOrDownloadSuitableQtRuntime ();
         }
 
