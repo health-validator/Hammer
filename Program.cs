@@ -699,7 +699,7 @@ class Program {
                 if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) {
                     var sb = new System.Text.StringBuilder(MAX_PATH);
                     GetModuleFileName(IntPtr.Zero, sb, MAX_PATH);
-                    return sb.ToString();
+                    return Path.GetDirectoryName(sb.ToString());
                 }
                 else {
                     return System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
