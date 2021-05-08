@@ -1,4 +1,4 @@
-name: .NET
+name: Build Hammer
 
 on:
   push:
@@ -113,3 +113,16 @@ jobs:
         prerelease: true
         title: Development Build
         files: publish/Hammer-${{matrix.deployment-platform}}.zip
+
+  upload_artifacts:
+    name: Upload to pre-release
+    runs-on: ubuntu-20.04
+    needs: build
+
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        path: artifacts
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
