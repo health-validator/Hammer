@@ -112,4 +112,4 @@ jobs:
         automatic_release_tag: latest
         prerelease: true
         title: Development Build
-        files: $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
+        files: publish/Hammer-${{matrix.deployment-platform}}.zip
