@@ -702,7 +702,7 @@ class Program {
                     return Path.GetDirectoryName(sb.ToString());
                 }
                 else {
-                    return System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                    return Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
                 }
             }
         }
