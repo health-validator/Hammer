@@ -17,15 +17,20 @@ jobs:
           - os: ubuntu-20.04
             buildname: 'linux'
             qt-version: '5.15.1-7fc8b10'
+            # .NET platform identifier we're working with
             dotnet-platform: 'linux-x64'
+            # used for the resulting zip or executable
+            deployment-platform: 'linux'
           - os: macos-10.15
             buildname: 'macos'
             qt-version: '5.15.1-7fc8b10'
             dotnet-platform: 'osx-x64'
+            deployment-platform: 'osx'
           - os: windows-2019
             buildname: 'windows'
             qt-version: '5.15.1-7fc8b10'
             dotnet-platform: 'win-x64'
+            deployment-platform: 'win'
 
     steps:
     - uses: actions/checkout@v2
@@ -88,13 +93,28 @@ jobs:
         name: hammer-${{matrix.buildname}}
         path: bin/Release/**/publish/
 
+    - name: Zip up for a preview link
+      uses: papeloto/action-zip@v1
+      # TODO debug
+      # if: github.event_name == 'push'
+      with:
+        files: bin/Release/**/publish/
+        recursive: false
+        dest: Hammer-${{matrix.deployment-platform}}.zip
+
+      # zip action can't write to a particular folder,
+      # and the gh pages deployment one requires a folder
+    - name: Move output into a folder
+      shell: bash
+      run: mkdir -p publish/ && mv Hammer-${{matrix.deployment-platform}}.zip publish/
+
     - name: Deploy to a preview link
       uses: peaceiris/actions-gh-pages@v3
       # TODO debug
       # if: github.event_name == 'push'
       with:
         personal_token: ${{secrets.DEPLOYMENT_TOKEN}}
-        publish_dir: bin/Release/**/publish/
+        publish_dir: publish/
         external_repository: health-validator/latest
         publish_branch: main
         keep_files: true
