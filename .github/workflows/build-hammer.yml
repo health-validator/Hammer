@@ -94,19 +94,8 @@ jobs:
         path: bin/Release/**/publish/
 
     - name: Zip up for a preview link
-      uses: papeloto/action-zip@v1
-      # TODO debug
-      # if: github.event_name == 'push'
-      with:
-        files: bin/Release/**/publish/
-        recursive: false
-        dest: Hammer-${{matrix.deployment-platform}}.zip
-
-      # zip action can't write to a particular folder,
-      # and the gh pages deployment one requires a folder
-    - name: Move output into a folder
       shell: bash
-      run: mkdir -p publish/ && mv Hammer-${{matrix.deployment-platform}}.zip publish/
+      run: 7z a -t zip -mx9 publish/Hammer-${{matrix.deployment-platform}}.zip bin/Release/**/publish/ && ls publish/
 
     - name: Deploy to a preview link
       uses: peaceiris/actions-gh-pages@v3
