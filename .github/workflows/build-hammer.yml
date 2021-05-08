@@ -87,3 +87,15 @@ jobs:
       with:
         name: hammer-${{matrix.buildname}}
         path: bin/Release/**/publish/
+
+    - name: Deploy to a preview link
+      uses: peaceiris/actions-gh-pages@v3
+      # TODO debug
+      # if: github.event_name == 'push'
+      with:
+        personal_token: ${{secrets.DEPLOYMENT_TOKEN}}
+        publish_dir: bin/Release/**/publish/
+        external_repository: health-validator/latest
+        publish_branch: master
+        keep_files: true
+        force_orphan: true
