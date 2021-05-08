@@ -107,7 +107,7 @@ jobs:
       # if: github.event_name == 'push'
       with:
         personal_token: ${{secrets.DEPLOYMENT_TOKEN}}
-        publish_dir: publish/
+        publish_dir: publish
         external_repository: health-validator/latest
         publish_branch: main
         keep_files: true
