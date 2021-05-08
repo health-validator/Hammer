@@ -106,7 +106,7 @@ jobs:
     - name: Deploy to a preview link
       # TODO debug
       # if: github.event_name == 'push'
-      uses: marvinpinto/action-automatic-releases@1.2.0
+      uses: marvinpinto/action-automatic-releases@v1.2.0
       with:
         repo_token: ${{secrets.GITHUB_TOKEN}}
         automatic_release_tag: latest
