@@ -968,6 +968,7 @@ class Program {
     }
 
     static int Main (string[] args) {
+        Console.WriteLine(AppModel.GetApplicationLocation());
         var qtRuntime = Path.Combine(AppModel.GetApplicationLocation(), "qt-runtime");
         if (Directory.Exists(qtRuntime)) {
             Console.WriteLine("Using embedded Qt runtime");
