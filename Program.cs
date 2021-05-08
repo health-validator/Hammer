@@ -61,8 +61,8 @@ class Program {
         }
 
         // this only gets populated on use, so it's OK to setup beforehand
-        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceStu3 = new Hl7.Fhir.Specification.Source.CachedResolver (new stu3.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (GetApplicationLocation (), "specification_Fhir3_0.zip")));
-        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceR4 = new Hl7.Fhir.Specification.Source.CachedResolver (new r4.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (GetApplicationLocation (), "specification_Fhir4_0.zip")));
+        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceStu3 = new Hl7.Fhir.Specification.Source.CachedResolver (new stu3.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (Extensions.GetExecutablePath (), "specification_Fhir3_0.zip")));
+        private readonly Hl7.Fhir.Specification.Source.IResourceResolver _coreSourceR4 = new Hl7.Fhir.Specification.Source.CachedResolver (new r4.Hl7.Fhir.Specification.Source.ZipSource (Path.Combine (Extensions.GetExecutablePath (), "specification_Fhir4_0.zip")));
 
         private Hl7.Fhir.Specification.Source.IResourceResolver _combinedSource;
 
@@ -690,14 +690,27 @@ class Program {
             return result;
         }
 
-        private static string GetApplicationLocation () {
-            return Path.GetDirectoryName (Assembly.GetEntryAssembly ()?.Location);
+        // credit: https://github.com/dotnet/runtime/issues/13051#issuecomment-514774802
+        public static class Extensions {
+            [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+            static extern uint GetModuleFileName(IntPtr hModule, System.Text.StringBuilder lpFilename, int nSize);
+            const int MAX_PATH = 255;
+            public static string GetExecutablePath() {
+                if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) {
+                    var sb = new System.Text.StringBuilder(MAX_PATH);
+                    GetModuleFileName(IntPtr.Zero, sb, MAX_PATH);
+                    return Path.GetDirectoryName(sb.ToString());
+                }
+                else {
+                    return System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                }
+            }
         }
 
         public OperationOutcome ValidateWithJava (CancellationToken token) {
             var resourcePath = SerializeResource (ResourceText, InstanceFormat);
 
-            var validatorPath = Path.Combine (GetApplicationLocation (), "org.hl7.fhir.validator.jar");
+            var validatorPath = Path.Combine (Extensions.GetExecutablePath (), "org.hl7.fhir.validator.jar");
             var scopeArgument = string.IsNullOrEmpty (ScopeDirectory) ? "" : $" -ig \"{ScopeDirectory}\"";
             var outputJson = $"{Path.GetTempFileName()}.json";
             var finalArguments = $"-jar {validatorPath} -version {(FhirVersion == "STU3"  ? "3.0" : "4.0")} -tx \"{TerminologyService}\"{scopeArgument} -output {outputJson} {resourcePath}";
@@ -968,7 +981,14 @@ class Program {
     }
 
     static int Main (string[] args) {
-        RuntimeManager.DiscoverOrDownloadSuitableQtRuntime ();
+        var qtRuntime = Path.Combine(AppModel.Extensions.GetExecutablePath(), "qt-runtime");
+        if (Directory.Exists(qtRuntime)) {
+            Console.WriteLine($"Using embedded Qt runtime from {qtRuntime}");
+            RuntimeManager.ConfigureRuntimeDirectory(qtRuntime);
+        } else {
+            Console.WriteLine($"Qt runtime not present in {qtRuntime}, using a default one");
+            RuntimeManager.DiscoverOrDownloadSuitableQtRuntime ();
+        }
 
         QQuickStyle.SetStyle ("Universal");
         QCoreApplication.SetAttribute (ApplicationAttribute.EnableHighDpiScaling, true);

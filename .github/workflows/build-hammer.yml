@@ -16,10 +16,16 @@ jobs:
         include:
           - os: ubuntu-20.04
             buildname: 'linux'
+            qt-version: '5.15.1-7fc8b10'
+            dotnet-platform: 'linux-x64'
           - os: macos-10.15
             buildname: 'macos'
+            qt-version: '5.15.1-7fc8b10'
+            dotnet-platform: 'osx-x64'
           - os: windows-2019
             buildname: 'windows'
+            qt-version: '5.15.1-7fc8b10'
+            dotnet-platform: 'win-x64'
 
     steps:
     - uses: actions/checkout@v2
@@ -31,15 +37,16 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
-    
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-        
+
     - name: Clone Java validator
       run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
-        
+
+      # build Java first as it's needed by .NET for copying into the publish folder
     - name: Build Java validator
       shell: bash
       run: |
@@ -49,24 +56,31 @@ jobs:
         mv org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli*-SNAPSHOT.jar $GITHUB_WORKSPACE/org.hl7.fhir.validator.jar
         cd $GITHUB_WORKSPACE
         java -jar org.hl7.fhir.validator.jar
-        
+
     - name: (Linux) Build Hammer
       if: runner.os == 'Linux'
       run: |
         sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
-        dotnet publish --configuration Release --runtime linux-x64
-      
+        dotnet publish --configuration Release --runtime ${{matrix.dotnet-platform}}
+
     - name: (macOS) Build Hammer
       if: runner.os == 'macOS'
-      run: |      
+      run: |
         sed -i '' 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
-        dotnet publish --configuration Release --runtime osx-x64
+        dotnet publish --configuration Release --runtime ${{matrix.dotnet-platform}}
 
     - name: (Windows) Build Hammer
       if: runner.os == 'Windows'
-      run: |      
+      run: |
         sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
-        dotnet publish --configuration Release --runtime win-x64
+        dotnet publish --configuration Release --runtime ${{matrix.dotnet-platform}}
+
+    - name: Download runtime
+      shell: bash
+      run: |
+        curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
+        mkdir -p bin/Release/net5.0/${{matrix.dotnet-platform}}/publish/qt-runtime
+        tar -xf qt-runtime.tar.gz -C bin/Release/net5.0/${{matrix.dotnet-platform}}/publish/qt-runtime
 
     - name: Publish as an artifact
       uses: actions/upload-artifact@v2
