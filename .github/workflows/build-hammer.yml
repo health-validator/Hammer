@@ -28,7 +28,7 @@ jobs:
             qt-version: '5.15.1-7fc8b10'
             dotnet-platform: 'osx-x64'
             dotnet-version: 'net5.0'
-            deployment-platform: 'osx'
+            deployment-platform: 'macos'
           - os: windows-2019
             buildname: 'windows'
             qt-version: '5.15.1-7fc8b10'
