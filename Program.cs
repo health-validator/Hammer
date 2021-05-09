@@ -1029,7 +1029,12 @@ class Program {
         // instance.
         cliParser.Process ();
 
-        AppModel.Instance.CheckForUpdates ();
+        var updatesCheckTimer = new System.Timers.Timer(TimeSpan.FromSeconds(5).TotalMilliseconds);
+        updatesCheckTimer.Elapsed += async (sender, args) =>
+        {
+            await AppModel.Instance.CheckForUpdates ();
+        };
+        updatesCheckTimer.Start();
 
         return app.Exec ();
     }
