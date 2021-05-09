@@ -28,7 +28,7 @@
     <!-- single file does not work: https://github.com/qmlnet/qmlnet/issues/238 -->
     <PublishSingleFile>false</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>CopyUsed</TrimMode>
+    <TrimMode>Link</TrimMode>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows')) and '$(Configuration)' == 'Release'">
@@ -36,7 +36,7 @@
     <SelfContained>true</SelfContained>
     <PublishSingleFile>false</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>CopyUsed</TrimMode>
+    <TrimMode>Link</TrimMode>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) and '$(Configuration)' == 'Release'">
@@ -44,7 +44,7 @@
     <SelfContained>true</SelfContained>
     <PublishSingleFile>false</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>CopyUsed</TrimMode>
+    <TrimMode>Link</TrimMode>
   </PropertyGroup>
 
   <Target Name="AddPackageAliases" BeforeTargets="ResolveReferences" Outputs="%(PackageReference.Identity)">
