@@ -165,6 +165,26 @@ ApplicationWindow {
                     }
                 }
             }
+        }
+
+        Row {
+            id: examplesRow
+            y: parent.height - 200
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 20
+            visible: textArea.state === "MINIMAL"
+
+            Label {
+                id: samplesLabel
+                text: qsTr("Samples")
+                font.bold: true
+                opacity: 0.6
+                font.pointSize: 20
+            }
+
+            Button {
+                text: qsTr("hide")
+            }
 
         }
 
