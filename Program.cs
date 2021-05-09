@@ -864,12 +864,12 @@ class Program {
         public async void CheckForUpdates () {
             Debug.WriteLine ($"Currently running Hammer v{ApplicationVersion}. Checking for updates...");
 
-            string tags = await GetRepoTags ();
-            if (String.IsNullOrEmpty (tags)) {
+            string releases = await GetRepoReleases ();
+            if (String.IsNullOrEmpty (releases)) {
                 return;
             }
 
-            var latestVersion = ExtractLatestVersion (tags);
+            var latestVersion = ExtractLatestVersion (releases);
 
             if (latestVersion == null) {
                 return;
@@ -892,14 +892,11 @@ class Program {
                 return null;
             }
 
-            var latestRelease = repoTags.First ();
+            string latestReleaseName = (string)repoTags.SelectTokens("$[?(@.draft == false && @.prerelease == false)].tag_name").FirstOrDefault();
 
-            var item = latestRelease.Children<JProperty> ().FirstOrDefault (p => p.Name == "name");
-            string latestReleaseTag = (string) item.Value;
-
-            var matches = ExtractReleaseVersion (latestReleaseTag);
+            var matches = ExtractReleaseVersion (latestReleaseName);
             if (!matches.Any ()) {
-                Console.WriteLine ($"Couldn't parse downloaded release tag '{latestReleaseTag}' to extract the version.");
+                Console.WriteLine ($"Couldn't parse downloaded release '{latestReleaseName}' to extract the version.");
                 return null;
             }
             var latestReleaseVersion = matches.First ().Groups[1].ToString ().Trim ();
@@ -911,9 +908,9 @@ class Program {
             return latestVersion;
         }
 
-        public async Task<string> GetRepoTags () {
+        public async Task<string> GetRepoReleases () {
             using var client = new HttpClient ();
-            string url = $"https://api.github.com/repos/{RepoOrg}/{RepoName}/tags";
+            string url = $"https://api.github.com/repos/{RepoOrg}/{RepoName}/releases";
 
             using var requestMessage = new HttpRequestMessage (HttpMethod.Get, url);
             requestMessage.Headers.Add ("User-Agent", $"{RepoOrg}/{RepoName}");
@@ -921,7 +918,7 @@ class Program {
             try {
                 response = await client.SendAsync (requestMessage);
             } catch (Exception exception) {
-                Console.WriteLine ($"Failed to download latest Hammer release tags: {exception.Message}");
+                Console.WriteLine ($"Failed to download latest Hammer releases: {exception.Message}");
                 return null;
             }
 
