@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/health-validator/Hammer/examples.json",
+    "type": "array",
+    "title": "JSON Schema for Hammer metadata examples",
+    "description": "This schema validates the metadata.json file that's included with Hammer (health validator)",
+    "default": [],
+    "examples": [
+        [
+            {
+                "filename": "patient.json",
+                "title": "Sample patient",
+                "description": "Valid Patient resource (JSON)"
+            }
+        ]
+    ],
+    "additionalItems": true,
+    "items": {
+        "$id": "#/items",
+        "anyOf": [
+            {
+                "$id": "#/items/anyOf/0",
+                "type": "object",
+                "title": "A single file with a single resource inside",
+                "description": "File can contain a Bundle",
+                "default": {},
+                "examples": [
+                    {
+                        "filename": "patient.json",
+                        "title": "Sample patient",
+                        "description": "Valid Patient resource (JSON)"
+                    }
+                ],
+                "required": [
+                    "filename",
+                    "title",
+                    "description"
+                ],
+                "properties": {
+                    "filename": {
+                        "$id": "#/items/anyOf/0/properties/filename",
+                        "type": "string",
+                        "title": "File name in the examples directory",
+                        "default": "",
+                        "examples": [
+                            "patient.json"
+                        ]
+                    },
+                    "title": {
+                        "$id": "#/items/anyOf/0/properties/title",
+                        "type": "string",
+                        "title": "Title of the example",
+                        "description": "Title will be shown in the UI",
+                        "default": "",
+                        "examples": [
+                            "Sample patient"
+                        ]
+                    },
+                    "description": {
+                        "$id": "#/items/anyOf/0/properties/description",
+                        "type": "string",
+                        "title": "Description of the resource",
+                        "description": "Description to show beneath the title",
+                        "default": "",
+                        "examples": [
+                            "Valid Patient resource (JSON)"
+                        ]
+                    }
+                },
+                "additionalProperties": true
+            }
+        ]
+    }
+}
