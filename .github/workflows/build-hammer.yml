@@ -15,13 +15,15 @@ jobs:
       matrix:
         include:
           - os: ubuntu-20.04
+            # name to show in the logs
             buildname: 'linux'
+            # qml.net version to use from https://github.com/qmlnet/qt-runtimes/releases/tag/releases
             qt-version: '5.15.1-7fc8b10'
             # .NET platform identifier
             dotnet-platform: 'linux-x64'
             # .NET platform version:
             dotnet-version: 'net5.0'
-            # used for the resulting zip or executable
+            # resulting zip or executable name
             deployment-platform: 'linux'
           - os: macos-10.15
             buildname: 'macos'
