@@ -70,8 +70,6 @@
     <PackageReference Include="Hl7.Fhir.Support.Poco" Version="3.2.0" />
 
     <PackageReference Include="CsvHelper" Version="27.0.2" />
-    <PackageReference Include="Microsoft.CodeQuality.Analyzers" Version="3.3.2" />
-    <PackageReference Include="Microsoft.NetCore.Analyzers" Version="3.3.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Qml.Net" Version="0.11.0" />
     <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.11.0" />
@@ -82,6 +80,10 @@
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="ToMarkdownTable" Version="0.2.1-alpha0003" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Update="errataFhir3.0.zip">
