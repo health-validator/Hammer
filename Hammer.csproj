@@ -77,9 +77,8 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
-
 
   <ItemGroup>
     <None Update="errataFhir3.0.zip">
