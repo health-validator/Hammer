@@ -138,9 +138,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-	
+
       - name: Install ajv
         run: npm install -g ajv-cli
-        
+
       - name: Validate metadata
         run: ajv -s assets/examples/.metadata.schema.json -d assets/examples/metadata.json
