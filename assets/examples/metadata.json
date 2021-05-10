@@ -1,5 +1,32 @@
-[{
-    "filename": "patient.json",
-    "title": "Sample patient",
-    "description": "Valid Patient resource (JSON)"
-}]
+[
+    {
+        "filename": "patient.json",
+        "title": "Sample patient",
+        "description": "Valid Patient resource (stu3, json)",
+        "fhirVersion": "STU3"
+    },
+    {
+        "filename": "patient.json",
+        "title": "Sample patient3",
+        "description": "Invalid Observation resource (stu3, json)",
+        "fhirVersion": "STU3"
+    },
+    {
+        "filename": "patient.json",
+        "title": "Sample patient",
+        "description": "Invalid Condition resource (r4, xml)",
+        "fhirVersion": "R4"
+    },
+    {
+        "filename": "patient.json",
+        "title": "Sample patient",
+        "description": "Invalid Bundle resource (r4, xml)",
+        "fhirVersion": "R4"
+    },
+    {
+        "filename": "patient.json",
+        "title": "Sample patient",
+        "description": "Invalid Practitioner resource (r4, json)",
+        "fhirVersion": "R4"
+    }
+]
