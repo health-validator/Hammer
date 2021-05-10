@@ -245,6 +245,23 @@ class Program
             set => this.SetProperty(ref _dotnetIssues, value);
         }
 
+        // exposes examples to QML
+        private List<Example> _examples = new List<Example>();
+        [NotifySignal]
+        public List<Example> Examples
+        {
+            get => _examples;
+            set => this.SetProperty(ref _examples, value);
+        }
+
+        // loads examples from disk
+        public class DiskExample
+        {
+            public string Filepath { get; set; }
+            public string Title { get; set; }
+            public string Description { get; set; }
+        }
+
         private bool _javaValidationCrashed;
         [NotifySignal]
         public bool JavaValidationCrashed
@@ -375,6 +392,33 @@ class Program
             {
                 get => _linePosition;
                 set => this.SetProperty(ref _linePosition, value);
+            }
+        }
+
+        public class Example
+        {
+            private string _filepath;
+            [NotifySignal]
+            public string Filepath
+            {
+                get => _filepath;
+                set => this.SetProperty(ref _filepath, value);
+            }
+
+            private string _title;
+            [NotifySignal]
+            public string Title
+            {
+                get => _title;
+                set => this.SetProperty(ref _title, value);
+            }
+
+            private string _description;
+            [NotifySignal]
+            public string Description
+            {
+                get => _description;
+                set => this.SetProperty(ref _description, value);
             }
         }
 
@@ -987,6 +1031,18 @@ class Program
             }
         }
 
+        public void LoadExamples()
+        {
+            JArray examples = JArray.Parse(File.ReadAllText(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "assets", "examples", "metadata.json")));
+
+            Examples = new List<Example>();
+            foreach (JToken example in examples)
+            {
+                Examples.Add(example.ToObject<Example>());
+            }
+            Console.WriteLine("hi");
+        }
+
         public void CancelValidation()
         {
             // Signal the CancellationToken in the tasks that we want to cancel.
@@ -1204,6 +1260,12 @@ class Program
         // Once the GUI is loaded, we can start working with the AppModel
         // instance.
         cliParser.Process();
+
+        Stopwatch sw = Stopwatch.StartNew();
+        AppModel.Instance.LoadExamples();
+        sw.Stop();
+
+        Console.WriteLine("LoadExamples time taken: {0}ms", sw.Elapsed.TotalMilliseconds);
 
         AppModel.Instance.CheckForUpdates();
 
