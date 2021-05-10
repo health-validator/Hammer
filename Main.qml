@@ -169,7 +169,7 @@ ApplicationWindow {
 
         Row {
             id: examplesRow
-            y: parent.height - 200
+            y: parent.height - 300
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 20
             visible: textArea.state === "MINIMAL"
@@ -185,34 +185,36 @@ ApplicationWindow {
             Button {
                 text: qsTr("hide")
             }
+        }
 
-            ListView {
-                id: examplesView
-                anchors.top: samplesLabel.bottom
-                anchors.left: parent.left
-                implicitWidth: contentItem.childrenRect.width
-                // height: parent.height - buttonsRow.height
 
-                Connections {
-                    target: appmodel
-                    function onExamplesLoaded () {
+        ListView {
+            id: examplesView
+            anchors.top: examplesRow.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            implicitWidth: contentItem.childrenRect.width
+            implicitHeight: contentItem.childrenRect.height
+            visible: textArea.state === "MINIMAL"
 
-                        examplesView.model = Net.toListModel(appmodel.examples)
-                    }
+            Connections {
+                target: appmodel
+                function onExamplesLoaded () {
+
+                    examplesView.model = Net.toListModel(appmodel.examples)
                 }
+            }
 
-                delegate: TabButton {
-                    id: control
-                    text: textMetrics.elidedText
-                    width: 250
-                    onClicked: appmodel.loadResourceFile(modelData.filepath)
+            delegate: TabButton {
+                id: control
+                text: textMetrics.elidedText
+                width: 250
+                onClicked: appmodel.loadResourceFile(modelData.filepath)
 
-                    TextMetrics {
-                        id: textMetrics
-                        elide: Text.ElideMiddle
-                        elideWidth: control.width
-                        text: modelData.title
-                    }
+                TextMetrics {
+                    id: textMetrics
+                    elide: Text.ElideMiddle
+                    elideWidth: control.width
+                    text: modelData.title
                 }
             }
         }
