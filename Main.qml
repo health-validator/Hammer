@@ -186,6 +186,35 @@ ApplicationWindow {
                 text: qsTr("hide")
             }
 
+            ListView {
+                id: examplesView
+                anchors.top: samplesLabel.bottom
+                anchors.left: parent.left
+                implicitWidth: contentItem.childrenRect.width
+                // height: parent.height - buttonsRow.height
+
+                Connections {
+                    target: appmodel
+                    function onExamplesLoaded () {
+
+                        examplesView.model = Net.toListModel(appmodel.examples)
+                    }
+                }
+
+                delegate: TabButton {
+                    id: control
+                    text: textMetrics.elidedText
+                    width: 250
+                    onClicked: appmodel.loadResourceFile(modelData.filepath)
+
+                    TextMetrics {
+                        id: textMetrics
+                        elide: Text.ElideMiddle
+                        elideWidth: control.width
+                        text: modelData.title
+                    }
+                }
+            }
         }
 
         Text {

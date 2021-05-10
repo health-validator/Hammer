@@ -36,6 +36,7 @@ using Newtonsoft.Json.Linq;
 class Program
 {
     [Signal("validationStarted")]
+    [Signal("examplesLoaded")]
     [Signal("updateAvailable", NetVariantType.String)]
     public class AppModel : IDisposable
     {
@@ -257,7 +258,7 @@ class Program
         // loads examples from disk
         public class DiskExample
         {
-            public string Filepath { get; set; }
+            public string Filename { get; set; }
             public string Title { get; set; }
             public string Description { get; set; }
         }
@@ -1033,14 +1034,21 @@ class Program
 
         public void LoadExamples()
         {
-            JArray examples = JArray.Parse(File.ReadAllText(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "assets", "examples", "metadata.json")));
+            JArray jsonExamples = JArray.Parse(File.ReadAllText(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "assets", "examples", "metadata.json")));
 
             Examples = new List<Example>();
-            foreach (JToken example in examples)
+            foreach (JToken jsonExample in jsonExamples)
             {
-                Examples.Add(example.ToObject<Example>());
+                var diskExample = jsonExample.ToObject<DiskExample>();
+                var example = new Example {
+                    Filepath = $"file://{Path.Combine(AppModel.Extensions.GetApplicationLocation(), "assets", "examples", diskExample.Filename)}",
+                    Title = diskExample.Title,
+                    Description = diskExample.Description,
+
+                };
+                Examples.Add(example);
             }
-            Console.WriteLine("hi");
+            this.ActivateSignal("examplesLoaded");
         }
 
         public void CancelValidation()
@@ -1261,10 +1269,10 @@ class Program
         // instance.
         cliParser.Process();
 
+        // do this async
         Stopwatch sw = Stopwatch.StartNew();
         AppModel.Instance.LoadExamples();
         sw.Stop();
-
         Console.WriteLine("LoadExamples time taken: {0}ms", sw.Elapsed.TotalMilliseconds);
 
         AppModel.Instance.CheckForUpdates();
