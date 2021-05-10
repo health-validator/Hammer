@@ -1032,6 +1032,8 @@ class Program
             }
         }
 
+        // load examples. This should be done syncronously: https://ux.stackexchange.com/q/138673/108628
+        // but if it can be made quicker, then even better
         public void LoadExamples()
         {
             JArray jsonExamples = JArray.Parse(File.ReadAllText(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "assets", "examples", "metadata.json")));
