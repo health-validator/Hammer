@@ -1,0 +1,118 @@
+name: Publish release
+
+on:
+# todo
+  # release:
+  #   types: [created]
+  push:
+
+jobs:
+  publish-hammer:
+    runs-on: windows-latest
+    if: github.repository == 'health-validator/Hammer'
+    env:
+      buildtype: Release
+      TAG_NAME: ${{github.event.release.tag_name}}
+
+    steps:
+    - name: Validate release version
+      shell: powershell
+      run: |
+        # Validate that the version used in the release is one that'll work with all of our tooling
+        # Squirrel can be picky: https://github.com/Squirrel/Squirrel.Windows/issues/1394
+
+        #
+        # TODO FIXME
+        #
+
+        $env:TAG_NAME = "Hammer-0.0.2"
+
+        if ($env:TAG_NAME -match "^Hammer-(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Release>-[a-z][0-9a-z-]*)?$") {
+          $SHORT_TAG_NAME = $Matches.Version
+        } else {
+          echo "$env:TAG_NAME isn't a valid release name - make sure it matches v#.#.#"
+          exit 1
+        }
+
+        echo "SHORT_TAG_NAME=${SHORT_TAG_NAME}" >> $env:GITHUB_ENV
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v1.4.0
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Setup nuget.exe
+      uses: warrenbuckley/Setup-Nuget@v1
+
+    - name: Setup msbuild.exe
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Checkout source code
+      uses: actions/checkout@v2.0.0
+
+    - name: Restore packages
+      run: nuget restore
+
+    - name: Update version number file
+      shell: powershell
+      run: |
+        $csproj = "Hammer.csproj"
+        $regex = '<Version>.+?<\/Version>'
+        $replacement = "<Version>$env:SHORT_TAG_NAME<\/Version>"
+        (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
+
+    - name: Compile Hammer
+      run: dotnet publish --configuration ${{env.buildtype}} --runtime win-x64
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 15
+
+    - name: Build installer
+      shell: powershell
+      env:
+        WORKSPACE: ${{runner.workspace}}
+        WORKSPACEGIT: ${{runner.workspace}}\ClinicArrivals
+        SIGNING_PASSWORD: ${{ secrets.SIGNING_CERT }}
+      run: |
+        $SQUIRRELWIN = "$env:WORKSPACE\squirrel-packaging-prep"
+        $SQUIRRELWINBIN = "$SQUIRRELWIN\lib\net45\"
+        $RELEASEDIR = "$env:WORKSPACE\finished-installer"
+        if (-not $(Test-Path "$SQUIRRELWINBIN")) {
+          New-Item "$SQUIRRELWINBIN" -ItemType "directory"
+        }
+        Move-Item $env:WORKSPACEGIT\ClinicArrivals\bin\$env:buildtype\* $SQUIRRELWINBIN
+        Remove-Item $env:WORKSPACEGIT\ClinicArrivals\bin\$env:buildtype\* -include *.pdb, *.vshost.*
+        Copy-Item $env:WORKSPACEGIT\ClinicArrivals.png $SQUIRRELWIN
+        $Script:NuSpec = "$env:WORKSPACEGIT\ClinicArrivals.nuspec"
+        nuget pack "$Script:NuSpec" -Version "$env:SHORT_TAG_NAME" `
+          -BasePath $SQUIRRELWIN -OutputDirectory $SQUIRRELWIN
+        $Script:NupkgPath = "$SQUIRRELWIN\ClinicArrivals.$env:SHORT_TAG_NAME.nupkg"
+        if (-not (Test-Path -Path $Script:NupkgPath -PathType Leaf)) {
+          Write-Output "ERROR: nupkg doesn't exist as expected! Build aborted."
+          exit 1
+        }
+        nuget install squirrel.windows -ExcludeVersion
+        .\squirrel.windows\tools\Squirrel `
+          --releasify $Script:NupkgPath `
+          --releaseDir $RELEASEDIR --no-msi `
+          --framework-version=462 `
+          --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico `
+          --loadingGif=$env:WORKSPACEGIT\ClinicArrivals.png `
+          --signWithParams="/a /f $env:WORKSPACEGIT\healthintersections.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
+        if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf)) {
+          Write-Output "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
+          Get-Content -Path .\squirrel.windows\tools\SquirrelSetup.log
+          exit 1
+        }
+        echo "::set-env name=RELEASEDIR::$RELEASEDIR"
+
+    - name: Upload installer .exe
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_name: ClinicArrivals-${{github.event.release.tag_name}}-win.exe
+        asset_path: ${{env.RELEASEDIR}}\Setup.exe
+        asset_content_type: application/vnd.microsoft.portable-executable
