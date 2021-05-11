@@ -169,7 +169,7 @@ ApplicationWindow {
 
         Row {
             id: examplesRow
-            y: parent.height - 300
+            y: parent.height - 400
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 20
             visible: textArea.state === "MINIMAL"
@@ -196,6 +196,7 @@ ApplicationWindow {
             implicitHeight: contentItem.childrenRect.height
             visible: textArea.state === "MINIMAL"
 
+
             Connections {
                 target: appmodel
                 function onExamplesLoaded () {
@@ -207,14 +208,14 @@ ApplicationWindow {
             delegate: TabButton {
                 id: control
                 text: textMetrics.elidedText
-                width: 250
+                width: 400
                 onClicked: appmodel.loadResourceFile(modelData.filepath)
 
                 TextMetrics {
                     id: textMetrics
                     elide: Text.ElideMiddle
                     elideWidth: control.width
-                    text: modelData.title
+                    text: `${modelData.title}\n${modelData.description}`
                 }
             }
         }
