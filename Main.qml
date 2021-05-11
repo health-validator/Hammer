@@ -97,7 +97,6 @@ ApplicationWindow {
             font.bold: true
             opacity: 0.6
             font.pointSize: 36
-            font.family: "Apple Color Emoji"
             visible: textArea.state === "MINIMAL"
         }
 
@@ -472,12 +471,8 @@ ApplicationWindow {
 }
 
 
-/*##^## Designer {
-    D{i:2;invisible:true}D{i:31;anchors_height:130;anchors_width:300}D{i:32;anchors_height:130;anchors_width:300}
-D{i:34;anchors_height:130;anchors_width:300}D{i:36;anchors_height:130;anchors_width:300}
-D{i:37;anchors_height:130;anchors_width:300}D{i:35;anchors_height:130;anchors_width:300}
-D{i:5;invisible:true}D{i:41;invisible:true}D{i:42;invisible:true}D{i:40;invisible:true}
-D{i:44;invisible:true}D{i:54;invisible:true}D{i:64;invisible:true}D{i:66;invisible:true}
-D{i:65;invisible:true}
+/*##^##
+Designer {
+    D{i:0}D{i:5;invisible:true}
 }
- ##^##*/
+##^##*/
