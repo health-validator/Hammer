@@ -1,32 +1,27 @@
 [
     {
         "filename": "patient.json",
-        "title": "Sample patient",
-        "description": "Valid Patient resource (stu3, json)",
-        "fhirVersion": "STU3"
+        "title": "Patient",
+        "description": "Valid Patient resource (json)"
     },
     {
-        "filename": "patient.json",
-        "title": "Sample patient3",
-        "description": "Invalid Observation resource (stu3, json)",
-        "fhirVersion": "STU3"
+        "filename": "observation.json",
+        "title": "Observation",
+        "description": "Invalid Observation resource (json)"
     },
     {
-        "filename": "patient.json",
-        "title": "Sample patient",
-        "description": "Invalid Condition resource (r4, xml)",
-        "fhirVersion": "R4"
+        "filename": "condition.xml",
+        "title": "Condition",
+        "description": "Invalid Condition resource (xml)"
     },
     {
-        "filename": "patient.json",
-        "title": "Sample patient",
-        "description": "Invalid Bundle resource (r4, xml)",
-        "fhirVersion": "R4"
+        "filename": "questionnaire.json",
+        "title": "Questionnaire",
+        "description": "Invalid Questionnaire resource (json)"
     },
     {
-        "filename": "patient.json",
-        "title": "Sample patient",
-        "description": "Invalid Practitioner resource (r4, json)",
-        "fhirVersion": "R4"
+        "filename": "organization.xml",
+        "title": "Organization",
+        "description": "Invalid Organization resource (xml)"
     }
 ]
