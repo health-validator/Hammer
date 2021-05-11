@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <PackageId>Hammer.Validator</PackageId>
     <IsPackable>false</IsPackable>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Authors>Vadim Peretokin</Authors>
     <Description>A modern, cross-platform validator for FHIR®.</Description>
     <PackageProjectUrl>https://github.com/health-validator/Hammer</PackageProjectUrl>
@@ -127,3 +127,4 @@
   </ItemGroup>
 
 </Project>
+

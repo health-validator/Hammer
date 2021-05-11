@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Hammer</id>
+    <title>Hammer</title>
+    <version>0.0.0</version>
+    <authors>Vadim Peretokin</authors>
+    <owners>Vadim Peretokin</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/health-validator/Hammer</projectUrl>
+    <icon>hammer-logo.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Validate your FHIR resources (experimental)</description>
+    <copyright>Copyright 2019-2021, Vadim Peretokin</copyright>
+    <tags>fhir resource validate validator</tags>
+  </metadata>
+</package>
