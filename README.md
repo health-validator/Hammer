@@ -85,11 +85,10 @@ Author: [Vadim Peretokin](https://www.linkedin.com/in/vadimperetokin). Join in, 
 
 This software wouldnt've been possible without these open source packages:
 
+- [Java FHIR validator](https://www.hl7.org/fhir/validation.html#jar)
 - [.NET API for FHIR](https://fire.ly/fhir-api/)
 - [.NET Core](https://dotnet.microsoft.com/)
-- [Anemonis.Runtime.ApplicationLauncher](https://github.com/alexanderkozlenko/dotnet-launcher)
 - [CsvHelper](https://joshclose.github.io/CsvHelper/)
-- [Java FHIR validator](https://www.hl7.org/fhir/validation.html#jar)
 - [Qml.Net](https://github.com/qmlnet/qmlnet)
 - [Qt](https://www.qt.io/)
 - [TextCopy](https://github.com/SimonCropp/TextCopy/)
