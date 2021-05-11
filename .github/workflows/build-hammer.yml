@@ -128,11 +128,11 @@ jobs:
           artifacts/hammer-linux/Hammer-linux.zip
           artifacts/hammer-windows/Hammer-windows.zip
           artifacts/hammer-macos/Hammer-macos.zip
-  
+
   validate_examples_metadata:
     name: Validate examples metadata file
     runs-on: ubuntu-20.04
-    
+
     steps:
       - name: Set up npm
         uses: actions/setup-node@v1
@@ -141,6 +141,9 @@ jobs:
 
       - name: Install ajv
         run: npm install -g ajv-cli
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Validate metadata
         run: ajv -s assets/examples/.metadata.schema.json -d assets/examples/metadata.json
