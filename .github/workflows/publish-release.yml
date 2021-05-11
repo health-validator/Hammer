@@ -13,6 +13,11 @@ jobs:
     env:
       buildtype: Release
       TAG_NAME: ${{github.event.release.tag_name}}
+      buildname: 'windows'
+      qt-version: '5.15.1-7fc8b10'
+      dotnet-platform: 'win-x64'
+      dotnet-version: 'net5.0'
+      deployment-platform: 'windows'
 
     steps:
     - name: Validate release version
@@ -49,11 +54,18 @@ jobs:
       run: |
         $csproj = "Hammer.csproj"
         $regex = '<Version>.+?<\/Version>'
-        $replacement = "<Version>$env:SHORT_TAG_NAME<\/Version>"
+        $replacement = "<Version>$env:SHORT_TAG_NAME</Version>"
         (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
 
     - name: Compile Hammer
       run: dotnet publish --configuration ${{env.buildtype}} --runtime win-x64
+
+    - name: Download runtime
+      shell: bash
+      run: |
+        curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{env.qt-version}}-${{env.dotnet-platform}}-runtime.tar.gz
+        mkdir -p bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/qt-runtime
+        tar -xf qt-runtime.tar.gz -C bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/qt-runtime
 
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
@@ -63,7 +75,7 @@ jobs:
       shell: powershell
       env:
         WORKSPACE: ${{runner.workspace}}
-        WORKSPACEGIT: ${{runner.workspace}}\ClinicArrivals
+        WORKSPACEGIT: ${{runner.workspace}}\Hammer
         SIGNING_PASSWORD: ${{ secrets.SIGNING_CERT }}
       run: |
         $SQUIRRELWIN = "$env:WORKSPACE\squirrel-packaging-prep"
@@ -72,13 +84,12 @@ jobs:
         if (-not $(Test-Path "$SQUIRRELWINBIN")) {
           New-Item "$SQUIRRELWINBIN" -ItemType "directory"
         }
-        Move-Item $env:WORKSPACEGIT\ClinicArrivals\bin\$env:buildtype\* $SQUIRRELWINBIN
-        Remove-Item $env:WORKSPACEGIT\ClinicArrivals\bin\$env:buildtype\* -include *.pdb, *.vshost.*
-        Copy-Item $env:WORKSPACEGIT\ClinicArrivals.png $SQUIRRELWIN
-        $Script:NuSpec = "$env:WORKSPACEGIT\ClinicArrivals.nuspec"
+        Move-Item cd bin\Release\${{env.dotnet-version}}\${{env.dotnet-platform}}\publish\* $SQUIRRELWINBIN
+        Copy-Item $env:WORKSPACEGIT\assets\hammer-logo.png $SQUIRRELWIN
+        $Script:NuSpec = "$env:WORKSPACEGIT\Hammer.nuspec"
         nuget pack "$Script:NuSpec" -Version "$env:SHORT_TAG_NAME" `
           -BasePath $SQUIRRELWIN -OutputDirectory $SQUIRRELWIN
-        $Script:NupkgPath = "$SQUIRRELWIN\ClinicArrivals.$env:SHORT_TAG_NAME.nupkg"
+        $Script:NupkgPath = "$SQUIRRELWIN\Hammer.$env:SHORT_TAG_NAME.nupkg"
         if (-not (Test-Path -Path $Script:NupkgPath -PathType Leaf)) {
           Write-Output "ERROR: nupkg doesn't exist as expected! Build aborted."
           exit 1
@@ -89,8 +100,8 @@ jobs:
           --releaseDir $RELEASEDIR --no-msi `
           --framework-version=462 `
           --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico `
-          --loadingGif=$env:WORKSPACEGIT\ClinicArrivals.png `
-          --signWithParams="/a /f $env:WORKSPACEGIT\healthintersections.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
+          --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png
+          # --signWithParams="/a /f $env:WORKSPACEGIT\healthintersections.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
         if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf)) {
           Write-Output "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
           Get-Content -Path .\squirrel.windows\tools\SquirrelSetup.log
@@ -104,6 +115,10 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_name: ClinicArrivals-${{github.event.release.tag_name}}-win.exe
+        asset_name: Hammer-${{github.event.release.tag_name}}-win.exe
         asset_path: ${{env.RELEASEDIR}}\Setup.exe
         asset_content_type: application/vnd.microsoft.portable-executable
+
+    - name: Setup tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
