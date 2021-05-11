@@ -18,6 +18,8 @@ jobs:
       dotnet-platform: 'win-x64'
       dotnet-version: 'net5.0'
       deployment-platform: 'windows'
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      DOTNET_NOLOGO: true
 
     steps:
     - name: Validate release version
