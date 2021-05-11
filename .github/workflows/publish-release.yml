@@ -49,6 +49,20 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v2.0.0
 
+    - name: Clone Java validator
+      run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
+
+      # build Java first as it's needed by .NET for copying into the publish folder
+    - name: Build Java validator
+      shell: bash
+      run: |
+        cd org.hl7.fhir.core
+        echo "Git revision of the validator code: $(git rev-parse HEAD)"
+        mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli --no-transfer-progress
+        mv org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli*-SNAPSHOT.jar $GITHUB_WORKSPACE/org.hl7.fhir.validator.jar
+        cd $GITHUB_WORKSPACE
+        java -jar org.hl7.fhir.validator.jar
+
     - name: Update version number file
       shell: powershell
       run: |
