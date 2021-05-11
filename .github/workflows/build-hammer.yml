@@ -43,7 +43,8 @@ jobs:
       DOTNET_NOLOGO: true
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout source code
+      uses: actions/checkout@v2.0.0
 
     - name: Restore maven cache
       uses: actions/cache@v2
