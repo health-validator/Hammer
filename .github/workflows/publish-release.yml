@@ -100,11 +100,14 @@ jobs:
         if (-not $(Test-Path "$SQUIRRELWINBIN")) {
           New-Item "$SQUIRRELWINBIN" -ItemType "directory"
         }
-        Move-Item cd bin\Release\${{env.dotnet-version}}\${{env.dotnet-platform}}\publish\* $SQUIRRELWINBIN
+        Move-Item bin\Release\${{env.dotnet-version}}\${{env.dotnet-platform}}\publish\* $SQUIRRELWINBIN
         Copy-Item $env:WORKSPACEGIT\assets\hammer-logo.png $SQUIRRELWIN
         $Script:NuSpec = "$env:WORKSPACEGIT\Hammer.nuspec"
+
+        ls $SQUIRRELWIN
         nuget pack "$Script:NuSpec" -Version "$env:SHORT_TAG_NAME" `
           -BasePath $SQUIRRELWIN -OutputDirectory $SQUIRRELWIN
+
         $Script:NupkgPath = "$SQUIRRELWIN\Hammer.$env:SHORT_TAG_NAME.nupkg"
         if (-not (Test-Path -Path $Script:NupkgPath -PathType Leaf)) {
           Write-Output "ERROR: nupkg doesn't exist as expected! Build aborted."
