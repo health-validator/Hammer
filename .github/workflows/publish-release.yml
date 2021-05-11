@@ -2,12 +2,12 @@ name: Publish release
 
 on:
   release:
-    types: [created, prereleased, edited]
+    types: [created]
 
 jobs:
   publish-hammer:
     runs-on: windows-latest
-    # if: github.repository == 'health-validator/Hammer'
+    if: github.repository == 'health-validator/Hammer'
     env:
       buildtype: Release
       TAG_NAME: ${{github.event.release.tag_name}}
