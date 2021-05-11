@@ -41,17 +41,8 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
-    - name: Setup nuget.exe
-      uses: warrenbuckley/Setup-Nuget@v1
-
-    - name: Setup msbuild.exe
-      uses: microsoft/setup-msbuild@v1
-
     - name: Checkout source code
       uses: actions/checkout@v2.0.0
-
-    - name: Restore packages
-      run: nuget restore
 
     - name: Update version number file
       shell: powershell
