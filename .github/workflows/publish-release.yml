@@ -2,8 +2,7 @@ name: Publish release
 
 on:
   release:
-    types: [created]
-  push:
+    types: [created, prereleased, edited]
 
 jobs:
   publish-hammer:
@@ -30,7 +29,7 @@ jobs:
         if ($env:TAG_NAME -match "^Hammer-(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Release>-[a-z][0-9a-z-]*)?$") {
           $SHORT_TAG_NAME = $Matches.Version
         } else {
-          echo "$env:TAG_NAME isn't a valid release name - make sure it matches v#.#.#"
+          echo "$env:TAG_NAME isn't a valid release name - make sure it matches Hammer-#.#.#"
           exit 1
         }
 
