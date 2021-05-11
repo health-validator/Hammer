@@ -131,21 +131,32 @@ jobs:
 
   validate_examples_metadata:
     name: Validate examples metadata file
+
     runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Check if metadata or schema have changed
+        id: changed-files-specific
+        uses: tj-actions/changed-files@v5.3
+        with:
+          files: |
+            assets/examples/.metadata.schema.json
+            assets/examples/metadata.json
 
       - name: Set up npm
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
         uses: actions/setup-node@v1
         with:
           node-version: 12
 
       - name: Install ajv
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
         run: npm install -g ajv-cli
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-
       - name: Validate metadata
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
         run: ajv -s assets/examples/.metadata.schema.json -d assets/examples/metadata.json

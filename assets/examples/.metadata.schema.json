@@ -14,7 +14,6 @@
             }
         ]
     ],
-    "additionalItems": true,
     "items": {
         "$id": "#/items",
         "anyOf": [
