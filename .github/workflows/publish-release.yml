@@ -111,8 +111,8 @@ jobs:
           --releasify $Script:NupkgPath `
           --releaseDir $RELEASEDIR --no-msi `
           --framework-version=462 `
-          # --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico `
           --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png
+          # --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico
           # --signWithParams="/a /f $env:WORKSPACEGIT\codesigningcertificate.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
         echo "archive creation done $LastExitCode"
 
