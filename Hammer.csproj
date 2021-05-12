@@ -127,9 +127,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
-      <_Parameter1>SquirrelAwareVersion</_Parameter1>
-      <_Parameter2>1</_Parameter2>
-    </AssemblyAttribute>
+    <AssemblyMetadata Include="SquirrelAwareVersion" Value="1" />
   </ItemGroup>
 </Project>
