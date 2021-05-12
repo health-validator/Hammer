@@ -65,6 +65,10 @@ jobs:
         $replacement = "<Version>$env:SHORT_TAG_NAME</Version>"
         (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
 
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+
     - name: Compile Hammer
       run: |
         sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
