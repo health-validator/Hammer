@@ -125,11 +125,4 @@
     <Content Include="assets/fonts/RobotoCondensed-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="RobotoMono-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
-      <_Parameter1>SquirrelAwareVersion</_Parameter1>
-      <_Parameter2>1</_Parameter2>
-    </AssemblyAttribute>
-  </ItemGroup>
 </Project>
