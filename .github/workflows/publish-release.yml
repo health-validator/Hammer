@@ -36,7 +36,7 @@ jobs:
         echo "SHORT_TAG_NAME=${SHORT_TAG_NAME}" >> $env:GITHUB_ENV
 
     - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.8.0
       with:
         dotnet-version: 5.0.x
 
