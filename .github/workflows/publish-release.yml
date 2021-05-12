@@ -105,18 +105,14 @@ jobs:
 
         nuget install squirrel.windows -ExcludeVersion
 
-        echo "making archive... $LastExitCode"
-        echo ".\squirrel.windows\tools\Squirrel --releasify $Script:NupkgPath --releaseDir $RELEASEDIR --no-msi --framework-version=462 --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png"
-
         # missing icon
         .\squirrel.windows\tools\Squirrel `
           --releasify $Script:NupkgPath `
           --releaseDir $RELEASEDIR --no-msi `
           --framework-version=462 `
           --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png
-          # --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico
+          --setupIcon $env:WORKSPACEGIT\assets\hammer-logo.ico
           # --signWithParams="/a /f $env:WORKSPACEGIT\codesigningcertificate.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
-        echo "archive creation done $LastExitCode"
 
         # test for $LastExitCode == -1
         if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf) -or ($LastExitCode -ne 0)) {
@@ -126,9 +122,7 @@ jobs:
           exit 1
         }
 
-        echo "past if check $LastExitCode"
         echo "RELEASEDIR=${RELEASEDIR}" >> $env:GITHUB_ENV
-        echo "past releasedit setting $LastExitCode"
 
     - name: Upload installer .exe
       uses: actions/upload-release-asset@v1.0.1
@@ -139,6 +133,3 @@ jobs:
         asset_name: Hammer-${{env.SHORT_TAG_NAME}}-win.exe
         asset_path: ${{env.RELEASEDIR}}\Setup.exe
         asset_content_type: application/vnd.microsoft.portable-executable
-
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
