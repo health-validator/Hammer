@@ -132,7 +132,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_name: Hammer-${{github.event.release.tag_name}}-win.exe
+        asset_name: Hammer-${{env.SHORT_TAG_NAME}}-win.exe
         asset_path: ${{env.RELEASEDIR}}\Setup.exe
         asset_content_type: application/vnd.microsoft.portable-executable
 
