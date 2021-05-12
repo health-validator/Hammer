@@ -113,7 +113,6 @@ jobs:
           --setupIcon $env:WORKSPACEGIT\assets\hammer-logo.ico
           # --signWithParams="/a /f $env:WORKSPACEGIT\codesigningcertificate.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
 
-        # test for $LastExitCode == -1
         if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf) -or ($LastExitCode -ne 0)) {
           echo "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
           Get-Content -Path .\squirrel.windows\tools\SquirrelSetup.log
