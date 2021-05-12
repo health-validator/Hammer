@@ -124,6 +124,7 @@ jobs:
         echo "past if check"
         echo "RELEASEDIR=${RELEASEDIR}" >> $env:GITHUB_ENV
         echo "past releasedit setting"
+        exit 0
 
     - name: Upload installer .exe
       uses: actions/upload-release-asset@v1.0.1
