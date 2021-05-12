@@ -47,7 +47,7 @@ jobs:
       uses: actions/checkout@v2.0.0
 
     - name: Restore maven cache
-      uses: actions/cache@v2
+      uses: actions/cache@v2.1.5
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
