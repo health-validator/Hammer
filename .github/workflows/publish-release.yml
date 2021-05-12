@@ -70,12 +70,6 @@ jobs:
         sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
         dotnet publish --configuration ${{env.buildtype}} --runtime win-x64
 
-    - name: Remove debug information
-      shell: bash
-      run: |
-        rm -f bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/createdump.exe
-        rm -f bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/Hammer.pdb
-
     - name: Download runtime
       shell: bash
       run: |
