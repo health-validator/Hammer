@@ -95,8 +95,6 @@ jobs:
         nuget pack "$Script:NuSpec" -Version "$env:SHORT_TAG_NAME" `
           -BasePath $SQUIRRELWIN -OutputDirectory $SQUIRRELWIN
 
-        echo "nuget packed: $LastExitCode"
-
         $Script:NupkgPath = "$SQUIRRELWIN\Hammer.$env:SHORT_TAG_NAME.nupkg"
         if (-not (Test-Path -Path $Script:NupkgPath -PathType Leaf)) {
           echo "ERROR: nupkg doesn't exist as expected! Build aborted."
@@ -108,6 +106,7 @@ jobs:
         echo "making archive... $LastExitCode"
         echo ".\squirrel.windows\tools\Squirrel --releasify $Script:NupkgPath --releaseDir $RELEASEDIR --no-msi --framework-version=462 --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png"
 
+        # missing icon
         .\squirrel.windows\tools\Squirrel `
           --releasify $Script:NupkgPath `
           --releaseDir $RELEASEDIR --no-msi `
@@ -117,16 +116,17 @@ jobs:
           # --signWithParams="/a /f $env:WORKSPACEGIT\codesigningcertificate.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
         echo "archive creation done $LastExitCode"
 
-        if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf)) {
+        # test for $LastExitCode == macos-10.15
+        if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf) -or ($LastExitCode -ne 0)) {
           echo "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
           Get-Content -Path .\squirrel.windows\tools\SquirrelSetup.log
-          echo "quotting because of failure"
+          Get-Content -Path .\squirrel.windows\tools\Squirrel-Releasify.log
           exit 1
         }
+
         echo "past if check $LastExitCode"
         echo "RELEASEDIR=${RELEASEDIR}" >> $env:GITHUB_ENV
         echo "past releasedit setting $LastExitCode"
-        exit 0
 
     - name: Upload installer .exe
       uses: actions/upload-release-asset@v1.0.1
