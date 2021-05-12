@@ -95,6 +95,8 @@ jobs:
         nuget pack "$Script:NuSpec" -Version "$env:SHORT_TAG_NAME" `
           -BasePath $SQUIRRELWIN -OutputDirectory $SQUIRRELWIN
 
+        echo "nuget packed: $LastExitCode"
+
         $Script:NupkgPath = "$SQUIRRELWIN\Hammer.$env:SHORT_TAG_NAME.nupkg"
         if (-not (Test-Path -Path $Script:NupkgPath -PathType Leaf)) {
           echo "ERROR: nupkg doesn't exist as expected! Build aborted."
@@ -103,7 +105,7 @@ jobs:
 
         nuget install squirrel.windows -ExcludeVersion
 
-        echo "making archive..."
+        echo "making archive... $LastExitCode"
         echo ".\squirrel.windows\tools\Squirrel --releasify $Script:NupkgPath --releaseDir $RELEASEDIR --no-msi --framework-version=462 --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png"
 
         .\squirrel.windows\tools\Squirrel `
@@ -113,7 +115,7 @@ jobs:
           --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico `
           --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png
           # --signWithParams="/a /f $env:WORKSPACEGIT\codesigningcertificate.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
-        echo "archive creation done"
+        echo "archive creation done $LastExitCode"
 
         if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf)) {
           echo "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
@@ -121,9 +123,9 @@ jobs:
           echo "quotting because of failure"
           exit 1
         }
-        echo "past if check"
+        echo "past if check $LastExitCode"
         echo "RELEASEDIR=${RELEASEDIR}" >> $env:GITHUB_ENV
-        echo "past releasedit setting"
+        echo "past releasedit setting $LastExitCode"
         exit 0
 
     - name: Upload installer .exe
@@ -137,5 +139,4 @@ jobs:
         asset_content_type: application/vnd.microsoft.portable-executable
 
     - name: Setup tmate session
-      if: ${{ failure() }}
       uses: mxschmitt/action-tmate@v3
