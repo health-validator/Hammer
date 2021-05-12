@@ -66,7 +66,9 @@ jobs:
         (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
 
     - name: Compile Hammer
-      run: dotnet publish --configuration ${{env.buildtype}} --runtime win-x64
+      run: |
+        sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
+        dotnet publish --configuration ${{env.buildtype}} --runtime win-x64
 
     - name: Download runtime
       shell: bash
