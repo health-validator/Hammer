@@ -104,19 +104,19 @@ jobs:
         nuget install squirrel.windows -ExcludeVersion
 
         echo "making archive... $LastExitCode"
-        echo ".\squirrel.windows\tools\Squirrel --releasify $Script:NupkgPath --releaseDir $RELEASEDIR --no-msi --framework-version=462 --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png"
+        echo ".\squirrel.windows\tools\Squirrel --releasify $Script:NupkgPath --releaseDir $RELEASEDIR --no-msi --framework-version=462 --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png"
 
         # missing icon
         .\squirrel.windows\tools\Squirrel `
           --releasify $Script:NupkgPath `
           --releaseDir $RELEASEDIR --no-msi `
           --framework-version=462 `
-          --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico `
+          # --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico `
           --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png
           # --signWithParams="/a /f $env:WORKSPACEGIT\codesigningcertificate.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
         echo "archive creation done $LastExitCode"
 
-        # test for $LastExitCode == macos-10.15
+        # test for $LastExitCode == -1
         if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf) -or ($LastExitCode -ne 0)) {
           echo "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
           Get-Content -Path .\squirrel.windows\tools\SquirrelSetup.log
