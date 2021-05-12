@@ -97,7 +97,7 @@ jobs:
 
         $Script:NupkgPath = "$SQUIRRELWIN\Hammer.$env:SHORT_TAG_NAME.nupkg"
         if (-not (Test-Path -Path $Script:NupkgPath -PathType Leaf)) {
-          Write-Output "ERROR: nupkg doesn't exist as expected! Build aborted."
+          echo "ERROR: nupkg doesn't exist as expected! Build aborted."
           exit 1
         }
 
@@ -116,11 +116,15 @@ jobs:
         echo "archive creation done"
 
         if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf)) {
-          Write-Output "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
+          echo "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
           Get-Content -Path .\squirrel.windows\tools\SquirrelSetup.log
+          echo "quotting because of failure"
           exit 1
         }
+        echo "past if check"
         echo "RELEASEDIR=${RELEASEDIR}" >> $env:GITHUB_ENV
+        echo "past releasedit setting"
+
     - name: Upload installer .exe
       uses: actions/upload-release-asset@v1.0.1
       env:
