@@ -120,6 +120,7 @@ jobs:
 
         nuget install squirrel.windows -ExcludeVersion
 
+        echo "Generating installer..."
         .\squirrel.windows\tools\Squirrel `
           --releasify $Script:NupkgPath `
           --releaseDir $RELEASEDIR --no-msi `
@@ -133,6 +134,7 @@ jobs:
           Get-Content -Path .\squirrel.windows\tools\Squirrel-Releasify.log
           exit 1
         }
+        echo "Installer made."
 
         echo "RELEASEDIR=${RELEASEDIR}" >> $env:GITHUB_ENV
 
