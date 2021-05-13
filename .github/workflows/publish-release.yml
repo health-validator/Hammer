@@ -43,6 +43,14 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v2.3.4
 
+    - name: Restore maven cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
     - name: Clone Java validator
       run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
 
@@ -66,7 +74,24 @@ jobs:
         (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
 
     - name: Compile Hammer
-      run: dotnet publish --configuration ${{env.buildtype}} --runtime win-x64
+      run: |
+        sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
+        dotnet publish --configuration ${{env.buildtype}} --runtime win-x64
+
+    - name: Trim createdump
+      shell: bash
+      run: |
+        # squirrel gets confused about which executable (Hammer.exe or createdump.exe)
+        # is right one launch after installing. Marking as Hammer.exe as squirrel-aware
+        # isn't possible until https://github.com/Squirrel/Squirrel.Windows/pull/1692 is in
+        # and removing createdump.exe from the output is not possible until
+        # https://github.com/dotnet/runtime/issues/43716 is in.
+        # For the time being, hack it out ourselves
+        jqi() {
+          cat <<< "$(jq "$1" < "$2")" > "$2"
+        }
+        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/Hammer.deps.json
+        rm -f bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/createdump.exe
 
     - name: Download runtime
       shell: bash
@@ -74,6 +99,20 @@ jobs:
         curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{env.qt-version}}-${{env.dotnet-platform}}-runtime.tar.gz
         mkdir -p bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/qt-runtime
+
+    - name: Create stand-alone zip
+      shell: bash
+      run: cd bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE\\publish\\Hammer-${{env.deployment-platform}}.zip
+
+    - name: Upload stand-alone zip
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_name: Hammer-${{env.SHORT_TAG_NAME}}-installerfree.zip
+        asset_path: ${{github.workspace}}\publish\Hammer-${{env.deployment-platform}}.zip
+        asset_content_type: application/zip
 
     - name: Build installer
       shell: powershell
@@ -97,40 +136,36 @@ jobs:
 
         $Script:NupkgPath = "$SQUIRRELWIN\Hammer.$env:SHORT_TAG_NAME.nupkg"
         if (-not (Test-Path -Path $Script:NupkgPath -PathType Leaf)) {
-          Write-Output "ERROR: nupkg doesn't exist as expected! Build aborted."
+          echo "ERROR: nupkg doesn't exist as expected! Build aborted."
           exit 1
         }
 
-        nuget install squirrel.windows -ExcludeVersion
+        nuget install squirrel.windows -ExcludeVersion -Verbosity quiet
 
-        echo "making archive..."
-        echo ".\squirrel.windows\tools\Squirrel --releasify $Script:NupkgPath --releaseDir $RELEASEDIR --no-msi --framework-version=462 --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png"
-
+        echo "Generating installer..."
         .\squirrel.windows\tools\Squirrel `
           --releasify $Script:NupkgPath `
           --releaseDir $RELEASEDIR --no-msi `
-          --framework-version=462 `
-          --setupIcon $env:WORKSPACEGIT\ClinicArrivals\ClinicArrivals.ico `
-          --loadingGif=$env:WORKSPACEGIT\assets\hammer-logo.png
+          --loadingGif=$env:WORKSPACEGIT\assets\hammer-windows-install.png `
+          --setupIcon $env:WORKSPACEGIT\assets\hammer-logo.ico
           # --signWithParams="/a /f $env:WORKSPACEGIT\codesigningcertificate.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
-        echo "archive creation done"
 
-        if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf)) {
-          Write-Output "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
+        if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf) -or ($LastExitCode -ne 0)) {
+          echo "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
           Get-Content -Path .\squirrel.windows\tools\SquirrelSetup.log
+          Get-Content -Path .\squirrel.windows\tools\Squirrel-Releasify.log
           exit 1
         }
+        echo "Installer made."
+
         echo "RELEASEDIR=${RELEASEDIR}" >> $env:GITHUB_ENV
+
     - name: Upload installer .exe
       uses: actions/upload-release-asset@v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_name: Hammer-${{github.event.release.tag_name}}-win.exe
+        asset_name: Hammer-${{env.SHORT_TAG_NAME}}-installer.exe
         asset_path: ${{env.RELEASEDIR}}\Setup.exe
         asset_content_type: application/vnd.microsoft.portable-executable
-
-    - name: Setup tmate session
-      if: ${{ failure() }}
-      uses: mxschmitt/action-tmate@v3
