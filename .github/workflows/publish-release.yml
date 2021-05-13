@@ -65,14 +65,22 @@ jobs:
         $replacement = "<Version>$env:SHORT_TAG_NAME</Version>"
         (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
 
-
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-
     - name: Compile Hammer
       run: |
         sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
         dotnet publish --configuration ${{env.buildtype}} --runtime win-x64
+
+    - name: Trim createdump
+      shell: bash
+      run: |
+        # squirrel gets confused about which executable (Hammer.exe or createdump.exe)
+        # is right one launch after installing. Marking as Hammer.exe as squirrel-aware
+        # isn't possible until https://github.com/Squirrel/Squirrel.Windows/pull/1692 is in
+        # and removing createdump.exe from the output is not possible until
+        # https://github.com/dotnet/runtime/issues/43716 is in.
+        # For the time being, hack it out ourselves
+        jq "del(..|.\"createdump.exe\"?)" bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/Hammer.deps.json
+        rm -f bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/createdump.exe
 
     - name: Download runtime
       shell: bash
