@@ -119,7 +119,7 @@ jobs:
       env:
         WORKSPACE: ${{runner.workspace}}
         WORKSPACEGIT: ${{runner.workspace}}\Hammer
-        SIGNING_PASSWORD: ${{ secrets.SIGNING_CERT }}
+        WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
       run: |
         $SQUIRRELWIN = "$env:WORKSPACE\squirrel-packaging-prep"
         $SQUIRRELWINBIN = "$SQUIRRELWIN\lib\net45\"
@@ -148,7 +148,7 @@ jobs:
           --releaseDir $RELEASEDIR --no-msi `
           --loadingGif=$env:WORKSPACEGIT\assets\hammer-windows-install.png `
           --setupIcon $env:WORKSPACEGIT\assets\hammer-logo.ico
-          # --signWithParams="/a /f $env:WORKSPACEGIT\codesigningcertificate.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
+          --signWithParams="/a /f $env:WORKSPACEGIT\assets\code-signing-certificate-windows.p12 /p $Env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256"
 
         if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf) -or ($LastExitCode -ne 0)) {
           echo "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
