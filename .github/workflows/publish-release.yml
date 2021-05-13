@@ -79,8 +79,14 @@ jobs:
         # and removing createdump.exe from the output is not possible until
         # https://github.com/dotnet/runtime/issues/43716 is in.
         # For the time being, hack it out ourselves
-        jq "del(..|.\"createdump.exe\"?)" bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/Hammer.deps.json
+        jqi() {
+          cat <<< "$(jq "$1" < "$2")" > "$2"
+        }
+        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/Hammer.deps.json
         rm -f bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/createdump.exe
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
 
     - name: Download runtime
       shell: bash
