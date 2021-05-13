@@ -85,9 +85,6 @@ jobs:
         jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/Hammer.deps.json
         rm -f bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/createdump.exe
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-
     - name: Download runtime
       shell: bash
       run: |
