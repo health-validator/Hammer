@@ -119,7 +119,7 @@ jobs:
       env:
         WORKSPACE: ${{runner.workspace}}
         WORKSPACEGIT: ${{runner.workspace}}\Hammer
-        SIGNING_PASSWORD: ${{ secrets.SIGNING_CERT }}
+        WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
       run: |
         $SQUIRRELWIN = "$env:WORKSPACE\squirrel-packaging-prep"
         $SQUIRRELWINBIN = "$SQUIRRELWIN\lib\net45\"
@@ -142,18 +142,26 @@ jobs:
 
         nuget install squirrel.windows -ExcludeVersion -Verbosity quiet
 
+        echo ".\squirrel.windows\tools\Squirrel --releasify $Script:NupkgPath --releaseDir $RELEASEDIR --no-msi --loadingGif=$env:WORKSPACEGIT\assets\hammer-windows-install.png  --setupIcon $env:WORKSPACEGIT\assets\hammer-logo.ico --signWithParams=\"/a /f $env:WORKSPACEGIT\assets\code-signing-certificate-windows.p12 /p $Env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256\""
+
         echo "Generating installer..."
         .\squirrel.windows\tools\Squirrel `
           --releasify $Script:NupkgPath `
           --releaseDir $RELEASEDIR --no-msi `
           --loadingGif=$env:WORKSPACEGIT\assets\hammer-windows-install.png `
-          --setupIcon $env:WORKSPACEGIT\assets\hammer-logo.ico
-          # --signWithParams="/a /f $env:WORKSPACEGIT\codesigningcertificate.p12 /p $Env:SIGNING_PASSWORD /fd sha256 /tr http://timestamp.digicert.com /td sha256"
+          --setupIcon $env:WORKSPACEGIT\assets\hammer-logo.ico `
+          --signWithParams="/a /f $env:WORKSPACEGIT\assets\code-signing-certificate-windows.p12 /p $Env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256"
 
         if (-not (Test-Path -Path "$RELEASEDIR\Setup.exe" -PathType Leaf) -or ($LastExitCode -ne 0)) {
-          echo "ERROR: Squirrel failed to generate the installer! Build aborted. Squirrel log is:"
-          Get-Content -Path .\squirrel.windows\tools\SquirrelSetup.log
-          Get-Content -Path .\squirrel.windows\tools\Squirrel-Releasify.log
+          echo "ERROR: Squirrel failed to generate the installer! Build aborted."
+          if (Test-Path -Path ".\squirrel.windows\tools\SquirrelSetup.log" -PathType Leaf) {
+            echo "SquirrelSetup.log: "
+            Get-Content -Path .\squirrel.windows\tools\SquirrelSetup.log
+          }
+          if (Test-Path -Path ".\squirrel.windows\tools\Squirrel-Releasify.log" -PathType Leaf) {
+            echo "Squirrel-Releasify.log: "
+            Get-Content -Path ..\squirrel.windows\tools\Squirrel-Releasify.log
+          }
           exit 1
         }
         echo "Installer made."
@@ -169,3 +177,7 @@ jobs:
         asset_name: Hammer-${{env.SHORT_TAG_NAME}}-installer.exe
         asset_path: ${{env.RELEASEDIR}}\Setup.exe
         asset_content_type: application/vnd.microsoft.portable-executable
+
+    - name: Setup tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
