@@ -171,3 +171,7 @@ jobs:
         asset_name: Hammer-${{env.SHORT_TAG_NAME}}-installer.exe
         asset_path: ${{env.RELEASEDIR}}\Setup.exe
         asset_content_type: application/vnd.microsoft.portable-executable
+
+    - name: Setup tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
