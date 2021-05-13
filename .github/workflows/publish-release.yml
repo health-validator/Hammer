@@ -43,6 +43,14 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v2.0.0
 
+    - name: Restore maven cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
     - name: Clone Java validator
       run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
 
