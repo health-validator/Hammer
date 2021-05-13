@@ -118,7 +118,7 @@ jobs:
           exit 1
         }
 
-        nuget install squirrel.windows -ExcludeVersion
+        nuget install squirrel.windows -ExcludeVersion -Verbosity quiet
 
         echo "Generating installer..."
         .\squirrel.windows\tools\Squirrel `
