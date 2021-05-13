@@ -1115,6 +1115,16 @@ class Program
                 get;
                 set;
             }
+
+            /// <summary>
+            /// Understand Squirrel's first launch argument in order to launch right after install on Windows
+            /// </summary>
+            [Option("squirrel-firstrun", Hidden = true)]
+            public bool SquirrelFirstRun
+            {
+                get;
+                set;
+            }
         }
 
         /// <summary>
