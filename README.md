@@ -67,6 +67,8 @@ Double-click `Hammer.exe`.
 1. Install [.NET Core 3.1 Runtime](https://dotnet.microsoft.com/download)
 1. Launch Hammer: double-click `run-hammer.sh`
 
+Note: Linux requires `xsel` to be installed for clipboard copy.
+
 ### Validating
 
 1. Drag and drop, paste, or open a FHIR instance.
