@@ -169,21 +169,18 @@ ApplicationWindow {
 
         Row {
             id: examplesRow
-            y: parent.height - 400
+            y: parent.height - 300
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 20
             visible: textArea.state === "MINIMAL"
 
             Label {
                 id: samplesLabel
-                text: qsTr("Samples")
+                text: qsTr("Examples to get you started with:")
                 font.bold: true
                 opacity: 0.6
-                font.pointSize: 20
-            }
-
-            Button {
-                text: qsTr("hide")
+                font.pointSize: 16
+                bottomPadding: 10
             }
         }
 
@@ -205,17 +202,27 @@ ApplicationWindow {
                 }
             }
 
-            delegate: TabButton {
+            delegate: Button {
                 id: control
-                text: textMetrics.elidedText
-                width: 400
+                text: `${modelData.title}<br><small>${modelData.description}</small>`
+                anchors { horizontalCenter: parent.horizontalCenter; }
+                flat: true
                 onClicked: appmodel.loadResourceFile(modelData.filepath)
 
-                TextMetrics {
-                    id: textMetrics
-                    elide: Text.ElideMiddle
-                    elideWidth: control.width
-                    text: `${modelData.title}\n${modelData.description}`
+                contentItem: Label {
+                    text: control.text
+                    textFormat: Text.RichText
+                    opacity: control.hovered ? 1.0 : 0.3
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                }
+
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    acceptedButtons: Qt.NoButton
                 }
             }
         }
@@ -228,7 +235,7 @@ ApplicationWindow {
             enabled: false
             z: 0
             rotation: -45
-            opacity: 0.1
+            opacity: 0.03
             font.pixelSize: 96
         }
 
