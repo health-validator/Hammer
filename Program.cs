@@ -582,12 +582,12 @@ class Program
                 InstanceFormat = ResourceFormat.Unknown;
         }
 
-        public void copyToClipboard(string message)
+        public async Task copyToClipboard(string message)
         {
-            Clipboard.SetText(message);
+            await ClipboardService.SetTextAsync(message);
         }
 
-        public void CopyValidationReportCsv()
+        public async Task CopyValidationReportCsv()
         {
             using var writer = new StringWriter();
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
@@ -617,10 +617,10 @@ class Program
                 csv.NextRecord();
             }
 
-            Clipboard.SetText(writer.ToString());
+            await ClipboardService.SetTextAsync(writer.ToString());
         }
 
-        public void CopyValidationReportMarkdown()
+        public async Task CopyValidationReportMarkdown()
         {
             List<MarkdownIssue> ConvertToMarkdown(List<Issue> rawIssues)
             {
@@ -660,7 +660,7 @@ class Program
 ";
             }
 
-            Clipboard.SetText(report);
+            await ClipboardService.SetTextAsync(report);
         }
 
         private stu3.Hl7.Fhir.Validation.Validator CreateValidatorStu3(stu3.Hl7.Fhir.Rest.FhirClient fhirClient)
