@@ -62,10 +62,11 @@ Experimental and not ready for production. Try it out and [give feedback](https:
 ### Windows
 Double-click `Hammer.exe`.
 
-### macOS and Linux
+### macOS 
+1. Double-click on `Hammer`.
 
-1. Install [.NET Core 3.1 Runtime](https://dotnet.microsoft.com/download)
-1. Launch Hammer: double-click `run-hammer.sh`
+### Linux
+Run `./Hammer` from the terminal.
 
 Note: Linux requires `xsel` to be installed for clipboard copy.
 
