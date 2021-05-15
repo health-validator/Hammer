@@ -298,7 +298,7 @@ ApplicationWindow {
                 onTriggered: {
                     if (message != "") {
                         appmodel.copyToClipboard(message)
-                        toast.show(qsTr("Copied message to clipboard"))
+                        toast.show(qsTr("Copied message to clipboard"), 3000)
                     }
                 }
             }
@@ -306,14 +306,14 @@ ApplicationWindow {
                 text: qsTr("Copy report as CSV")
                 onTriggered: {
                     appmodel.copyValidationReportCsv()
-                    toast.show(qsTr("Copied all results as a CSV"))
+                    toast.show(qsTr("Copied all results as a CSV"), 3000)
                 }
             }
             MenuItem {
                 text: qsTr("Copy report as Markdown")
                 onTriggered: {
                     appmodel.copyValidationReportMarkdown();
-                    toast.show(qsTr("Copied as Markdown (works well in Zulip)"))
+                    toast.show(qsTr("Copied as Markdown (works well in Zulip)"), 3000)
                 }
             }
         }
