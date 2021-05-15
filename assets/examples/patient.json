@@ -8,18 +8,13 @@
         "coding": [
           {
             "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-            "code": "MR"
+            "code": "MR",
+            "display": "Medical record number"
           }
         ]
       },
       "system": "urn:oid:1.2.36.146.595.217.0.1",
-      "value": "12345",
-      "period": {
-        "start": "2001-05-06"
-      },
-      "assigner": {
-        "display": "Acme Healthcare"
-      }
+      "value": "12345"
     }
   ],
   "active": true,
@@ -37,6 +32,10 @@
     {
       "system": "email",
       "value": "vperetokin@hey.com"
+    },
+    {
+      "system": "other",
+      "value": "https://www.linkedin.com/in/vadimperetokin"
     }
   ],
   "gender": "male",
