@@ -36,6 +36,7 @@ using Newtonsoft.Json.Linq;
 class Program
 {
     [Signal("validationStarted")]
+    [Signal("examplesLoaded")]
     [Signal("updateAvailable", NetVariantType.String)]
     public class AppModel : IDisposable
     {
@@ -245,6 +246,23 @@ class Program
             set => this.SetProperty(ref _dotnetIssues, value);
         }
 
+        // exposes examples to QML
+        private List<Example> _examples = new List<Example>();
+        [NotifySignal]
+        public List<Example> Examples
+        {
+            get => _examples;
+            set => this.SetProperty(ref _examples, value);
+        }
+
+        // loads examples from disk
+        public class DiskExample
+        {
+            public string Filename { get; set; }
+            public string Title { get; set; }
+            public string Description { get; set; }
+        }
+
         private bool _javaValidationCrashed;
         [NotifySignal]
         public bool JavaValidationCrashed
@@ -375,6 +393,33 @@ class Program
             {
                 get => _linePosition;
                 set => this.SetProperty(ref _linePosition, value);
+            }
+        }
+
+        public class Example
+        {
+            private string _filepath;
+            [NotifySignal]
+            public string Filepath
+            {
+                get => _filepath;
+                set => this.SetProperty(ref _filepath, value);
+            }
+
+            private string _title;
+            [NotifySignal]
+            public string Title
+            {
+                get => _title;
+                set => this.SetProperty(ref _title, value);
+            }
+
+            private string _description;
+            [NotifySignal]
+            public string Description
+            {
+                get => _description;
+                set => this.SetProperty(ref _description, value);
             }
         }
 
@@ -987,6 +1032,27 @@ class Program
             }
         }
 
+        // load examples. This should be done syncronously: https://ux.stackexchange.com/q/138673/108628
+        // but if it can be made quicker, then even better
+        public void LoadExamples()
+        {
+            JArray jsonExamples = JArray.Parse(File.ReadAllText(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "assets", "examples", "metadata.json")));
+
+            Examples = new List<Example>();
+            foreach (JToken jsonExample in jsonExamples)
+            {
+                var diskExample = jsonExample.ToObject<DiskExample>();
+                var example = new Example {
+                    Filepath = $"file://{Path.Combine(AppModel.Extensions.GetApplicationLocation(), "assets", "examples", diskExample.Filename)}",
+                    Title = diskExample.Title,
+                    Description = diskExample.Description,
+
+                };
+                Examples.Add(example);
+            }
+            this.ActivateSignal("examplesLoaded");
+        }
+
         public void CancelValidation()
         {
             // Signal the CancellationToken in the tasks that we want to cancel.
@@ -1214,6 +1280,12 @@ class Program
         // Once the GUI is loaded, we can start working with the AppModel
         // instance.
         cliParser.Process();
+
+        // do this async
+        Stopwatch sw = Stopwatch.StartNew();
+        AppModel.Instance.LoadExamples();
+        sw.Stop();
+        Console.WriteLine("LoadExamples time taken: {0}ms", sw.Elapsed.TotalMilliseconds);
 
         AppModel.Instance.CheckForUpdates();
 

@@ -164,7 +164,66 @@ ApplicationWindow {
                     }
                 }
             }
+        }
 
+        Row {
+            id: examplesRow
+            y: parent.height - 300
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 20
+            visible: textArea.state === "MINIMAL"
+
+            Label {
+                id: samplesLabel
+                text: qsTr("Examples to get you started with:")
+                font.bold: true
+                opacity: 0.6
+                font.pointSize: 16
+                bottomPadding: 10
+            }
+        }
+
+
+        ListView {
+            id: examplesView
+            anchors.top: examplesRow.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            implicitWidth: contentItem.childrenRect.width
+            implicitHeight: contentItem.childrenRect.height
+            visible: textArea.state === "MINIMAL"
+
+
+            Connections {
+                target: appmodel
+                function onExamplesLoaded () {
+
+                    examplesView.model = Net.toListModel(appmodel.examples)
+                }
+            }
+
+            delegate: Button {
+                id: control
+                text: `${modelData.title}<br><small>${modelData.description}</small>`
+                anchors { horizontalCenter: parent.horizontalCenter; }
+                flat: true
+                onClicked: appmodel.loadResourceFile(modelData.filepath)
+
+                contentItem: Label {
+                    text: control.text
+                    textFormat: Text.RichText
+                    opacity: control.hovered ? 1.0 : 0.3
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                }
+
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    acceptedButtons: Qt.NoButton
+                }
+            }
         }
 
         Text {
@@ -175,7 +234,7 @@ ApplicationWindow {
             enabled: false
             z: 0
             rotation: -45
-            opacity: 0.1
+            opacity: 0.03
             font.pixelSize: 96
         }
 

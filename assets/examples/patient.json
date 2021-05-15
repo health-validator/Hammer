@@ -1,0 +1,59 @@
+{
+  "resourceType": "Patient",
+  "id": "example",
+  "identifier": [
+    {
+      "use": "usual",
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MR",
+            "display": "Medical record number"
+          }
+        ]
+      },
+      "system": "urn:oid:1.2.36.146.595.217.0.1",
+      "value": "12345"
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "use": "official",
+      "text": "Vadim Peretokin",
+      "family": "Peretokin",
+      "given": [
+        "Vadim"
+      ]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "email",
+      "value": "vperetokin@hey.com"
+    },
+    {
+      "system": "other",
+      "value": "https://www.linkedin.com/in/vadimperetokin"
+    }
+  ],
+  "gender": "male",
+  "deceasedBoolean": false,
+  "address": [
+    {
+      "use": "home",
+      "type": "both",
+      "text": "999 Kanaalweg, 8132 DJ, Amsterdam, The Netherlands",
+      "line": [
+        "999 Kanaalweg"
+      ],
+      "city": "Amsterdam",
+      "postalCode": "8132 DJ",
+      "period": {
+        "start": "2017-01-01"
+      },
+      "country": "NL"
+    }
+  ]
+}
