@@ -11,6 +11,7 @@
     <PackageProjectUrl>https://github.com/health-validator/Hammer</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/health-validator/Hammer/blob/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://github.com/health-validator/Hammer/raw/master/assets/hammer-logo.png</PackageIconUrl>
+    <ApplicationIcon>assets/hammer-logo.ico</ApplicationIcon>
     <RepositoryUrl>https://github.com/health-validator/Hammer</RepositoryUrl>
     <PackageTags>validator, fhir, xml, json, crossplatform</PackageTags>
   </PropertyGroup>
@@ -121,6 +122,7 @@
     <Content Include="*.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/run-hammer.bat" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="assets/hammer-logo.ico" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/fonts/RobotoCondensed-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="RobotoMono-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

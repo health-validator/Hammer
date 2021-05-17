@@ -1276,6 +1276,7 @@ class Program
         QCoreApplication.OrganizationDomain = "Hammer.mc";
         QCoreApplication.OrganizationName = "Hammer";
         engine.Load(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "Main.qml"));
+        app.SetWindowIcon(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "assets", "hammer-logo.png"));
 
         // Once the GUI is loaded, we can start working with the AppModel
         // instance.
