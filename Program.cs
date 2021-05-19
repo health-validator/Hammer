@@ -571,8 +571,14 @@ class Program
             }
 
             var filePath = text;
-            filePath = filePath.RemovePrefix(RuntimeInformation
-                .IsOSPlatform(OSPlatform.Windows) ? "file:///" : "file://");
+            // Windows can use three leading slashes, while others can use two
+            // examples load with just two on windows as well - so simpler to
+            // try both variants
+            filePath = filePath.RemovePrefix("file:///");
+            filePath = filePath.RemovePrefix("file://");
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                filePath = filePath.Prepend("/");
+            }
             filePath = filePath.Replace("\r", "", StringComparison.InvariantCulture)
                 .Replace("\n", "", StringComparison.InvariantCulture);
             filePath = Uri.UnescapeDataString(filePath);
