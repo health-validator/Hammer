@@ -256,7 +256,7 @@ ApplicationWindow {
             State {
                 name: "EDITING_SETTINGS"
                 PropertyChanges { target: settingsPane; y: 0 }
-                PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
+                PropertyChanges { target: actionButton; text: qsTr("← Back")}
             }
         ]
         state: "ENTERING_RESOURCE"
@@ -302,6 +302,17 @@ ApplicationWindow {
 
             ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             ToolTip.text: qsTr(`Open new instance (Ctrl+O)`)
+        }
+
+        Button {
+            id: backButton
+            text: "←"
+            visible: textArea.state === "EXPANDED"
+
+            onClicked: appmodel.resourceText = ""
+
+            ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
+            ToolTip.text: qsTr(`Back to start`)
         }
 
         Button {
