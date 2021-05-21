@@ -249,7 +249,8 @@ ApplicationWindow {
             State {
                 name: "VALIDATION_RESULTS"
                 PropertyChanges { target: addResourcesPage; height: window.height / 2 }
-                PropertyChanges { target: resultsPane; y: window.height / 2 }
+                // math.round is a workaround for font artifacts in errors list if there's a decimal
+                PropertyChanges { target: resultsPane; y: Math.round(window.height / 2) }
                 PropertyChanges { target: settingsPane; y: window.height }
                 // PropertyChanges { target: actionButton; text: qsTr("Re-validate")}
             },
