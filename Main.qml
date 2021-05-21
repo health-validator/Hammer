@@ -269,6 +269,7 @@ ApplicationWindow {
             Transition {
                 from: "*"; to: "ENTERING_RESOURCE"
                 NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
+                NumberAnimation { property: "height"; easing.type: Easing.OutCirc; duration: animationDuration }
                 NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
             },
             Transition {
@@ -344,6 +345,13 @@ ApplicationWindow {
         width: window.width
         height: (window.height / 2) - buttonsRow.height
         y: 500
+
+        background: Rectangle {
+            border.color: "#444"
+            border.width: 1
+            radius: 4
+        }
+
 
         // Context menu with the options to copy the validation report as
         // Markdown or CSV, and optionally to copy a single message. To enable
