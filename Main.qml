@@ -242,14 +242,14 @@ ApplicationWindow {
             State {
                 name: "ENTERING_RESOURCE"
                 PropertyChanges { target: addResourcesPage; x: 0 }
-                PropertyChanges { target: resultsPane; x: resultsPane.width }
+                PropertyChanges { target: resultsPane; y: window.height }
                 PropertyChanges { target: settingsPane; y: window.height }
                 PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
             },
             State {
                 name: "VALIDATION_RESULTS"
-                PropertyChanges { target: addResourcesPage; x: addResourcesPage.width * -1 }
-                PropertyChanges { target: resultsPane; x: 0 }
+                PropertyChanges { target: addResourcesPage; height: window.height / 2 }
+                PropertyChanges { target: resultsPane; y: window.height / 2 }
                 PropertyChanges { target: settingsPane; y: window.height }
                 PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
             },
@@ -264,7 +264,7 @@ ApplicationWindow {
         transitions: [
             Transition {
                 from: "*"; to: "VALIDATION_RESULTS"
-                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
+                NumberAnimation { property: "y"; easing.type: Easing.OutCirc; duration: animationDuration }
             },
             Transition {
                 from: "*"; to: "ENTERING_RESOURCE"
@@ -332,8 +332,8 @@ ApplicationWindow {
     Pane {
         id: resultsPane
         width: window.width
-        height: parent.height - actionButton.height
-        x: resultsPane.width
+        height: (window.height / 2) - buttonsRow.height
+        y: 500
 
         // Context menu with the options to copy the validation report as
         // Markdown or CSV, and optionally to copy a single message. To enable
@@ -383,7 +383,6 @@ ApplicationWindow {
 
             Row {
                 id: errorCountsRow
-//                Layout.fillWidth: true
                 width: resultsPane.availableWidth
                 bottomPadding: 30
 
