@@ -251,7 +251,7 @@ ApplicationWindow {
                 PropertyChanges { target: addResourcesPage; height: window.height / 2 }
                 PropertyChanges { target: resultsPane; y: window.height / 2 }
                 PropertyChanges { target: settingsPane; y: window.height }
-                PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
+                PropertyChanges { target: actionButton; text: qsTr("Re-validate")}
             },
             State {
                 name: "EDITING_SETTINGS"
@@ -312,15 +312,12 @@ ApplicationWindow {
             Layout.fillWidth: true
 
             onClicked: {
-                if (addResourcesPage.state === "ENTERING_RESOURCE"
-                        || (addResourcesPage.state === "VALIDATION_RESULTS"
-                            && resultsPageEditor.state === "VISIBLE")) {
-                    appmodel.startValidation()
-                } else {
-                    if (addResourcesPage.state === "VALIDATION_RESULTS") {
+                if (appmodel.validatingDotnet || appmodel.validatingJava) {
                         appmodel.cancelValidation()
-                    }
-                    addResourcesPage.state = "ENTERING_RESOURCE"
+                        addResourcesPage.state = "ENTERING_RESOURCE"
+                } else {
+                    appmodel.startValidation()
+
                 }
             }
 
