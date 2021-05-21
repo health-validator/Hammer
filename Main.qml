@@ -433,8 +433,7 @@ ApplicationWindow {
 
                     function peekIssue(lineNumber, linePosition) {
                         if (lineNumber === 0 && linePosition === 0) { return; }
-                        resultsPageEditor.state = "VISIBLE"
-                        resultsPageEditor.openError(lineNumber, linePosition)
+                        textArea.openError(lineNumber, linePosition)
                     }
 
                     IssuesList {
@@ -457,38 +456,6 @@ ApplicationWindow {
                         showInfo: settings.showInfo
                     }
                 }
-            }
-
-            InstanceEditor {
-                id: resultsPageEditor
-                instanceText: appmodel.resourceText
-                fontName: monospaceFont.name
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignBottom
-
-                states: [
-                    State {
-                        name: "HIDDEN"
-                        PropertyChanges { target: resultsPageEditor; implicitHeight: 0 }
-                    },
-                    State {
-                        name: "VISIBLE"
-                        PropertyChanges { target: resultsPageEditor; implicitHeight: 250 }
-                        PropertyChanges { target: actionButton; text: qsTr("Re-validate")}
-                    }
-                ]
-                state: "HIDDEN"
-
-                transitions: [
-                    Transition {
-                        from: "*"; to: "VISIBLE"
-                        NumberAnimation { properties: "implicitHeight"; easing.type: Easing.InBack; duration: animationDuration/2 }
-                    },
-                    Transition {
-                        from: "*"; to: "HIDDEN"
-                        NumberAnimation { properties: "implicitHeight"; easing.type: Easing.InBack; duration: animationDuration/2 }
-                    }
-                ]
             }
         }
     }
