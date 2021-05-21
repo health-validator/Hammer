@@ -251,7 +251,7 @@ ApplicationWindow {
                 PropertyChanges { target: addResourcesPage; height: window.height / 2 }
                 PropertyChanges { target: resultsPane; y: window.height / 2 }
                 PropertyChanges { target: settingsPane; y: window.height }
-                PropertyChanges { target: actionButton; text: qsTr("Re-validate")}
+                // PropertyChanges { target: actionButton; text: qsTr("Re-validate")}
             },
             State {
                 name: "EDITING_SETTINGS"
@@ -309,7 +309,10 @@ ApplicationWindow {
             text: "←"
             visible: textArea.state === "EXPANDED"
 
-            onClicked: appmodel.resourceText = ""
+            onClicked: {
+                appmodel.resourceText = ""
+                addResourcesPage.state = "ENTERING_RESOURCE"
+            }
 
             ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
             ToolTip.text: qsTr(`Back to start`)
@@ -317,8 +320,7 @@ ApplicationWindow {
 
         Button {
             id: actionButton
-            // this should be set declaratively
-            text: appmodel.validateButtonText
+            text: (appmodel.validatingDotnet || appmodel.validatingJava) ? "Cancel" : appmodel.validateButtonText
             visible: appmodel.resourceText || addResourcesPage.state === "EDITING_SETTINGS"
             Layout.fillWidth: true
 
