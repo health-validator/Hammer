@@ -242,21 +242,21 @@ ApplicationWindow {
             State {
                 name: "ENTERING_RESOURCE"
                 PropertyChanges { target: addResourcesPage; x: 0 }
-                PropertyChanges { target: resultsPane; x: resultsPane.width }
+                PropertyChanges { target: resultsPane; y: window.height }
                 PropertyChanges { target: settingsPane; y: window.height }
                 PropertyChanges { target: actionButton; text: appmodel.validateButtonText }
             },
             State {
                 name: "VALIDATION_RESULTS"
-                PropertyChanges { target: addResourcesPage; x: addResourcesPage.width * -1 }
-                PropertyChanges { target: resultsPane; x: 0 }
+                PropertyChanges { target: addResourcesPage; height: window.height / 2 }
+                // math.round is a workaround for font artifacts in errors list if there's a decimal
+                PropertyChanges { target: resultsPane; y: Math.round(window.height / 2) }
                 PropertyChanges { target: settingsPane; y: window.height }
-                PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
             },
             State {
                 name: "EDITING_SETTINGS"
                 PropertyChanges { target: settingsPane; y: 0 }
-                PropertyChanges { target: actionButton; text: qsTr("⮪ Back")}
+                PropertyChanges { target: actionButton; text: qsTr("← Back")}
             }
         ]
         state: "ENTERING_RESOURCE"
@@ -264,11 +264,12 @@ ApplicationWindow {
         transitions: [
             Transition {
                 from: "*"; to: "VALIDATION_RESULTS"
-                NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
+                NumberAnimation { property: "y"; easing.type: Easing.OutCirc; duration: animationDuration }
             },
             Transition {
                 from: "*"; to: "ENTERING_RESOURCE"
                 NumberAnimation { property: "x"; easing.type: Easing.InBack; duration: animationDuration }
+                NumberAnimation { property: "height"; easing.type: Easing.OutCirc; duration: animationDuration }
                 NumberAnimation { property: "y"; easing.type: Easing.OutBack; duration: animationDuration }
             },
             Transition {
@@ -305,22 +306,32 @@ ApplicationWindow {
         }
 
         Button {
+            id: backButton
+            text: "←"
+            visible: textArea.state === "EXPANDED"
+
+            onClicked: {
+                appmodel.resourceText = ""
+                addResourcesPage.state = "ENTERING_RESOURCE"
+            }
+
+            ToolTip.visible: hovered; ToolTip.delay: tooltipDelay
+            ToolTip.text: qsTr(`Back to start`)
+        }
+
+        Button {
             id: actionButton
-            // this should be set declaratively
-            text: appmodel.validateButtonText
+            text: (appmodel.validatingDotnet || appmodel.validatingJava) ? "Cancel" : appmodel.validateButtonText
             visible: appmodel.resourceText || addResourcesPage.state === "EDITING_SETTINGS"
             Layout.fillWidth: true
 
             onClicked: {
-                if (addResourcesPage.state === "ENTERING_RESOURCE"
-                        || (addResourcesPage.state === "VALIDATION_RESULTS"
-                            && resultsPageEditor.state === "VISIBLE")) {
-                    appmodel.startValidation()
-                } else {
-                    if (addResourcesPage.state === "VALIDATION_RESULTS") {
+                if (appmodel.validatingDotnet || appmodel.validatingJava) {
                         appmodel.cancelValidation()
-                    }
-                    addResourcesPage.state = "ENTERING_RESOURCE"
+                        addResourcesPage.state = "ENTERING_RESOURCE"
+                } else {
+                    appmodel.startValidation()
+
                 }
             }
 
@@ -332,8 +343,15 @@ ApplicationWindow {
     Pane {
         id: resultsPane
         width: window.width
-        height: parent.height - actionButton.height
-        x: resultsPane.width
+        height: (window.height / 2) - buttonsRow.height
+        y: 500
+
+        background: Rectangle {
+            border.color: "#444"
+            border.width: 1
+            radius: 4
+        }
+
 
         // Context menu with the options to copy the validation report as
         // Markdown or CSV, and optionally to copy a single message. To enable
@@ -383,7 +401,6 @@ ApplicationWindow {
 
             Row {
                 id: errorCountsRow
-//                Layout.fillWidth: true
                 width: resultsPane.availableWidth
                 bottomPadding: 30
 
@@ -437,8 +454,7 @@ ApplicationWindow {
 
                     function peekIssue(lineNumber, linePosition) {
                         if (lineNumber === 0 && linePosition === 0) { return; }
-                        resultsPageEditor.state = "VISIBLE"
-                        resultsPageEditor.openError(lineNumber, linePosition)
+                        textArea.openError(lineNumber, linePosition)
                     }
 
                     IssuesList {
@@ -461,38 +477,6 @@ ApplicationWindow {
                         showInfo: settings.showInfo
                     }
                 }
-            }
-
-            InstanceEditor {
-                id: resultsPageEditor
-                instanceText: appmodel.resourceText
-                fontName: monospaceFont.name
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignBottom
-
-                states: [
-                    State {
-                        name: "HIDDEN"
-                        PropertyChanges { target: resultsPageEditor; implicitHeight: 0 }
-                    },
-                    State {
-                        name: "VISIBLE"
-                        PropertyChanges { target: resultsPageEditor; implicitHeight: 250 }
-                        PropertyChanges { target: actionButton; text: qsTr("Re-validate")}
-                    }
-                ]
-                state: "HIDDEN"
-
-                transitions: [
-                    Transition {
-                        from: "*"; to: "VISIBLE"
-                        NumberAnimation { properties: "implicitHeight"; easing.type: Easing.InBack; duration: animationDuration/2 }
-                    },
-                    Transition {
-                        from: "*"; to: "HIDDEN"
-                        NumberAnimation { properties: "implicitHeight"; easing.type: Easing.InBack; duration: animationDuration/2 }
-                    }
-                ]
             }
         }
     }
