@@ -946,6 +946,7 @@ class Program
                 }
 
                 sw.Stop();
+                _validatorProcesses.Remove(validator);
                 Console.WriteLine($"Java validation performed in {sw.ElapsedMilliseconds}ms");
                 return result;
             }
