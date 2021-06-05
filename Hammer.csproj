@@ -64,7 +64,7 @@
     <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="3.2.0" GeneratePathProperty="true" ExcludeAssets="contentFiles" />
     <PackageReference Include="Hl7.Fhir.Specification.R4" Version="3.2.0" GeneratePathProperty="true" ExcludeAssets="contentFiles" />
     <PackageReference Include="Hl7.Fhir.STU3" Version="3.2.0" />
-    <PackageReference Include="Hl7.Fhir.R4" Version="3.2.0" />
+    <PackageReference Include="Hl7.Fhir.R4" Version="3.3.0" />
     <PackageReference Include="Hl7.Fhir.Support" Version="3.2.0" />
     <PackageReference Include="Hl7.FhirPath" Version="3.2.0" />
     <PackageReference Include="Hl7.Fhir.Support.Poco" Version="3.2.0" />
@@ -76,7 +76,7 @@
     <PackageReference Include="Qml.Net.OSXBinaries" Version="0.11.0" />
     <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.11.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="TextCopy" Version="4.3.0" />
+    <PackageReference Include="TextCopy" Version="4.3.1" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="ToMarkdownTable" Version="0.2.1-alpha0003" />
   </ItemGroup>
