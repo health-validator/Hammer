@@ -64,23 +64,23 @@ public class CLIParser
     {
         _cliOptions.WithParsed(result =>
         {
-            AppModel.Instance.AnimateQml = false;
+            Program.AppModel.Instance.AnimateQml = false;
 
             if (result.ScopeDir != null)
             {
                 var scopeUri = new System.Uri(System.IO.Path.GetFullPath(result.ScopeDir));
-                AppModel.Instance.LoadScopeDirectory(scopeUri.ToString());
+                Program.AppModel.Instance.LoadScopeDirectory(scopeUri.ToString());
             }
             if (result.ResourceFile != null)
             {
                 var resourceUri = new System.Uri(System.IO.Path.GetFullPath(result.ResourceFile));
-                if (AppModel.Instance.LoadResourceFile(resourceUri.ToString()))
+                if (Program.AppModel.Instance.LoadResourceFile(resourceUri.ToString()))
                 {
-                    AppModel.Instance.StartValidation();
+                    Program.AppModel.Instance.StartValidation();
                 }
             }
 
-            AppModel.Instance.AnimateQml = true;
+            Program.AppModel.Instance.AnimateQml = true;
         });
     }
 }
