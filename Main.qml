@@ -403,11 +403,12 @@ ApplicationWindow {
                 id: errorCountsRow
                 width: resultsPane.availableWidth
                 bottomPadding: 30
+                anchors.horizontalCenter: parent.horizontalCenter
 
                 StatusBox {
                     id: dotnetErrorsBox
                     label: ".NET"
-                    width: resultsPane.availableWidth/2
+                    width: resultsPane.availableWidth/4
 
                     runningStatus: appmodel.validatingDotnet
                     dataModel: if (!appmodel.validatingDotnet) Net.toListModel(appmodel.dotnetIssues)
@@ -421,7 +422,7 @@ ApplicationWindow {
                 StatusBox {
                     id: javaErrorsBox
                     label: "Java (beta)"
-                    width: resultsPane.availableWidth/2
+                    width: resultsPane.availableWidth/4
 
                     runningStatus: appmodel.validatingJava
                     dataModel: if (!appmodel.validatingJava) Net.toListModel(appmodel.javaIssues)

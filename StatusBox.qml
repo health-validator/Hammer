@@ -99,7 +99,7 @@ Item {
             text: [counts.errorCount, counts.warningCount, counts.infoCount]
                 .filter((count, index) => (index == 0) || (index == 1 && showWarnings) || (index == 2 && showInfo))
                 .join(" ∙ ")
-            font.pointSize: 35
+            font.pointSize: 15
             anchors.centerIn: parent
             visible: !runningStatus
             color: "white"
