@@ -403,7 +403,7 @@ ApplicationWindow {
                 id: errorCountsRow
                 width: resultsPane.availableWidth
                 bottomPadding: 30
-                anchors.horizontalCenter: parent.horizontalCenter
+                Layout.alignment: Qt.AlignHCenter
 
                 StatusBox {
                     id: dotnetErrorsBox
