@@ -402,7 +402,7 @@ ApplicationWindow {
             Row {
                 id: errorCountsRow
                 width: resultsPane.availableWidth
-                bottomPadding: 30
+                bottomPadding: 10
                 Layout.alignment: Qt.AlignHCenter
 
                 StatusBox {
