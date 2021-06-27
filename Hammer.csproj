@@ -13,6 +13,9 @@
     <PackageIconUrl>https://github.com/health-validator/Hammer/raw/master/assets/hammer-logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/health-validator/Hammer</RepositoryUrl>
     <PackageTags>validator, fhir, xml, json, crossplatform</PackageTags>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>hammer</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
