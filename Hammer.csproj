@@ -3,17 +3,19 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <OutputType>Exe</OutputType>
-    <PackageId>Hammer.Validator</PackageId>
+    <PackageId>Hammer</PackageId>
     <IsPackable>false</IsPackable>
     <Version>0.0.2</Version>
     <Authors>Vadim Peretokin</Authors>
-    <Description>A modern, cross-platform validator for FHIR®.</Description>
+    <Description>A modern, cross-platform GUI validator for FHIR®.</Description>
     <PackageProjectUrl>https://github.com/health-validator/Hammer</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/health-validator/Hammer/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>hammer-logo.png</PackageIcon>
     <PackageIconUrl>https://github.com/health-validator/Hammer/raw/master/assets/hammer-logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/health-validator/Hammer</RepositoryUrl>
     <PackageTags>validator, fhir, xml, json, crossplatform</PackageTags>
     <PackAsTool>true</PackAsTool>
+    <IsPackable>true</IsPackable>
     <ToolCommandName>hammer</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
@@ -118,13 +120,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- only copy on release because the file is already present then. Couldn't get msbuild to download on its own -->
-    <Content Include="org.hl7.fhir.validator.jar" Condition=" '$(Configuration)' == 'Release' " CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="org.hl7.fhir.validator.jar" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/examples/*" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="*.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/run-hammer.bat" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="assets/hammer-logo.png" Pack="true" PackagePath="\"/>
     <Content Include="assets/fonts/RobotoCondensed-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="RobotoMono-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+
+  <!-- doesn't work - file included in package does not have the change -->
+  <Target Name="PrepQmlForPacking" AfterTargets="PublishBuild" BeforeTargets="GenerateNuspec">
+    <Exec Command="sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' $(PublishDir)/Main.qml" />
+  </Target>
 </Project>
