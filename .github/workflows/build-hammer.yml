@@ -152,7 +152,7 @@ jobs:
 
       - name: Set up npm
         if: steps.changed-files-specific.outputs.any_changed == 'true'
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.3.0
         with:
           node-version: 12
 
