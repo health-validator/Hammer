@@ -1249,15 +1249,35 @@ class Program
 
     static int Main(string[] args)
     {
-        var qtRuntime = Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime");
-        if (Directory.Exists(qtRuntime))
+        List<string> qtRuntimes = new List<string>{ Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime") };
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            Console.WriteLine($"Using embedded Qt runtime from {qtRuntime}");
-            RuntimeManager.ConfigureRuntimeDirectory(qtRuntime);
+            qtRuntimes.Add(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime-linux"));
         }
-        else
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
-            Console.WriteLine($"Qt runtime not present in {qtRuntime}, using a default one");
+            qtRuntimes.Add(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime-osx"));
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            qtRuntimes.Add(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime-win"));
+        }
+
+        var foundRuntime = false;
+        foreach (var runtime in qtRuntimes)
+        {
+            if (Directory.Exists(runtime))
+            {
+                Console.WriteLine($"Using embedded Qt runtime from {runtime}");
+                RuntimeManager.ConfigureRuntimeDirectory(runtime);
+                foundRuntime = true;
+            }
+        }
+
+        if (!foundRuntime)
+        {
+            Console.WriteLine($"Using a default Qt runtime, none found in:\n  {string.Join("\n  ", qtRuntimes)}");
             RuntimeManager.DiscoverOrDownloadSuitableQtRuntime();
         }
 

@@ -5,7 +5,7 @@
     <OutputType>Exe</OutputType>
     <PackageId>Hammer</PackageId>
     <IsPackable>false</IsPackable>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
     <Authors>Vadim Peretokin</Authors>
     <Description>A modern, cross-platform GUI validator for FHIR®.</Description>
     <PackageProjectUrl>https://github.com/health-validator/Hammer</PackageProjectUrl>
@@ -120,7 +120,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="org.hl7.fhir.validator.jar" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <!-- <Content Include="org.hl7.fhir.validator.jar" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" /> -->
     <Content Include="assets/examples/*" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="*.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
@@ -128,11 +128,13 @@
     <None Include="assets/hammer-logo.png" Pack="true" PackagePath="\"/>
     <Content Include="assets/fonts/RobotoCondensed-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="RobotoMono-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
 
-  <Content Include="qt-runtime/**/*.*">
-    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-  </Content>
+    <!-- better to use our own instead of the nuget package, see https://github.com/qmlnet/qmlnet/issues/241#issuecomment-879359840 -->
+    <Content Include="qt-runtime-linux/**/*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>content/qt-runtime-linux</PackagePath>
+    </Content>
+  </ItemGroup>
 
   <!-- doesn't work - file included in package does not have the change -->
   <Target Name="PrepQmlForPacking" AfterTargets="PublishBuild" BeforeTargets="GenerateNuspec">
