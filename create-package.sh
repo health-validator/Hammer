@@ -12,7 +12,7 @@ for i in "${buildnames[@]}"
 do
   if [ ! -d "qt-runtime-$i" ]; then
     if [ ! -e "qt-runtime-$i.tar.gz" ]; then
-      echo "download https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${qt_version}-${i}-x64-runtime.tar.gz"
+      echo "Downloading https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${qt_version}-${i}-x64-runtime.tar.gz..."
       curl --location --output "qt-runtime-$i.tar.gz" "https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${qt_version}-${i}-x64-runtime.tar.gz"
     fi
     mkdir -p "qt-runtime-$i/"
