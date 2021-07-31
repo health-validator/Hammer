@@ -4,7 +4,6 @@
     <TargetFramework>net5.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <PackageId>Hammer</PackageId>
-    <IsPackable>false</IsPackable>
     <Version>0.0.3</Version>
     <Authors>Vadim Peretokin</Authors>
     <Description>A modern, cross-platform GUI validator for FHIR®.</Description>
@@ -120,7 +119,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- <Content Include="org.hl7.fhir.validator.jar" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" /> -->
+    <Content Include="org.hl7.fhir.validator.jar" CopyToOutputDirectory="PreserveNewest">
+      <PackagePath></PackagePath>
+    </Content>
     <Content Include="assets/examples/*" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="*.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="assets/run-hammer.sh" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
@@ -132,7 +133,7 @@
     <!-- better to use our own instead of the nuget package, see https://github.com/qmlnet/qmlnet/issues/241#issuecomment-879359840 -->
     <Content Include="qt-runtime-linux/**/*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>content/qt-runtime-linux</PackagePath>
+      <PackagePath></PackagePath>
     </Content>
   </ItemGroup>
 
