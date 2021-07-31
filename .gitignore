@@ -1,6 +1,6 @@
 # Customizations
 nupkg/
-qt-runtime-linux/
+qt-runtime-*/
 qt-runtime-*.tar.gz
 
 # Standard template
