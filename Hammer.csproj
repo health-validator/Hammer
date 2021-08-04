@@ -129,7 +129,9 @@
     <None Update="RobotoMono-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
 
     <!-- better to use our own instead of the nuget package, see https://github.com/qmlnet/qmlnet/issues/241#issuecomment-879359840 -->
-    <None Update="qt-runtime-linux/**/*.*"  CopyToOutputDirectory="PreserveNewest" />
+    <None Update="qt-runtime-linux/**/*.*" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="qt-runtime-osx/**/*.*" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="qt-runtime-win/**/*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- doesn't work - file included in package does not have the change -->
