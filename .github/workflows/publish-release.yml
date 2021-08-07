@@ -62,6 +62,8 @@ jobs:
         echo "Git revision of the validator code: $(git rev-parse HEAD)"
         mvn package -Dmaven.test.skip=true --projects org.hl7.fhir.validation.cli --no-transfer-progress
         mv org.hl7.fhir.validation.cli/target/org.hl7.fhir.validation.cli*-SNAPSHOT.jar $GITHUB_WORKSPACE/org.hl7.fhir.validator.jar
+
+        # validate Java validator works
         cd $GITHUB_WORKSPACE
         java -jar org.hl7.fhir.validator.jar
 
@@ -178,6 +180,13 @@ jobs:
         asset_path: ${{env.RELEASEDIR}}\Setup.exe
         asset_content_type: application/vnd.microsoft.portable-executable
 
-    - name: Setup tmate session
+    - name: Publish to nuget
+      env:
+        NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
+      shell: bash
+        ./create-package.sh
+        dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+
+    - name: Setup tmate session should the build fail
       if: ${{ failure() }}
       uses: mxschmitt/action-tmate@v3

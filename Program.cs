@@ -1249,15 +1249,27 @@ class Program
 
     static int Main(string[] args)
     {
-        var qtRuntime = Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime");
-        if (Directory.Exists(qtRuntime))
+        // support searching multiple locations in case more are needed in the future. Originally added for nuget,
+        // but getting the Qt runtime into nuget is an issue
+        List<string> qtRuntimes = new List<string>{ Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime") };
+
+        var foundRuntime = false;
+        foreach (var runtime in qtRuntimes)
         {
-            Console.WriteLine($"Using embedded Qt runtime from {qtRuntime}");
-            RuntimeManager.ConfigureRuntimeDirectory(qtRuntime);
+            if (Directory.Exists(runtime))
+            {
+                Console.WriteLine($"Using embedded Qt runtime from {runtime}");
+                RuntimeManager.ConfigureRuntimeDirectory(runtime);
+                foundRuntime = true;
+            }
         }
-        else
+
+        if (!foundRuntime)
         {
-            Console.WriteLine($"Qt runtime not present in {qtRuntime}, using a default one");
+            if (string.IsNullOrEmpty(RuntimeManager.FindSuitableQtRuntime())) {
+                Console.WriteLine($"Performing first-time setup, this'll take a couple of minutes...");
+            }
+            // downloaded to ~/.qmlnet-qt-runtimes by default
             RuntimeManager.DiscoverOrDownloadSuitableQtRuntime();
         }
 

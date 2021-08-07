@@ -1,3 +1,10 @@
+# Customizations
+nupkg/
+qt-runtime-*/
+qt-runtime-*.tar.gz
+
+# Standard template
+
 *.pdb
 *.code-workspace
 *.qml.autosave
