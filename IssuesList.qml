@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.12
+import appmodel 1.0
 
 /** List the error and warning messages of the validation step. */
 ColumnLayout {
@@ -138,14 +139,18 @@ ColumnLayout {
                 hoverEnabled: true
                 cursorShape: containsMouse ? Qt.PointingHandCursor : Qt.ArrowCursor
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onClicked: if (mouse.button === Qt.RightButton) {
-                    var message = modelData.text
-                    if (modelData.lineNumber != 0) {
-                        message += qsTr(` (line ${modelData.lineNumber}:${modelData.linePosition})`)
+                onClicked: {
+                    if (modelData.text == appmodel.noJavaInstall) {
+                        Qt.openUrlExternally(appmodel.javaInstallLink)
+                    } else if (mouse.button === Qt.RightButton) {
+                        var message = modelData.text
+                        if (modelData.lineNumber != 0) {
+                            message += qsTr(` (line ${modelData.lineNumber}:${modelData.linePosition})`)
+                        }
+                        rootComponent.rightClickedOnMessage(message)
+                    } else {
+                        rootComponent.peekIssue(modelData.lineNumber, modelData.linePosition)
                     }
-                    rootComponent.rightClickedOnMessage(message)
-                } else {
-                    rootComponent.peekIssue(modelData.lineNumber, modelData.linePosition)
                 }
             }
         }
