@@ -6,7 +6,7 @@
     <PackageId>Hammer</PackageId>
     <Version>0.0.3</Version>
     <Authors>Vadim Peretokin</Authors>
-    <Description>A modern, cross-platform GUI validator for FHIR®.</Description>
+    <Description>A modern, cross-platform validator for FHIR® resources.</Description>
     <PackageProjectUrl>https://github.com/health-validator/Hammer</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>hammer-logo.png</PackageIcon>
@@ -17,6 +17,7 @@
     <IsPackable>true</IsPackable>
     <ToolCommandName>hammer</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -120,13 +121,14 @@
 
   <ItemGroup>
     <None Update="org.hl7.fhir.validator.jar" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="assets/examples/*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="assets/examples/*" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <None Update="*.qml" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <None Update="assets/run-hammer.sh" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <None Update="assets/run-hammer.bat" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <None Include="assets/hammer-logo.png" Pack="true" PackagePath="\"/>
     <None Update="assets/fonts/RobotoCondensed-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <None Update="RobotoMono-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <!-- doesn't work - file included in package does not have the change -->
