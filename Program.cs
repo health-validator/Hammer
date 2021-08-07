@@ -1249,20 +1249,9 @@ class Program
 
     static int Main(string[] args)
     {
+        // support searching multiple locations in case more are needed in the future. Originally added for nuget,
+        // but getting the Qt runtime into nuget is an issue
         List<string> qtRuntimes = new List<string>{ Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime") };
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            qtRuntimes.Add(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime-linux"));
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            qtRuntimes.Add(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime-osx"));
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            qtRuntimes.Add(Path.Combine(AppModel.Extensions.GetApplicationLocation(), "qt-runtime-win"));
-        }
 
         var foundRuntime = false;
         foreach (var runtime in qtRuntimes)
@@ -1277,7 +1266,9 @@ class Program
 
         if (!foundRuntime)
         {
-            Console.WriteLine($"Using a default Qt runtime, none found in:\n  {string.Join("\n  ", qtRuntimes)}");
+            if (string.IsNullOrEmpty(RuntimeManager.FindSuitableQtRuntime())) {
+                Console.WriteLine($"Performing first-time setup, this'll take a couple of minutes...");
+            }
             RuntimeManager.DiscoverOrDownloadSuitableQtRuntime();
         }
 
