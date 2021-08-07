@@ -93,6 +93,22 @@ class Program
             set => this.SetProperty(ref _applicationVersion, value);
         }
 
+        private string _noJavaInstall = "No Java install detected - Java validator couldn't run. Would you like to install Java?";
+        [NotifySignal]
+        public string NoJavaInstall
+        {
+            get => _noJavaInstall;
+            set => this.SetProperty(ref _noJavaInstall, value);
+        }
+
+        private string _javaInstallLink = "https://adoptium.net/releases.html?variant=openjdk16&jvmVariant=hotspot";
+        [NotifySignal]
+        public string JavaInstallLink
+        {
+            get => _javaInstallLink;
+            set => this.SetProperty(ref _javaInstallLink, value);
+        }
+
         private string _scopeDirectory;
         [NotifySignal]
         public string ScopeDirectory
@@ -926,12 +942,13 @@ class Program
             catch (Exception ex)
             {
                 result = new OperationOutcome();
-                if (ex.Message == "The system cannot find the file specified")
+                if (ex.Message == "The system cannot find the file specified" ||
+                    ex.Message == "No such file or directory")
                 {
                     result.Issue.Add(new OperationOutcome.IssueComponent
                     {
                         Severity = OperationOutcome.IssueSeverity.Error,
-                        Diagnostics = "Java could not be found. Is your Java installed and working correctly? See https://www.java.com/en/download/help/version_manual.xml",
+                        Diagnostics = AppModel.Instance.NoJavaInstall,
                         Code = OperationOutcome.IssueType.Exception
                     });
                 }
