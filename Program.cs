@@ -1269,6 +1269,7 @@ class Program
             if (string.IsNullOrEmpty(RuntimeManager.FindSuitableQtRuntime())) {
                 Console.WriteLine($"Performing first-time setup, this'll take a couple of minutes...");
             }
+            // downloaded to ~/.qmlnet-qt-runtimes by default
             RuntimeManager.DiscoverOrDownloadSuitableQtRuntime();
         }
 
