@@ -1317,11 +1317,7 @@ class Program
         // instance.
         cliParser.Process();
 
-        // do this async
-        Stopwatch sw = Stopwatch.StartNew();
         AppModel.Instance.LoadExamples();
-        sw.Stop();
-        Console.WriteLine("LoadExamples time taken: {0}ms", sw.Elapsed.TotalMilliseconds);
 
         AppModel.Instance.CheckForUpdates();
 
