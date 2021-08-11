@@ -106,7 +106,12 @@ jobs:
       env:
         WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
       run: |
-        Get-ChildItem "bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/" -Filter *.log |
+        Get-ChildItem "bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/" -Filter *.dll -Recurse |
+        Foreach-Object {
+          echo "Signing $_.FullName..."
+          SignTool.exe sign /a /f $env:WORKSPACEGIT\assets\code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$_.FullName"
+        }
+        Get-ChildItem "bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/" -Filter *.exe -Recurse |
         Foreach-Object {
           echo "Signing $_.FullName..."
           SignTool.exe sign /a /f $env:WORKSPACEGIT\assets\code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$_.FullName"
