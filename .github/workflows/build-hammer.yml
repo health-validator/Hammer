@@ -100,6 +100,18 @@ jobs:
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
+    - name: (Windows) Sign executables
+      shell: powershell
+      if: runner.os == 'Windows'
+      env:
+        WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
+      run: |
+        Get-ChildItem "bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/" -Filter *.log |
+        Foreach-Object {
+          echo "Signing $_.FullName..."
+          SignTool.exe sign /a /f $env:WORKSPACEGIT\assets\code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$_.FullName"
+        }
+
     - name: Zip up artifact
       shell: bash
       run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
