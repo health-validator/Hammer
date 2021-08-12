@@ -105,8 +105,8 @@ jobs:
         jqi() {
           cat <<< "$(jq "$1" < "$2")" > "$2"
         }
-        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/Hammer.deps.json
-        rm -f bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/createdump.exe
+        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.deps.json
+        rm -f bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/createdump.exe
 
     - name: Download runtime
       shell: bash
