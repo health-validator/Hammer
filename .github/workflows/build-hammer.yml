@@ -59,6 +59,11 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
+    - name: Setup tmate session
+      if: runner.os == 'Windows'
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 15
+
     - name: Clone Java validator
       run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
 
@@ -99,11 +104,6 @@ jobs:
         curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
-
-    - name: Setup tmate session
-      if: runner.os == 'Windows'
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 15
 
     - name: (Windows) Sign executables
       shell: powershell
