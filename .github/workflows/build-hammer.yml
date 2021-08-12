@@ -98,6 +98,16 @@ jobs:
         sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
         dotnet publish --configuration Release --runtime ${{matrix.dotnet-platform}}
 
+    - name: Trim createdump
+      shell: bash
+      run: |
+        # remove createdump.exe as it's not necessary
+        jqi() {
+          cat <<< "$(jq "$1" < "$2")" > "$2"
+        }
+        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/Hammer.deps.json
+        rm -f bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/createdump.exe
+
     - name: Download runtime
       shell: bash
       run: |
@@ -116,12 +126,13 @@ jobs:
         Get-ChildItem "bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/" -Filter *.dll -Recurse |
         Foreach-Object {
           echo "Signing $($_.FullName)..."
-          signtool.exe sign /a /f $env:WORKSPACEGIT\assets\code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$_.FullName"
+          # tried paths with \ for /f, didn't work
+          signtool.exe sign /a /f $env:WORKSPACEGIT/assets/code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$_.FullName"
         }
         Get-ChildItem "bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/" -Filter *.exe -Recurse |
         Foreach-Object {
           echo "Signing $($_.FullName)..."
-          signtool.exe sign /a /f $env:WORKSPACEGIT\assets\code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$_.FullName"
+          signtool.exe sign /a /f $env:WORKSPACEGIT/assets/code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$_.FullName"
         }
 
     - name: Zip up artifact
