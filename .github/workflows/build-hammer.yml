@@ -59,10 +59,12 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
-    # - name: Setup tmate session
-    #   if: runner.os == 'Windows'
-    #   uses: mxschmitt/action-tmate@v3
-    #   timeout-minutes: 15
+    - name: Setup tmate session
+      if: runner.os == 'Windows'
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 15
+      env:
+        WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
 
     - name: Clone Java validator
       run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
