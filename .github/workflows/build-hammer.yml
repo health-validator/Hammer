@@ -136,11 +136,32 @@ jobs:
       shell: bash
       run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
 
-    - name: Upload artifact
+    - name: Upload as a Github artifact
       uses: actions/upload-artifact@v2
       with:
         name: hammer-${{matrix.buildname}}
         path: publish/*
+
+    - name: Update version number file
+      shell: powershell
+      run: |
+        $csproj = "Hammer.csproj"
+        $regex = '<Version>(.+?)<\/Version>'
+        $replacement = "<Version>$1-rc</Version>"
+        (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
+
+    - name: Setup tmate session
+      if: runner.os == 'windows'
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 15
+
+    - name: Publish pre-release to nuget
+      env:
+        NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
+      shell: bash
+      run:
+        ./create-package.sh
+        dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
 
   upload_artifacts:
@@ -165,6 +186,7 @@ jobs:
           artifacts/hammer-linux/Hammer-linux.zip
           artifacts/hammer-windows/Hammer-windows.zip
           artifacts/hammer-macos/Hammer-macos.zip
+
 
   validate_examples_metadata:
     name: Validate examples metadata file
