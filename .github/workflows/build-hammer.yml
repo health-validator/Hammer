@@ -59,13 +59,13 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
-    - name: Setup tmate session
-      if: runner.os == 'Windows'
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 15
-      env:
-        WORKSPACEGIT: ${{runner.workspace}}\Hammer
-        WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
+    # - name: Setup tmate session
+    #   if: runner.os == 'Windows'
+    #   uses: mxschmitt/action-tmate@v3
+    #   timeout-minutes: 15
+    #   env:
+    #     WORKSPACEGIT: ${{runner.workspace}}\Hammer
+    #     WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
 
     - name: Clone Java validator
       run: git clone --depth 1 --shallow-submodules https://github.com/health-validator/org.hl7.fhir.core
@@ -131,12 +131,12 @@ jobs:
         Foreach-Object {
           echo "Signing $($_.FullName)..."
           # tried paths with \ for /f, didn't work
-          signtool.exe sign /a /f $env:WORKSPACEGIT/assets/code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$_.FullName"
+          signtool.exe sign /a /f $env:WORKSPACEGIT/assets/code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$($_.FullName)"
         }
         Get-ChildItem "bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/" -Filter *.exe -Recurse |
         Foreach-Object {
           echo "Signing $($_.FullName)..."
-          signtool.exe sign /a /f $env:WORKSPACEGIT/assets/code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$_.FullName"
+          signtool.exe sign /a /f $env:WORKSPACEGIT/assets/code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$($_.FullName)"
         }
 
     - name: Zip up artifact
