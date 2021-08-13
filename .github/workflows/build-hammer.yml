@@ -142,6 +142,15 @@ jobs:
         name: hammer-${{matrix.buildname}}
         path: publish/*
 
+    - name: (Linux) Update version number file
+      if: runner.os == 'linux'
+      shell: powershell
+      run: |
+        $csproj = "Hammer.csproj"
+        $regex = '<Version>(.+?)<\/Version>'
+        $replacement = "<Version>$1-rc</Version>"
+        (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
+
     # We only need to run this on one OS - so run it on the quickest one
     - name: (Linux) Publish pre-release to nuget
       if: runner.os == 'Linux'
@@ -149,7 +158,7 @@ jobs:
         NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
       shell: bash
       run:
-        dotnet pack --version-suffix rc
+        dotnet pack dotnet pack
         # dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
     - name: Setup tmate session
