@@ -144,8 +144,6 @@ jobs:
 
         nuget install squirrel.windows -ExcludeVersion -Verbosity quiet
 
-        echo ".\squirrel.windows\tools\Squirrel --releasify $Script:NupkgPath --releaseDir $RELEASEDIR --no-msi --loadingGif=$env:WORKSPACEGIT\assets\hammer-windows-install.png  --setupIcon $env:WORKSPACEGIT\assets\hammer-logo.ico --signWithParams=\"/a /f $env:WORKSPACEGIT\assets\code-signing-certificate-windows.p12 /p $Env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256\""
-
         echo "Generating installer..."
         .\squirrel.windows\tools\Squirrel `
           --releasify $Script:NupkgPath `

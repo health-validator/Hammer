@@ -93,12 +93,44 @@ jobs:
         sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
         dotnet publish --configuration Release --runtime ${{matrix.dotnet-platform}}
 
+    - name: (Windows) Trim createdump
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        # remove createdump.exe as it's not necessary
+        jqi() {
+          cat <<< "$(jq "$1" < "$2")" > "$2"
+        }
+        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.deps.json
+        rm -f bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/createdump.exe
+
     - name: Download runtime
       shell: bash
       run: |
         curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
+
+    - name: (Windows) Sign executables
+      shell: powershell
+      if: runner.os == 'Windows'
+      env:
+        WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
+        WORKSPACEGIT: ${{runner.workspace}}\Hammer
+      run: |
+        $env:path += ";${env:ProgramFiles(x86)}\Windows Kits\10\bin\x64"
+
+        Get-ChildItem "bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/" -Filter *.dll -Recurse |
+        Foreach-Object {
+          echo "Signing $($_.FullName)..."
+          # tried paths with \ for /f, didn't work
+          signtool.exe sign /a /f $env:WORKSPACEGIT/assets/code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$($_.FullName)"
+        }
+        Get-ChildItem "bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/" -Filter *.exe -Recurse |
+        Foreach-Object {
+          echo "Signing $($_.FullName)..."
+          signtool.exe sign /a /f $env:WORKSPACEGIT/assets/code-signing-certificate-windows.p12 /p $env:WINDOWS_CODE_SIGNING /fd sha256 /tr http://timestamp.digicert.com /td sha256 "$($_.FullName)"
+        }
 
     - name: Zip up artifact
       shell: bash
