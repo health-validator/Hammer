@@ -101,7 +101,8 @@ jobs:
         sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
         dotnet publish --configuration Release --runtime ${{matrix.dotnet-platform}}
 
-    - name: Trim createdump
+    - name: (Windows) Trim createdump
+      if: runner.os == 'Windows'
       shell: bash
       run: |
         # remove createdump.exe as it's not necessary
