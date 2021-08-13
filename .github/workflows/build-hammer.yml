@@ -153,12 +153,6 @@ jobs:
         dotnet pack
         dotnet nuget push nupkg/Hammer.*.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
-    - name: Setup tmate session
-      if: runner.os == 'Linux'
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 15
-      env:
-        NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
 
   upload_artifacts:
     name: Upload to pre-release
