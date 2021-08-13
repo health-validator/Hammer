@@ -142,27 +142,21 @@ jobs:
         name: hammer-${{matrix.buildname}}
         path: publish/*
 
-    - name: Update version number file
-      shell: powershell
-      run: |
-        $csproj = "Hammer.csproj"
-        $regex = '<Version>(.+?)<\/Version>'
-        $replacement = "<Version>$1-rc</Version>"
-        (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
-
-    - name: Setup tmate session
-      if: runner.os == 'windows'
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 15
-
-    - name: Publish pre-release to nuget
+    # We only need to run this on one OS - so run it on the quickest one
+    - name: (Linux) Publish pre-release to nuget
+      if: runner.os == 'Linux'
       env:
         NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
       shell: bash
       run:
-        ./create-package.sh
-        dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+        dotnet pack dotnet pack --version-suffix rc
+        # dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
+    - name: Setup tmate session
+      if: runner.os == 'Linux'
+      if: runner.os == 'windows'
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 15
 
   upload_artifacts:
     name: Upload to pre-release
