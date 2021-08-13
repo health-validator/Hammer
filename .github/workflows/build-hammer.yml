@@ -154,7 +154,6 @@ jobs:
 
     - name: Setup tmate session
       if: runner.os == 'Linux'
-      if: runner.os == 'windows'
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 15
 
