@@ -149,8 +149,9 @@ jobs:
         NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
       shell: bash
       run:
-        dotnet pack /property:VersionSuffix=rc
-        # dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+        sed -i -r 's|<Version>(.+?)<\/Version>|<Version>\1-rc</Version>|g' Hammer.csproj
+        dotnet pack
+        dotnet nuget push nupkg/Hammer.*.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
     - name: Setup tmate session
       if: runner.os == 'Linux'
