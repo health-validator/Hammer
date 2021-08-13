@@ -148,7 +148,7 @@ jobs:
       env:
         NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
       shell: bash
-      run:
+      run: |
         sed -i -r 's|<Version>(.+?)<\/Version>|<Version>\1-rc</Version>|g' Hammer.csproj
         dotnet pack
         dotnet nuget push nupkg/Hammer.*.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
@@ -157,6 +157,8 @@ jobs:
       if: runner.os == 'Linux'
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 15
+      env:
+        NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
 
   upload_artifacts:
     name: Upload to pre-release
