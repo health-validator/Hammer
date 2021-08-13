@@ -149,7 +149,7 @@ jobs:
         NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
       shell: bash
       run:
-        dotnet pack dotnet pack --version-suffix rc
+        dotnet pack --version-suffix rc
         # dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
     - name: Setup tmate session
