@@ -64,6 +64,7 @@ jobs:
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 15
       env:
+        WORKSPACEGIT: ${{runner.workspace}}\Hammer
         WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
 
     - name: Clone Java validator
@@ -122,6 +123,7 @@ jobs:
       if: runner.os == 'Windows'
       env:
         WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
+        WORKSPACEGIT: ${{runner.workspace}}\Hammer
       run: |
         $env:path += ";${env:ProgramFiles(x86)}\Windows Kits\10\bin\x64"
 
