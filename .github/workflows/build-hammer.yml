@@ -144,7 +144,8 @@ jobs:
 
     # We only need to run this on one OS - so run it on the quickest one
     - name: (Linux) Publish pre-release to nuget
-      if: runner.os == 'Linux' && github.ref == 'refs/heads/main'
+      # if: runner.os == 'Linux' && github.ref == 'refs/heads/main'
+      if: runner.os == 'Linux'
       env:
         NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
       shell: bash
