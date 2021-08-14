@@ -136,11 +136,22 @@ jobs:
       shell: bash
       run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
 
-    - name: Upload artifact
+    - name: Upload as a Github artifact
       uses: actions/upload-artifact@v2
       with:
         name: hammer-${{matrix.buildname}}
         path: publish/*
+
+    # We only need to run this on one OS - so run it on the quickest one
+    - name: (Linux) Publish pre-release to nuget
+      if: runner.os == 'Linux'
+      env:
+        NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
+      shell: bash
+      run: |
+        sed -i -r 's|<Version>(.+?)<\/Version>|<Version>0.0.1-rc</Version>|g' Hammer.csproj
+        dotnet pack
+        dotnet nuget push nupkg/Hammer.*.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
 
   upload_artifacts:
@@ -165,6 +176,7 @@ jobs:
           artifacts/hammer-linux/Hammer-linux.zip
           artifacts/hammer-windows/Hammer-windows.zip
           artifacts/hammer-macos/Hammer-macos.zip
+
 
   validate_examples_metadata:
     name: Validate examples metadata file
