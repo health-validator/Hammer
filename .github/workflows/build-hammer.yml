@@ -144,12 +144,14 @@ jobs:
 
     # We only need to run this on one OS - so run it on the quickest one
     - name: (Linux) Publish pre-release to nuget
+      # if: runner.os == 'Linux' && github.ref == 'refs/heads/main'
       if: runner.os == 'Linux'
       env:
         NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
       shell: bash
       run: |
-        sed -i -r 's|<Version>(.+?)<\/Version>|<Version>0.0.1-rc</Version>|g' Hammer.csproj
+        sed -i -r 's|<Version>(.+?)<\/Version>|<Version>\1-rc${{github.run_number}}</Version>|g' Hammer.csproj
+        sed -i 's|<PackageId>Hammer</PackageId>|<PackageId>Hammer.TestVersion</PackageId>|g' Hammer.csproj
         dotnet pack
         dotnet nuget push nupkg/Hammer.*.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
