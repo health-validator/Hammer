@@ -150,7 +150,7 @@ jobs:
         NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
       shell: bash
       run: |
-        echo "${{env.GITHUB_RUN_NUMBER}} - number"
+        echo "${{env.GITHUB_RUN_NUMBER}} - number, or ${{github.run_number}}"
         sed -i -r 's|<Version>(.+?)<\/Version>|<Version>\1-rc${{env.GITHUB_RUN_NUMBER}}</Version>|g' Hammer.csproj
         sed -i 's|<PackageId>Hammer</PackageId>|<PackageId>Hammer.TestVersion</PackageId>|g' Hammer.csproj
         dotnet pack
