@@ -150,8 +150,7 @@ jobs:
         NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
       shell: bash
       run: |
-        echo "${{env.GITHUB_RUN_NUMBER}} - number, or ${{github.run_number}}"
-        sed -i -r 's|<Version>(.+?)<\/Version>|<Version>\1-rc${{env.GITHUB_RUN_NUMBER}}</Version>|g' Hammer.csproj
+        sed -i -r 's|<Version>(.+?)<\/Version>|<Version>\1-rc${{github.run_number}}</Version>|g' Hammer.csproj
         sed -i 's|<PackageId>Hammer</PackageId>|<PackageId>Hammer.TestVersion</PackageId>|g' Hammer.csproj
         dotnet pack
         dotnet nuget push nupkg/Hammer.*.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
