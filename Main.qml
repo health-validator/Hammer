@@ -327,11 +327,15 @@ ApplicationWindow {
 
             onClicked: {
                 if (appmodel.validatingDotnet || appmodel.validatingJava) {
-                        appmodel.cancelValidation()
-                        addResourcesPage.state = "ENTERING_RESOURCE"
-                } else {
+                    appmodel.cancelValidation()
+                    addResourcesPage.state = "ENTERING_RESOURCE"
+                } else if (addResourcesPage.state === "ENTERING_RESOURCE" ||
+                            addResourcesPage.state === "VALIDATION_RESULTS") {
                     appmodel.startValidation()
-
+                } else if (addResourcesPage.state === "EDITING_SETTINGS") {
+                    addResourcesPage.state = "ENTERING_RESOURCE"
+                } else {
+                    console.error(`Unknown resources page state: ${addResourcesPage.state}`)
                 }
             }
 
