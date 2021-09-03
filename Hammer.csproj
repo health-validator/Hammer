@@ -65,7 +65,7 @@
 
   <ItemGroup>
     <PackageReference Include="Hl7.Fhir.ElementModel" Version="3.4.0" />
-    <PackageReference Include="Hl7.Fhir.Serialization" Version="3.4.0" />
+    <PackageReference Include="Hl7.Fhir.Serialization" Version="3.5.0" />
     <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="3.4.0" GeneratePathProperty="true" ExcludeAssets="contentFiles" />
     <PackageReference Include="Hl7.Fhir.Specification.R4" Version="3.4.0" GeneratePathProperty="true" ExcludeAssets="contentFiles" />
     <PackageReference Include="Hl7.Fhir.STU3" Version="3.4.0" />
