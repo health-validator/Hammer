@@ -89,6 +89,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         sed -i '' 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
+        dotnet restore
         dotnet msbuild -p:Configuration=Release -t:BundleApp -p:RuntimeIdentifier=${{matrix.dotnet-platform}} -p:UseAppHost=true
 
     - name: (Windows) Build Hammer
