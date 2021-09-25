@@ -112,8 +112,8 @@ jobs:
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
     - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 15
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 15
 
     - name: (Windows) Sign executables
       shell: powershell
