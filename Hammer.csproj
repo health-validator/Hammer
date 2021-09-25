@@ -15,7 +15,6 @@
     <PackageTags>validator, fhir, xml, json, crossplatform</PackageTags>
     <PackAsTool>true</PackAsTool>
     <IsPackable>true</IsPackable>
-    <UseAppHost>true</UseAppHost>
     <ToolCommandName>hammer</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -51,11 +50,14 @@
     <PublishSingleFile>false</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>Link</TrimMode>
+  </PropertyGroup>
 
+  <PropertyGroup>
     <CFBundleName>Hammer</CFBundleName> <!-- Also defines .app file name -->
     <CFBundleDisplayName>Hammer</CFBundleDisplayName>
     <CFBundleIdentifier>com.example</CFBundleIdentifier>
     <CFBundleVersion>$(Version)</CFBundleVersion>
+    <CFBundleShortVersionString>$(Version)</CFBundleShortVersionString>
     <CFBundlePackageType>APPL</CFBundlePackageType>
     <CFBundleSignature>????</CFBundleSignature>
     <CFBundleExecutable>Hammer</CFBundleExecutable>
