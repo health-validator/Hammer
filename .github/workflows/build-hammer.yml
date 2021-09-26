@@ -119,7 +119,7 @@ jobs:
 
         # clean up the publish folder, leaving the .app only
         cd  bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
-        rm -f !(Hammer.app)
+        find . ! -name Hammer.app -delete
 
     - name: (Windows/Linux) Extract runtime
       shell: bash
