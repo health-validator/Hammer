@@ -117,6 +117,10 @@ jobs:
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
 
+        # clean up the publish folder, leaving the .app only
+        cd  bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
+        rm -f !(Hammer.app)
+
     - name: (Windows/Linux) Extract runtime
       shell: bash
       if: runner.os == 'Windows' || runner.os == 'Linux'
