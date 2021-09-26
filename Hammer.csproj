@@ -52,6 +52,20 @@
     <TrimMode>Link</TrimMode>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <CFBundleName>Hammer</CFBundleName> <!-- Also defines .app file name -->
+    <CFBundleDisplayName>Hammer</CFBundleDisplayName>
+    <CFBundleIdentifier>com.example</CFBundleIdentifier>
+    <CFBundleVersion>$(Version)</CFBundleVersion>
+    <CFBundleShortVersionString>$(Version)</CFBundleShortVersionString>
+    <CFBundlePackageType>APPL</CFBundlePackageType>
+    <CFBundleSignature>????</CFBundleSignature>
+    <CFBundleExecutable>Hammer</CFBundleExecutable>
+    <CFBundleIconFile>assets/hammer-logo.icns</CFBundleIconFile> <!-- Will be copied from output directory -->
+    <NSPrincipalClass>NSApplication</NSPrincipalClass>
+    <NSHighResolutionCapable>true</NSHighResolutionCapable>
+  </PropertyGroup>
+
   <Target Name="AddPackageAliases" BeforeTargets="ResolveReferences" Outputs="%(PackageReference.Identity)">
     <ItemGroup>
       <ReferencePath Condition="'%(FileName)'=='Hl7.Fhir.STU3.Core' Or '%(FileName)'=='Hl7.Fhir.STU3.Specification'">
@@ -84,6 +98,7 @@
     <PackageReference Include="TextCopy" Version="4.3.1" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="ToMarkdownTable" Version="0.2.1-alpha0003" />
+    <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -126,6 +141,7 @@
     <None Update="assets/run-hammer.sh" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <None Update="assets/run-hammer.bat" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <None Include="assets/hammer-logo.png" Pack="true" PackagePath="\"/>
+    <None Update="assets/hammer-logo.icns" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <None Update="assets/fonts/RobotoCondensed-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <None Update="RobotoMono-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <None Include="README.md" Pack="true" PackagePath="\"/>

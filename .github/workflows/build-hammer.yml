@@ -85,7 +85,8 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         sed -i '' 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
-        dotnet publish --configuration Release --runtime ${{matrix.dotnet-platform}}
+        dotnet restore --runtime=osx-x64
+        dotnet msbuild -p:Configuration=Release -t:BundleApp -p:RuntimeIdentifier=osx-x64 -p:UseAppHost=true
 
     - name: (Windows) Build Hammer
       if: runner.os == 'Windows'
@@ -108,6 +109,24 @@ jobs:
       shell: bash
       run: |
         curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
+
+    - name: (macOS) Extract runtime
+      shell: bash
+      if: runner.os == 'macOS'
+      run: |
+        mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
+        tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
+
+        # clean up the publish folder, leaving the .app only
+        cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
+        mv Hammer.app /tmp/Hammer.app
+        rm -rf *
+        cp -r /tmp/Hammer.app .
+
+    - name: (Windows/Linux) Extract runtime
+      shell: bash
+      if: runner.os == 'Windows' || runner.os == 'Linux'
+      run: |
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
