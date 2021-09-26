@@ -109,18 +109,19 @@ jobs:
       shell: bash
       run: |
         curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
-        mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
     - name: (macOS) Extract runtime
       shell: bash
       if: runner.os == 'macOS'
       run: |
+        mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
 
     - name: (Windows/Linux) Extract runtime
       shell: bash
       if: runner.os == 'Windows' || runner.os == 'Linux'
       run: |
+        mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
     - name: (Windows) Sign executables
