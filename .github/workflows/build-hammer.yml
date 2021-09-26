@@ -81,16 +81,12 @@ jobs:
         sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
         dotnet publish --configuration Release --runtime ${{matrix.dotnet-platform}}
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 15
-
     - name: (macOS) Build Hammer
       if: runner.os == 'macOS'
       run: |
         sed -i '' 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
-        dotnet restore
-        dotnet msbuild -p:Configuration=Release -t:BundleApp -p:RuntimeIdentifier=${{matrix.dotnet-platform}} -p:UseAppHost=true
+        dotnet restore --runtime=osx-x64
+        dotnet msbuild -p:Configuration=Release -t:BundleApp -p:RuntimeIdentifier=osx-x64 -p:UseAppHost=true
 
     - name: (Windows) Build Hammer
       if: runner.os == 'Windows'
@@ -114,6 +110,17 @@ jobs:
       run: |
         curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
+
+    - name: (macOS) Extract runtime
+      shell: bash
+      if: runner.os == 'macOS'
+      run: |
+        tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
+
+    - name: (Windows/Linux) Extract runtime
+      she
+      if: runner.os == 'Windows' || runner.os == 'Linux'
+      run: |
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
     - name: (Windows) Sign executables
