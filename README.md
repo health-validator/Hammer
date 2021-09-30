@@ -55,7 +55,7 @@ Experimental and not ready for production. Try it out and [give feedback](https:
 
 ## Download
 
-Recommended: [Windows](https://github.com/health-validator/Hammer/releases/download/latest/Hammer-windows.zip) | [macOS](https://github.com/health-validator/Hammer/releases/download/latest/Hammer-macos.zip) | [Linux](https://github.com/health-validator/Hammer/releases/download/latest/Hammer-linux.zip)
+Recommended: Windows [installer](https://github.com/health-validator/Hammer/releases/download/Hammer-0.0.2/Hammer-0.0.2-installer.exe) or [zip](https://github.com/health-validator/Hammer/releases/download/Hammer-0.0.2/Hammer-0.0.2-installerfree.zip) | [macOS](https://github.com/health-validator/Hammer/releases/download/Hammer-0.0.2/hammer-macos.zip) | [Linux](https://github.com/health-validator/Hammer/releases/download/Hammer-0.0.2/hammer-linux.zip)
 
 Alternatively, you can also install it as .NET tool:
 
