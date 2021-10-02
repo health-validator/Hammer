@@ -102,7 +102,7 @@ This software wouldnt've been possible without these open source packages:
 - [Qt](https://www.qt.io/)
 - [TextCopy](https://github.com/SimonCropp/TextCopy/)
 
-This project is not related to [Firely](https://fire.ly/).
+This project is not related to any employer.
 
 Credit to [Markdownify](https://github.com/amitmerchant1990/electron-markdownify) for the README inspiration.
 
