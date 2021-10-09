@@ -146,9 +146,4 @@
     <None Update="RobotoMono-Regular.ttf" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
-
-  <!-- doesn't work - file included in package does not have the change -->
-  <Target Name="PrepQmlForPacking" AfterTargets="PublishBuild" BeforeTargets="GenerateNuspec">
-    <Exec Command="sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' $(PublishDir)/Main.qml" />
-  </Target>
 </Project>
