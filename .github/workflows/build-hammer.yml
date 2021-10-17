@@ -210,7 +210,7 @@ jobs:
 
       - name: Check if metadata or schema have changed
         id: changed-files-specific
-        uses: tj-actions/changed-files@v9.3
+        uses: tj-actions/changed-files@v10.1
         with:
           files: |
             assets/examples/.metadata.schema.json
