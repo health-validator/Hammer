@@ -132,7 +132,7 @@ jobs:
 
     - name: (Windows) Sign executables
       shell: powershell
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && env.WINDOWS_CODE_SIGNING != null
       env:
         WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
         WORKSPACEGIT: ${{runner.workspace}}\Hammer
