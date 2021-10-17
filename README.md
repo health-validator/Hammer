@@ -9,10 +9,6 @@
 <h4 align="center">A modern, cross-platform validator for <a href="http://hl7.org/fhir/index.html" target="_blank">FHIR®</a>.</h4>
 
 <p align="center">
-  <a href="https://github.com/health-validator/Hammer/wiki/How-to-download-latest-development-build">
-    <img src="https://travis-ci.com/health-validator/Hammer.svg?branch=master"
-         alt="Build status">
-  </a>
   <a href="https://chat.fhir.org/#narrow/stream/179239-tooling/topic/Hammer">
     <img src="https://img.shields.io/badge/chat-on%20zulip-green.svg">
   </a>
