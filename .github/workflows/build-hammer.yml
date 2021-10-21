@@ -44,7 +44,7 @@ jobs:
 
     steps:
     - name: Checkout source code
-      uses: actions/checkout@v2.3.5
+      uses: actions/checkout@v2.3.4
 
     - name: Restore maven cache
       uses: actions/cache@v2.1.6
@@ -55,7 +55,7 @@ jobs:
           ${{ runner.os }}-maven-
 
     - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v1.8.2
+      uses: actions/setup-dotnet@v1.8.1
       with:
         dotnet-version: 5.0.x
 
@@ -204,13 +204,13 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v2.3.5
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
       - name: Check if metadata or schema have changed
         id: changed-files-specific
-        uses: tj-actions/changed-files@v10.1
+        uses: tj-actions/changed-files@v9.3
         with:
           files: |
             assets/examples/.metadata.schema.json
