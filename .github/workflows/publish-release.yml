@@ -1,13 +1,13 @@
 name: Publish release
 
 on:
-  push: # TODO disable me
+  push: # TODO disable me, after checking that the tag works right
   release:
     types: [created]
 
 jobs:
   build:
-    name: ${{matrix.buildname}} publish-hammer
+    name: Publish Hammer on ${{matrix.buildname}}
     runs-on: ${{matrix.os}}
     if: github.repository == 'health-validator/Hammer'
     strategy:
@@ -45,14 +45,15 @@ jobs:
         # Validate that the version used in the release is one that'll work with all of our tooling
         # Squirrel can be picky: https://github.com/Squirrel/Squirrel.Windows/issues/1394
 
-        if ($env:TAG_NAME -match "^Hammer-(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Release>-[a-z][0-9a-z-]*)?$") {
-          $SHORT_TAG_NAME = $Matches.Version
-        } else {
-          echo "$env:TAG_NAME isn't a valid release name - make sure it matches Hammer-#.#.#"
-          exit 1
-        }
+        # if ($env:TAG_NAME -match "^Hammer-(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Release>-[a-z][0-9a-z-]*)?$") {
+        #   $SHORT_TAG_NAME = $Matches.Version
+        # } else {
+        #   echo "$env:TAG_NAME isn't a valid release name - make sure it matches Hammer-#.#.#"
+        #   exit 1
+        # }
 
-        echo "SHORT_TAG_NAME=${SHORT_TAG_NAME}" >> $env:GITHUB_ENV
+        # echo "SHORT_TAG_NAME=${SHORT_TAG_NAME}" >> $env:GITHUB_ENV
+        echo "SHORT_TAG_NAME=1.5.0" >> $env:GITHUB_ENV
 
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v1.8.2
@@ -197,13 +198,13 @@ jobs:
         asset_path: ${{env.RELEASEDIR}}\Setup.exe
         asset_content_type: application/vnd.microsoft.portable-executable
 
-    - name: Publish to nuget
-      env:
-        NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
-      shell: bash
-      run:
-        ./create-package.sh
-        dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+    # - name: Publish to nuget
+    #   env:
+    #     NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
+    #   shell: bash
+    #   run:
+    #     ./create-package.sh
+    #     dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
     - name: Setup tmate session should the build fail
       if: ${{ failure() }}
