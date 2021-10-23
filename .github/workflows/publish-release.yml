@@ -32,7 +32,6 @@ jobs:
       TAG_NAME: ${{github.event.release.tag_name}}
       buildname: 'windows'
       qt-version: '5.15.1-7fc8b10'
-      dotnet-platform: 'win-x64'
       dotnet-version: 'net5.0'
       deployment-platform: 'windows'
       DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -53,6 +52,8 @@ jobs:
         # }
 
         # echo "SHORT_TAG_NAME=${SHORT_TAG_NAME}" >> $env:GITHUB_ENV
+        echo "TAG_NAME=1.5.0" >> $env:GITHUB_ENV # delete me
+
         echo "SHORT_TAG_NAME=1.5.0" >> $env:GITHUB_ENV
 
     - name: Setup .NET Core SDK
@@ -96,9 +97,10 @@ jobs:
         (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
 
     - name: Compile Hammer
+      shell: powershell
       run: |
-        sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
-        dotnet publish --configuration ${{env.buildtype}} --runtime win-x64
+        (Get-Content "Main.qml" -Raw) -replace "// import appmodel 1.0", "import appmodel 1.0" | Set-Content "Main.qml"
+        dotnet publish --configuration ${{env.buildtype}} --runtime ${{matrix.dotnet-platform}}
 
     - name: Trim createdump
       shell: bash
@@ -112,19 +114,19 @@ jobs:
         jqi() {
           cat <<< "$(jq "$1" < "$2")" > "$2"
         }
-        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/Hammer.deps.json
-        rm -f bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/createdump.exe
+        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{env.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.deps.json
+        rm -f bin/Release/${{env.dotnet-version}}/${{matrix.dotnet-platform}}/publish/createdump.exe
 
     - name: Download runtime
       shell: bash
       run: |
-        curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{env.qt-version}}-${{env.dotnet-platform}}-runtime.tar.gz
-        mkdir -p bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/qt-runtime
-        tar -xf qt-runtime.tar.gz -C bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/qt-runtime
+        curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{env.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
+        mkdir -p bin/Release/${{env.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
+        tar -xf qt-runtime.tar.gz -C bin/Release/${{env.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
     - name: Create stand-alone zip
       shell: bash
-      run: cd bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE\\publish\\Hammer-${{env.deployment-platform}}.zip
+      run: cd bin/Release/${{env.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE\\publish\\Hammer-${{env.deployment-platform}}.zip
 
     - name: Upload stand-alone zip
       uses: actions/upload-release-asset@v1.0.2
@@ -149,7 +151,7 @@ jobs:
         if (-not $(Test-Path "$SQUIRRELWINBIN")) {
           New-Item "$SQUIRRELWINBIN" -ItemType "directory"
         }
-        Move-Item bin\Release\${{env.dotnet-version}}\${{env.dotnet-platform}}\publish\* $SQUIRRELWINBIN
+        Move-Item bin\Release\${{env.dotnet-version}}\${{matrix.dotnet-platform}}\publish\* $SQUIRRELWINBIN
         Copy-Item $env:WORKSPACEGIT\assets\hammer-logo.png $SQUIRRELWIN
         $Script:NuSpec = "$env:WORKSPACEGIT\Hammer.nuspec"
 
