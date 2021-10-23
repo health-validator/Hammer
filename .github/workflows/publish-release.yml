@@ -9,7 +9,7 @@ jobs:
   build:
     name: ${{matrix.buildname}} publish-hammer
     runs-on: ${{matrix.os}}
-    if: github.repository == 'vadi2/Hammer'
+    if: github.repository == 'health-validator/Hammer'
     strategy:
       fail-fast: false
       matrix:
