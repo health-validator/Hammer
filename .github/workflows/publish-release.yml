@@ -2,20 +2,33 @@ name: Publish release
 
 on:
   release:
-    types: [created]
+    # types: [created]
 
 jobs:
-  publish-hammer:
-    runs-on: windows-latest
+  build:
+    name: Publish Hammer on ${{matrix.buildname}}
+    runs-on: ${{matrix.os}}
     if: github.repository == 'health-validator/Hammer'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-10.15
+            buildname: 'macos'
+            qt-version: '5.15.1-7fc8b10'
+            dotnet-platform: 'osx-x64'
+            dotnet-version: 'net5.0'
+            deployment-platform: 'macos'
+          - os: windows-2019
+            buildname: 'windows'
+            qt-version: '5.15.1-7fc8b10'
+            dotnet-platform: 'win-x64'
+            dotnet-version: 'net5.0'
+            deployment-platform: 'windows'
+
     env:
       buildtype: Release
       TAG_NAME: ${{github.event.release.tag_name}}
-      buildname: 'windows'
-      qt-version: '5.15.1-7fc8b10'
-      dotnet-platform: 'win-x64'
-      dotnet-version: 'net5.0'
-      deployment-platform: 'windows'
       DOTNET_CLI_TELEMETRY_OPTOUT: true
       DOTNET_NOLOGO: true
 
@@ -67,7 +80,7 @@ jobs:
         cd $GITHUB_WORKSPACE
         java -jar org.hl7.fhir.validator.jar
 
-    - name: Update version number file
+    - name: Update version & appmodel files
       shell: powershell
       run: |
         $csproj = "Hammer.csproj"
@@ -75,12 +88,21 @@ jobs:
         $replacement = "<Version>$env:SHORT_TAG_NAME</Version>"
         (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
 
-    - name: Compile Hammer
-      run: |
-        sed -i 's|// import appmodel 1.0|import appmodel 1.0|g' Main.qml
-        dotnet publish --configuration ${{env.buildtype}} --runtime win-x64
+        (Get-Content "Main.qml" -Raw) -replace "// import appmodel 1.0", "import appmodel 1.0" | Set-Content "Main.qml"
 
-    - name: Trim createdump
+    - name: (macOS) Build Hammer
+      if: runner.os == 'macOS'
+      run: |
+        dotnet restore --runtime=${{matrix.dotnet-platform}}
+        dotnet msbuild -p:Configuration=${{env.buildtype}} -t:BundleApp -p:RuntimeIdentifier=${{matrix.dotnet-platform}} -p:UseAppHost=true
+
+    - name: (Windows) Build Hammer
+      if: runner.os == 'Windows'
+      run: |
+        dotnet publish --configuration ${{env.buildtype}} --runtime ${{matrix.dotnet-platform}}
+
+    - name: (Windows) Trim createdump
+      if: runner.os == 'Windows'
       shell: bash
       run: |
         # squirrel gets confused about which executable (Hammer.exe or createdump.exe)
@@ -92,31 +114,51 @@ jobs:
         jqi() {
           cat <<< "$(jq "$1" < "$2")" > "$2"
         }
-        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/Hammer.deps.json
-        rm -f bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/createdump.exe
+        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.deps.json
+        rm -f bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/createdump.exe
 
     - name: Download runtime
       shell: bash
       run: |
-        curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{env.qt-version}}-${{env.dotnet-platform}}-runtime.tar.gz
-        mkdir -p bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/qt-runtime
-        tar -xf qt-runtime.tar.gz -C bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/qt-runtime
+        curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
 
-    - name: Create stand-alone zip
+    - name: (macOS) Extract runtime
       shell: bash
-      run: cd bin/Release/${{env.dotnet-version}}/${{env.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE\\publish\\Hammer-${{env.deployment-platform}}.zip
+      if: runner.os == 'macOS'
+      run: |
+        mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
+        tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
 
-    - name: Upload stand-alone zip
+        # clean up the publish folder, leaving the .app only
+        cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
+        mv Hammer.app /tmp/Hammer.app
+        rm -rf *
+        cp -r /tmp/Hammer.app .
+
+    - name: (Windows/Linux) Extract runtime
+      shell: bash
+      if: runner.os == 'Windows' || runner.os == 'Linux'
+      run: |
+        mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
+        tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
+
+    - name: Zip up artifact
+      shell: bash
+      run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
+
+    - name: (Windows) Upload stand-alone zip
+      if: runner.os == 'Windows'
       uses: actions/upload-release-asset@v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_name: Hammer-${{env.SHORT_TAG_NAME}}-installerfree.zip
-        asset_path: ${{github.workspace}}\publish\Hammer-${{env.deployment-platform}}.zip
+        asset_path: ${{github.workspace}}\publish\Hammer-${{matrix.deployment-platform}}.zip
         asset_content_type: application/zip
 
-    - name: Build installer
+    - name: (Windows) Build installer
+      if: runner.os == 'windows'
       shell: powershell
       env:
         WORKSPACE: ${{runner.workspace}}
@@ -129,7 +171,7 @@ jobs:
         if (-not $(Test-Path "$SQUIRRELWINBIN")) {
           New-Item "$SQUIRRELWINBIN" -ItemType "directory"
         }
-        Move-Item bin\Release\${{env.dotnet-version}}\${{env.dotnet-platform}}\publish\* $SQUIRRELWINBIN
+        Move-Item bin\Release\${{matrix.dotnet-version}}\${{matrix.dotnet-platform}}\publish\* $SQUIRRELWINBIN
         Copy-Item $env:WORKSPACEGIT\assets\hammer-logo.png $SQUIRRELWIN
         $Script:NuSpec = "$env:WORKSPACEGIT\Hammer.nuspec"
 
@@ -168,7 +210,7 @@ jobs:
 
         echo "RELEASEDIR=${RELEASEDIR}" >> $env:GITHUB_ENV
 
-    - name: Upload installer .exe
+    - name: (Windows) Upload installer .exe
       uses: actions/upload-release-asset@v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -178,13 +220,25 @@ jobs:
         asset_path: ${{env.RELEASEDIR}}\Setup.exe
         asset_content_type: application/vnd.microsoft.portable-executable
 
-    - name: Publish to nuget
+    - name: (macOS) Upload installer .app
+      uses: actions/upload-release-asset@v1.0.2
       env:
-        NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
-      shell: bash
-      run:
-        ./create-package.sh
-        dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_name: Hammer-${{env.SHORT_TAG_NAME}}-installer.zip
+        asset_path: bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
+        asset_content_type: application/zip
+
+    # - name: (Windows) Publish to nuget
+    #   # publish only once for all three builds. This update will still work for macOS and Linux
+    #   if: runner.os == 'windows'
+    #   env:
+    #     NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
+    #   shell: bash
+    #   run:
+    #     ./create-package.sh
+    #     dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
     - name: Setup tmate session should the build fail
       if: ${{ failure() }}
