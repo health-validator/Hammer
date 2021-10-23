@@ -202,7 +202,7 @@ jobs:
           }
           if (Test-Path -Path ".\squirrel.windows\tools\Squirrel-Releasify.log" -PathType Leaf) {
             echo "Squirrel-Releasify.log: "
-            Get-Content -Path ..\squirrel.windows\tools\Squirrel-Releasify.log
+            Get-Content -Path .\squirrel.windows\tools\Squirrel-Releasify.log
           }
           exit 1
         }
