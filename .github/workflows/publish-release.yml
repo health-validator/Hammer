@@ -153,7 +153,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_name: Hammer-${{env.SHORT_TAG_NAME}}-installerfree.zip
+        asset_name: Hammer-${{env.SHORT_TAG_NAME}}-windows-installerfree.zip
         asset_path: ${{github.workspace}}\publish\Hammer-${{matrix.deployment-platform}}.zip
         asset_content_type: application/zip
 
@@ -227,8 +227,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_name: Hammer-${{env.SHORT_TAG_NAME}}-installer.zip
-        asset_path: bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
+        asset_name: Hammer-${{env.SHORT_TAG_NAME}}-macos.zip
+        asset_path: ${{github.workspace}}/publish/Hammer-${{matrix.deployment-platform}}.zip
         asset_content_type: application/zip
 
     # - name: (Windows) Publish to nuget
