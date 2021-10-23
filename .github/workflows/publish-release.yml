@@ -1,7 +1,6 @@
 name: Publish release
 
 on:
-  push: # TODO disable me, after checking that the tag works right
   release:
     types: [created]
 
@@ -40,17 +39,14 @@ jobs:
         # Validate that the version used in the release is one that'll work with all of our tooling
         # Squirrel can be picky: https://github.com/Squirrel/Squirrel.Windows/issues/1394
 
-        # if ($env:TAG_NAME -match "^Hammer-(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Release>-[a-z][0-9a-z-]*)?$") {
-        #   $SHORT_TAG_NAME = $Matches.Version
-        # } else {
-        #   echo "$env:TAG_NAME isn't a valid release name - make sure it matches Hammer-#.#.#"
-        #   exit 1
-        # }
+        if ($env:TAG_NAME -match "^Hammer-(?<Version>\d+(\s*\.\s*\d+){0,3})(?<Release>-[a-z][0-9a-z-]*)?$") {
+          $SHORT_TAG_NAME = $Matches.Version
+        } else {
+          echo "$env:TAG_NAME isn't a valid release name - make sure it matches Hammer-#.#.#"
+          exit 1
+        }
 
-        # echo "SHORT_TAG_NAME=${SHORT_TAG_NAME}" >> $env:GITHUB_ENV
-        echo "TAG_NAME=1.5.0" >> $env:GITHUB_ENV # delete me
-
-        echo "SHORT_TAG_NAME=1.5.0" >> $env:GITHUB_ENV
+        echo "SHORT_TAG_NAME=${SHORT_TAG_NAME}" >> $env:GITHUB_ENV
 
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v1.8.2
@@ -84,7 +80,7 @@ jobs:
         cd $GITHUB_WORKSPACE
         java -jar org.hl7.fhir.validator.jar
 
-    - name: Update version number file
+    - name: Update version & appmodel files
       shell: powershell
       run: |
         $csproj = "Hammer.csproj"
@@ -92,13 +88,21 @@ jobs:
         $replacement = "<Version>$env:SHORT_TAG_NAME</Version>"
         (Get-Content $csproj -Raw) -replace $regex, $replacement | Set-Content $csproj
 
-    - name: Compile Hammer
-      shell: powershell
-      run: |
         (Get-Content "Main.qml" -Raw) -replace "// import appmodel 1.0", "import appmodel 1.0" | Set-Content "Main.qml"
+
+    - name: (macOS) Build Hammer
+      if: runner.os == 'macOS'
+      run: |
+        dotnet restore --runtime=${{matrix.dotnet-platform}}
+        dotnet msbuild -p:Configuration=${{env.buildtype}} -t:BundleApp -p:RuntimeIdentifier=${{matrix.dotnet-platform}} -p:UseAppHost=true
+
+    - name: (Windows) Build Hammer
+      if: runner.os == 'Windows'
+      run: |
         dotnet publish --configuration ${{env.buildtype}} --runtime ${{matrix.dotnet-platform}}
 
-    - name: Trim createdump
+    - name: (Windows) Trim createdump
+      if: runner.os == 'Windows'
       shell: bash
       run: |
         # squirrel gets confused about which executable (Hammer.exe or createdump.exe)
@@ -117,14 +121,33 @@ jobs:
       shell: bash
       run: |
         curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
+
+    - name: (macOS) Extract runtime
+      shell: bash
+      if: runner.os == 'macOS'
+      run: |
+        mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
+        tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
+
+        # clean up the publish folder, leaving the .app only
+        cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
+        mv Hammer.app /tmp/Hammer.app
+        rm -rf *
+        cp -r /tmp/Hammer.app .
+
+    - name: (Windows/Linux) Extract runtime
+      shell: bash
+      if: runner.os == 'Windows' || runner.os == 'Linux'
+      run: |
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
-    - name: Create stand-alone zip
+    - name: Zip up artifact
       shell: bash
-      run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE\\publish\\Hammer-${{matrix.deployment-platform}}.zip
+      run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
 
-    - name: Upload stand-alone zip
+    - name: (Windows) Upload stand-alone zip
+      if: runner.os == 'Windows'
       uses: actions/upload-release-asset@v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -134,7 +157,8 @@ jobs:
         asset_path: ${{github.workspace}}\publish\Hammer-${{matrix.deployment-platform}}.zip
         asset_content_type: application/zip
 
-    - name: Build installer
+    - name: (Windows) Build installer
+      if: runner.os == 'windows'
       shell: powershell
       env:
         WORKSPACE: ${{runner.workspace}}
@@ -186,7 +210,7 @@ jobs:
 
         echo "RELEASEDIR=${RELEASEDIR}" >> $env:GITHUB_ENV
 
-    - name: Upload installer .exe
+    - name: (Windows) Upload installer .exe
       uses: actions/upload-release-asset@v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -196,7 +220,19 @@ jobs:
         asset_path: ${{env.RELEASEDIR}}\Setup.exe
         asset_content_type: application/vnd.microsoft.portable-executable
 
-    # - name: Publish to nuget
+    - name: (macOS) Upload installer .app
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_name: Hammer-${{env.SHORT_TAG_NAME}}-installer.zip
+        asset_path: bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
+        asset_content_type: application/zip
+
+    # - name: (Windows) Publish to nuget
+    #   # publish only once for all three builds. This update will still work for macOS and Linux
+    #   if: runner.os == 'windows'
     #   env:
     #     NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
     #   shell: bash
