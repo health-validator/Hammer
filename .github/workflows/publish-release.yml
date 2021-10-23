@@ -1,13 +1,32 @@
 name: Publish release
 
 on:
+  push: # TODO disable me
   release:
     types: [created]
 
 jobs:
-  publish-hammer:
-    runs-on: windows-latest
-    if: github.repository == 'health-validator/Hammer'
+  build:
+    name: ${{matrix.buildname}} publish-hammer
+    runs-on: ${{matrix.os}}
+    if: github.repository == 'vadi2/Hammer'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-10.15
+            buildname: 'macos'
+            qt-version: '5.15.1-7fc8b10'
+            dotnet-platform: 'osx-x64'
+            dotnet-version: 'net5.0'
+            deployment-platform: 'macos'
+          - os: windows-2019
+            buildname: 'windows'
+            qt-version: '5.15.1-7fc8b10'
+            dotnet-platform: 'win-x64'
+            dotnet-version: 'net5.0'
+            deployment-platform: 'windows'
+
     env:
       buildtype: Release
       TAG_NAME: ${{github.event.release.tag_name}}
