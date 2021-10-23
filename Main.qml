@@ -256,6 +256,7 @@ ApplicationWindow {
             State {
                 name: "EDITING_SETTINGS"
                 PropertyChanges { target: settingsPane; y: 0 }
+                PropertyChanges { target: resultsPane; y: window.height }
                 PropertyChanges { target: actionButton; text: qsTr("← Back")}
             }
         ]
@@ -492,7 +493,7 @@ ApplicationWindow {
         horizontalPadding: 40
         width: addResourcesPage.width
         x: 0
-        y: window.height
+        y: window.height // start with settings hidden below the main window
     }
 
     Settings {
