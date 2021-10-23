@@ -30,10 +30,6 @@ jobs:
     env:
       buildtype: Release
       TAG_NAME: ${{github.event.release.tag_name}}
-      buildname: 'windows'
-      qt-version: '5.15.1-7fc8b10'
-      dotnet-version: 'net5.0'
-      deployment-platform: 'windows'
       DOTNET_CLI_TELEMETRY_OPTOUT: true
       DOTNET_NOLOGO: true
 
@@ -114,19 +110,19 @@ jobs:
         jqi() {
           cat <<< "$(jq "$1" < "$2")" > "$2"
         }
-        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{env.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.deps.json
-        rm -f bin/Release/${{env.dotnet-version}}/${{matrix.dotnet-platform}}/publish/createdump.exe
+        jqi "del(..|.\"createdump.exe\"?)" bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.deps.json
+        rm -f bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/createdump.exe
 
     - name: Download runtime
       shell: bash
       run: |
-        curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{env.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
-        mkdir -p bin/Release/${{env.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
-        tar -xf qt-runtime.tar.gz -C bin/Release/${{env.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
+        curl --location --output qt-runtime.tar.gz https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-${{matrix.qt-version}}-${{matrix.dotnet-platform}}-runtime.tar.gz
+        mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
+        tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
     - name: Create stand-alone zip
       shell: bash
-      run: cd bin/Release/${{env.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE\\publish\\Hammer-${{env.deployment-platform}}.zip
+      run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE\\publish\\Hammer-${{matrix.deployment-platform}}.zip
 
     - name: Upload stand-alone zip
       uses: actions/upload-release-asset@v1.0.2
@@ -135,7 +131,7 @@ jobs:
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_name: Hammer-${{env.SHORT_TAG_NAME}}-installerfree.zip
-        asset_path: ${{github.workspace}}\publish\Hammer-${{env.deployment-platform}}.zip
+        asset_path: ${{github.workspace}}\publish\Hammer-${{matrix.deployment-platform}}.zip
         asset_content_type: application/zip
 
     - name: Build installer
@@ -151,7 +147,7 @@ jobs:
         if (-not $(Test-Path "$SQUIRRELWINBIN")) {
           New-Item "$SQUIRRELWINBIN" -ItemType "directory"
         }
-        Move-Item bin\Release\${{env.dotnet-version}}\${{matrix.dotnet-platform}}\publish\* $SQUIRRELWINBIN
+        Move-Item bin\Release\${{matrix.dotnet-version}}\${{matrix.dotnet-platform}}\publish\* $SQUIRRELWINBIN
         Copy-Item $env:WORKSPACEGIT\assets\hammer-logo.png $SQUIRRELWIN
         $Script:NuSpec = "$env:WORKSPACEGIT\Hammer.nuspec"
 
