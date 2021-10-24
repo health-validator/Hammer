@@ -129,6 +129,9 @@ jobs:
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
 
+        # trim unnecessary Tools folder (containing only Conan support)
+        rm -rf bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime/Tools
+
         # clean up the publish folder, leaving the .app only
         cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
         mv Hammer.app /tmp/Hammer.app
@@ -141,6 +144,9 @@ jobs:
       run: |
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
+
+        # trim unnecessary Tools folder (containing only Conan support)
+        rm -rf bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime/Tools
 
     - name: (macOS) Sign the app
       shell: bash
