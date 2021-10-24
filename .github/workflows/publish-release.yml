@@ -158,7 +158,7 @@ jobs:
         security default-keychain -s $KEYCHAIN
         security unlock-keychain -p travis $KEYCHAIN
         security set-keychain-settings -t 3600 -u $KEYCHAIN
-        security import code-signing-certificate-macos.p12 -k $KEYCHAIN -P "$MACOS_SIGNING_PASS" -T /usr/bin/codesign
+        security import assets/code-signing-certificate-macos.p12 -k $KEYCHAIN -P "$MACOS_SIGNING_PASS" -T /usr/bin/codesign
         security set-key-partition-list -S apple-tool:,apple: -s -k travis $KEYCHAIN
         export IDENTITY="Developer ID Application"
         echo "Imported identity:"
