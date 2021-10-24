@@ -142,6 +142,48 @@ jobs:
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
+    - name: (macOS) Sign the app
+      shell: bash
+      if: runner.os == 'macOS'
+      env:
+        MACOS_SIGNING_PASS: ${{secrets.MACOS_SIGNING_PASS}}
+        AC_USERNAME: ${{secrets.APPLE_USERNAME}}
+        AC_PASSWORD: ${{secrets.APPLE_PASSWORD}}
+      run: |
+        brew tap mitchellh/gon
+        brew install mitchellh/gon/gon
+
+        KEYCHAIN=build.keychain
+        security create-keychain -p travis $KEYCHAIN
+        security default-keychain -s $KEYCHAIN
+        security unlock-keychain -p travis $KEYCHAIN
+        security set-keychain-settings -t 3600 -u $KEYCHAIN
+        security import code-signing-certificate-macos.p12 -k $KEYCHAIN -P "$MACOS_SIGNING_PASS" -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple: -s -k travis $KEYCHAIN
+        export IDENTITY="Developer ID Application"
+        echo "Imported identity:"
+        security find-identity
+        echo "----"
+
+        cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
+
+        codesign --deep -o runtime -s "$IDENTITY" "Hammer.app"
+        echo "Signed final .dmg"
+
+        cat << EOF > gon.json
+        {
+          "notarize": [{
+            "path": "./Hammer.app",
+            "bundle_id": "mudlet",
+            "staple": true
+          }]
+        }
+        EOF
+
+        gon gon.json
+
+        security delete-keychain $KEYCHAIN
+
     - name: Zip up artifact
       shell: bash
       run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
