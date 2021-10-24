@@ -179,7 +179,7 @@ jobs:
         cat << EOF > gon.json
         {
           "notarize": [{
-            "path": "./Hammer.app",
+            "path": "./Hammer.app/Contents/macOS/Hammer",
             "bundle_id": "hammer",
             "staple": true
           }]
