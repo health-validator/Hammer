@@ -73,6 +73,32 @@ Pane {
         }
 
         Text {
+            text: qsTr("Check terminologies with")
+            color: Universal.foreground
+            font.pointSize: settingsPane.headerFontSize
+            font.bold: true
+            Layout.fillWidth: true; Layout.columnSpan: 3
+            topPadding: 10
+        }
+        ComboBox {
+            id: terminologyCombobox
+            editable: true
+            model: ListModel {
+                id: model
+                ListElement { text: "https://tx.fhir.org" }
+                ListElement { text: qsTr("don't check with any server") }
+            }
+            onAccepted: {
+                appmodel.terminologyService = currentText
+
+                if (find(editText) === -1) {
+                    model.append({text: editText})
+                }
+            }
+            Layout.fillWidth: true; Layout.columnSpan: 3
+        }
+
+        Text {
             text: qsTr("Show errors and...")
             color: Universal.foreground
             font.pointSize: settingsPane.headerFontSize
