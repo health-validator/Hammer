@@ -95,6 +95,9 @@ Pane {
                     model.append({text: editText})
                 }
             }
+            onActivated: {
+                appmodel.terminologyService = currentText
+            }
             Layout.fillWidth: true; Layout.columnSpan: 3
         }
 
