@@ -467,6 +467,31 @@ class Program
             }
         }
 
+        private bool terminologyDisabled()
+        {
+            return TerminologyService == "don't check with any server";
+        }
+
+        private string getJavaTxString()
+        {
+            if (terminologyDisabled())
+            {
+                return "n/a";
+            }
+
+            return TerminologyService;
+        }
+
+        private bool useDotnetExternalTx()
+        {
+            if (!terminologyDisabled())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         private List<Issue> convertIssues(List<OperationOutcome.IssueComponent> issues)
         {
             List<Issue> convertedIssues = new List<Issue>();
@@ -730,11 +755,13 @@ class Program
             await ClipboardService.SetTextAsync(report);
         }
 
-        private stu3.Hl7.Fhir.Validation.Validator CreateValidatorStu3(stu3.Hl7.Fhir.Rest.FhirClient fhirClient)
+        private stu3.Hl7.Fhir.Validation.Validator CreateValidatorStu3(stu3.Hl7.Fhir.Rest.FhirClient fhirClient = null)
         {
-            var externalTerminology = new stu3.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService(fhirClient);
             var localTerminology = new stu3.Hl7.Fhir.Specification.Terminology.LocalTerminologyService(_combinedSource.AsAsync() ?? _coreSourceStu3.AsAsync());
-            var combinedTerminology = new stu3.Hl7.Fhir.Specification.Terminology.FallbackTerminologyService(localTerminology, externalTerminology);
+
+            var externalTerminology = (fhirClient != null) ? new stu3.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService(fhirClient) : null;
+
+            var combinedTerminology = (fhirClient != null) ? new stu3.Hl7.Fhir.Specification.Terminology.FallbackTerminologyService(localTerminology, externalTerminology) : null;
 
             var settings = new stu3.Hl7.Fhir.Validation.ValidationSettings
             {
@@ -749,11 +776,13 @@ class Program
             return new stu3.Hl7.Fhir.Validation.Validator(settings);
         }
 
-        private r4.Hl7.Fhir.Validation.Validator CreateValidatorR4(r4.Hl7.Fhir.Rest.FhirClient fhirClient)
+        private r4.Hl7.Fhir.Validation.Validator CreateValidatorR4(r4.Hl7.Fhir.Rest.FhirClient fhirClient = null)
         {
-            var externalTerminology = new r4.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService(fhirClient);
             var localTerminology = new r4.Hl7.Fhir.Specification.Terminology.LocalTerminologyService(_combinedSource.AsAsync() ?? _coreSourceR4.AsAsync());
-            var combinedTerminology = new r4.Hl7.Fhir.Specification.Terminology.FallbackTerminologyService(localTerminology, externalTerminology);
+
+            var externalTerminology = (fhirClient != null) ? new r4.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService(fhirClient) : null;
+
+            var combinedTerminology = (fhirClient != null) ? new r4.Hl7.Fhir.Specification.Terminology.FallbackTerminologyService(localTerminology, externalTerminology) : null;
 
             var settings = new r4.Hl7.Fhir.Validation.ValidationSettings
             {
@@ -797,8 +826,8 @@ class Program
                     var summaryProviderStu3 = new stu3.Hl7.Fhir.Specification.StructureDefinitionSummaryProvider(_combinedSource ?? _coreSourceStu3);
                     _parsedResource = untyped.ToTypedElement(summaryProviderStu3);
 
-                    using var fhirClient = new stu3.Hl7.Fhir.Rest.FhirClient(TerminologyService);
-                    var validator = CreateValidatorStu3(fhirClient);
+                    using var fhirClient = useDotnetExternalTx() ? new stu3.Hl7.Fhir.Rest.FhirClient(TerminologyService) : null;
+                    var validator = CreateValidatorStu3(useDotnetExternalTx() ? fhirClient : null);
                     result = validator.Validate(_parsedResource);
                 }
                 else
@@ -806,8 +835,8 @@ class Program
                     var summaryProviderR4 = new r4.Hl7.Fhir.Specification.StructureDefinitionSummaryProvider(_combinedSource ?? _coreSourceR4);
                     _parsedResource = untyped.ToTypedElement(summaryProviderR4);
 
-                    using var fhirClient = new r4.Hl7.Fhir.Rest.FhirClient(TerminologyService);
-                    var validator = CreateValidatorR4(fhirClient);
+                    using var fhirClient = useDotnetExternalTx() ? new r4.Hl7.Fhir.Rest.FhirClient(TerminologyService) : null;
+                    var validator = CreateValidatorR4(useDotnetExternalTx() ? fhirClient : null);
                     result = validator.Validate(_parsedResource);
                 }
 
@@ -913,7 +942,7 @@ class Program
             var validatorPath = Path.Combine(Extensions.GetApplicationLocation(), "org.hl7.fhir.validator.jar");
             var scopeArgument = string.IsNullOrEmpty(ScopeDirectory) ? "" : $" -ig \"{ScopeDirectory}\"";
             var outputJson = $"{Path.GetTempFileName()}.json";
-            var finalArguments = $"-jar {validatorPath} -version {(FhirVersion == "STU3" ? "3.0" : "4.0")} -tx \"{TerminologyService}\"{scopeArgument} -output {outputJson} {resourcePath}";
+            var finalArguments = $"-jar {validatorPath} -version {(FhirVersion == "STU3" ? "3.0" : "4.0")} -tx \"{getJavaTxString()}\"{scopeArgument} -output {outputJson} {resourcePath}";
             Console.WriteLine($"Beginning Java validation: java {finalArguments}");
 
             OperationOutcome result;

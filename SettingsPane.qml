@@ -86,7 +86,7 @@ Pane {
             model: ListModel {
                 id: model
                 ListElement { text: "https://tx.fhir.org" }
-                ListElement { text: qsTr("don't check with any server") }
+                ListElement { text: "don't check with any server" }
             }
             onAccepted: {
                 appmodel.terminologyService = currentText
