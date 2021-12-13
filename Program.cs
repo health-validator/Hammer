@@ -469,7 +469,8 @@ class Program
 
         private bool terminologyDisabled()
         {
-            return TerminologyService == "don't check with any server";
+            string[] disabledTerminology = {"don't check with any server", "n/a", "off", "none"};
+            return disabledTerminology.Contains(TerminologyService, StringComparer.OrdinalIgnoreCase);
         }
 
         private string getJavaTxString()
