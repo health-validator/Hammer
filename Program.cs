@@ -877,25 +877,20 @@ class Program
             return fileName;
         }
 
-        // in case the Java validator crashes (which it can if it doesn't like something)
-        // it won't produce an OperationOutcome for us. Take what we've got and make one ourselves
+        // in case the Java validator crashes (which it can if it doesn't like something),
+        // it won't produce an OperationOutcome for us - take what we've got and make one ourselves
         private static OperationOutcome ConvertJavaStdout(string output)
         {
             var result = new OperationOutcome();
-            using var reader = new StringReader(output);
-
-            for (var line = reader.ReadLine(); line != null; line = reader.ReadLine())
+            result.Issue.Add(new OperationOutcome.IssueComponent
             {
-                result.Issue.Add(new OperationOutcome.IssueComponent
+                Severity = OperationOutcome.IssueSeverity.Error,
+                Details = new CodeableConcept
                 {
-                    Severity = OperationOutcome.IssueSeverity.Error,
-                    Details = new CodeableConcept
-                    {
-                        Text = line
-                    },
-                    Code = OperationOutcome.IssueType.Processing
-                });
-            }
+                    Text = output
+                },
+                Code = OperationOutcome.IssueType.Processing
+            });
 
             return result;
         }
