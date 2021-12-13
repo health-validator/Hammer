@@ -507,6 +507,17 @@ class Program
                 };
                 convertedIssues.Add(simplifiedIssue);
 
+                // read Java details
+                var javaLineNumber = issue.GetIntegerExtension("http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line");
+                var javaLinePosition = issue.GetIntegerExtension("http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col");
+                if (javaLineNumber.HasValue && javaLinePosition.HasValue)
+                {
+                    simplifiedIssue.LineNumber = javaLineNumber.Value;
+                    simplifiedIssue.LinePosition = javaLinePosition.Value;
+                    continue;
+                }
+
+                // read .NET details
                 var serializationDetails = GetPositionInfo(issue);
                 if (serializationDetails == null)
                 {
@@ -515,6 +526,9 @@ class Program
 
                 simplifiedIssue.LineNumber = serializationDetails.LineNumber;
                 simplifiedIssue.LinePosition = serializationDetails.LinePosition;
+
+
+
             }
 
             return convertedIssues;
