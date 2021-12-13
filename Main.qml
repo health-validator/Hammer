@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-// import appmodel 1.0
+// // import appmodel 1.0
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls.Universal 2.12
@@ -14,7 +14,7 @@ ApplicationWindow {
     Component.onCompleted: settings.isWindowMaximized ? showMaximized() : showNormal()
     width: 640; height: 650
     minimumWidth: 550; minimumHeight: 300
-    title: qsTr(`Hammer experimental ${appmodel.fhirVersion} ${appmodel.applicationVersion}`)
+    title: qsTr(`Hammer ${appmodel.fhirVersion} ${appmodel.applicationVersion}`)
 
     Universal.theme: settings.appearDark ? Universal.Dark : Universal.Light
 
@@ -224,18 +224,6 @@ ApplicationWindow {
                     acceptedButtons: Qt.NoButton
                 }
             }
-        }
-
-        Text {
-            id: experimentalText
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            text: qsTr("Experimental")
-            enabled: false
-            z: 0
-            rotation: -45
-            opacity: 0.03
-            font.pixelSize: 96
         }
 
         states: [

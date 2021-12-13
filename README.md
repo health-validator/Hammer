@@ -33,10 +33,6 @@
   <img alt="Hammer demo" src="https://raw.githubusercontent.com/health-validator/Hammer/master/assets/hammer-demo.gif">
 </p>
 
-## Status
-
-Experimental and not ready for production. Try it out and [give feedback](https://github.com/health-validator/Hammer/issues)!
-
 ## Key Features
 
 * .NET and Java dual-validation
@@ -64,7 +60,7 @@ dotnet tool install --global Hammer
 ### Windows
 Double-click `Hammer.exe`.
 
-### macOS 
+### macOS
 1. Double-click on `Hammer`.
 
 ### Linux
