@@ -29,6 +29,10 @@
   <a href="#license">License</a>
 </p>
 
+<p align="center">
+  <img alt="Hammer demo" src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/hammer-intro.gif">
+</p>
+
 <!-- keep for website?
 <div class="center">
   <video class="hammer-intro" muted autoplay loop playsinline>
