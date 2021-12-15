@@ -21,8 +21,6 @@
 </p>
 
 <p align="center">
-  <a href="#what">What?</a> •
-  <a href="#how-to-use">How To Use</a> •
   <a href="#download">Download</a> •
   <a href="#credits">Credits</a> •
   <a href="#roadmap">Roadmap</a> •
@@ -46,23 +44,33 @@
 </div>
 -->
 
-## What?
-
 You've got a FHIR resource. You want to validate it, but how?
 
 Use Hammer. Drag & drop a resource into the app, hit `Validate`, and let it do its magic.
 
 ## Features
 
-* Simple, intuitive design
-* .NET and Java dual-validation
-* XML and JSON supported
-* Dark theme available
-* Copy validation report as CSV
-* Filter by errors/warnings/info
-* Open-source and Free
-* Cross platform
-  - Windows, macOS, and Linux.
+### Simple, intuitive design
+> ![Hammer's main window](assets/images/hammer-main-window.webp)
+
+### Dual-validation by the best FHIR validators
+> ![Dual Java and .NET validation](assets/images/dual-validation.webp)
+
+### Both JSON and XML supported
+> ![JSON and XML supported](assets/images/json-xml-example.webp)
+
+### STU3 and R4 supported
+> ![STU3 and R4 supported](assets/images/stu3-and-r4-supported.webp)
+
+### Copy validation report as CSV
+
+### Filter by errors/warnings/info
+> ![Filter errors and warnings](assets/images/filter-errors.webp)
+
+Open-source and Free
+
+Cross platform
+Windows, macOS, and Linux.
 
 ## Download
 
