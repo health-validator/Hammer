@@ -29,12 +29,14 @@
   <a href="#license">License</a>
 </p>
 
+<!-- keep for website?
 <div class="center">
   <video class="hammer-intro" muted autoplay loop playsinline>
     <source src="/assets/hammer-intro.webm" type="video/webm">
     <source src="/assets/hammer-intro.mp4" type="video/mp4">
   </video>
 </div>
+-->
 
 ## Key Features
 
