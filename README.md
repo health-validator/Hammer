@@ -29,9 +29,12 @@
   <a href="#license">License</a>
 </p>
 
-<p align="center">
-  <img alt="Hammer demo" src="https://raw.githubusercontent.com/health-validator/Hammer/master/assets/hammer-demo.gif">
-</p>
+<div class="center">
+  <video class="hammer-intro" muted autoplay loop playsinline>
+    <source src="/assets/hammer-intro.webm" type="video/webm">
+    <source src="/assets/hammer-intro.mp4" type="video/mp4">
+  </video>
+</div>
 
 ## Key Features
 
