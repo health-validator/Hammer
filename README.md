@@ -77,9 +77,6 @@ Use Hammer. Drag & drop a resource into the app, hit `Validate`, and let it do i
 <br/><br/><br/>
 
 ### Open-source and Free
-> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/free-to-download.webp" width="500">
-<br/><br/><br/>
-
 
 ### Windows, macOS, and Linux
 
