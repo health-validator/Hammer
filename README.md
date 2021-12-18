@@ -69,6 +69,8 @@ Use Hammer. Drag & drop a resource into the app, hit `Validate`, and let it do i
 <br/><br/><br/><br/>
 
 ### Copy validation report as CSV
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/csv-export.webp" width="500">
+<br/><br/><br/><br/>
 
 ### Filter by errors/warnings/info
 > <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/filter-errors.webp" width="500">
@@ -77,6 +79,7 @@ Use Hammer. Drag & drop a resource into the app, hit `Validate`, and let it do i
 ### Open-source and Free
 > <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/free-to-download.webp" width="500">
 <br/><br/><br/><br/>
+
 
 ### Windows, macOS, and Linux
 
