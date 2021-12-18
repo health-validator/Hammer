@@ -21,29 +21,64 @@
 </p>
 
 <p align="center">
-  <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How To Use</a> •
   <a href="#download">Download</a> •
-  <a href="#credits">Credits</a> •
-  <a href="#roadmap">Roadmap</a> •
-  <a href="#license">License</a>
+  <a href="#features">Features</a> •
+  <a href="#credits">Credits</a>
 </p>
 
 <p align="center">
-  <img alt="Hammer demo" src="https://raw.githubusercontent.com/health-validator/Hammer/master/assets/hammer-demo.gif">
+  <a href="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/hammer-intro.mov">
+    <img
+      src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/hammer-intro.gif"
+      alt="Hammer demo"
+      width="500px"
+    />
+  </a>
 </p>
 
-## Key Features
+<!-- keeping for website version
+<div class="center">
+  <video class="hammer-intro" muted autoplay loop playsinline>
+    <source src="/assets/hammer-intro.webm" type="video/webm">
+    <source src="/assets/hammer-intro.mp4" type="video/mp4">
+  </video>
+</div>
+-->
 
-* .NET and Java dual-validation
-* XML and JSON
-* Dark theme
-* Simple, intuitive design
-* Filter by message type
-* Copy validation report as CSV
-* Open-source and Free
-* Cross platform
-  - Windows, macOS and Linux.
+You've got a FHIR resource. You want to validate it, but how?
+
+Use Hammer. Drag & drop a resource into the app, hit `Validate`, and let it do its magic.
+
+## Features
+
+### Simple, intuitive design
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/hammer-main-window.webp" width="500">
+<br/><br/><br/>
+
+### Dual-validation by the best FHIR validators
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/dual-validation.webp" width="500">
+<br/><br/><br/>
+
+
+### Both JSON and XML supported
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/json-xml-example.webp" width="500">
+<br/><br/><br/>
+
+### STU3 and R4 supported
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/stu3-and-r4-supported.webp" width="500">
+<br/><br/><br/>
+
+### Copy validation report as CSV
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/csv-export.webp" width="500">
+<br/><br/><br/>
+
+### Filter by errors/warnings/info
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/filter-errors.webp" width="500">
+<br/><br/><br/>
+
+### Open-source and Free
+
+### Windows, macOS, and Linux
 
 ## Download
 
@@ -54,31 +89,6 @@ Alternatively, you can also install it as .NET tool:
 ```sh
 dotnet tool install --global Hammer
 ```
-
-## How To Use
-
-### Windows
-Double-click `Hammer.exe`.
-
-### macOS
-1. Double-click on `Hammer`.
-
-### Linux
-Run `./Hammer` from the terminal.
-
-Note: Linux requires `xsel` to be installed for clipboard copy.
-
-### Validating
-
-1. Drag and drop, paste, or open a FHIR instance.
-1. Adjust the validation scope in settings if necessary - by default, it's the folder and subfolders the resource was opened from.
-1. Click `Validate`.
-
-First time Hammer launches, it needs to download the necessary components to run - so it'll take a bit of time.
-
-## Roadmap
-
-See the [project's roadmap](https://github.com/health-validator/Hammer/blob/master/ROADMAP.md) to get an idea of where it's headed, as well as contribute!
 
 ## Credits
 
@@ -95,20 +105,6 @@ This software wouldnt've been possible without these open source packages:
 - [TextCopy](https://github.com/SimonCropp/TextCopy/)
 
 This project is not related to any employer.
-
-Credit to [Markdownify](https://github.com/amitmerchant1990/electron-markdownify) for the README inspiration.
-
-## Related
-
-[Furore.Fhir.ValidationDemo](https://github.com/FirelyTeam/Furore.Fhir.ValidationDemo) - Windows app demonstrating the use of the .NET HL7 FHIR Profile Validation API
-
-## You may also like...
-
-- [FHIR](http://hl7.org/fhir/) - Official HL7 FHIR® specification
-- [FRED](https://github.com/smart-on-fhir/fred) - FHIR instance editor
-- [Ontoserver](http://ontoserver.csiro.au/) - Production-grade terminology server
-- [Simplifier](https://simplifier.net/) - The FHIR hub
-- [Vonk](https://fire.ly/products/vonk) - Production-grade FHIR server
 
 ## License
 
