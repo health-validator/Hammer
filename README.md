@@ -22,17 +22,18 @@
 
 <p align="center">
   <a href="#download">Download</a> •
-  <a href="#credits">Credits</a> •
-  <a href="#roadmap">Roadmap</a> •
-  <a href="#license">License</a>
+  <a href="#features">Features</a> •
+  <a href="#credits">Credits</a>
 </p>
 
 <p align="center">
-  <img
-    src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/hammer-intro.gif"
-    alt="Hammer demo"
-    width="50%"
-  />
+  <a href="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/hammer-intro.mov">
+    <img
+      src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/hammer-intro.gif"
+      alt="Hammer demo"
+      width="500px"
+    />
+  </a>
 </p>
 
 <!-- keeping for website version
@@ -51,26 +52,33 @@ Use Hammer. Drag & drop a resource into the app, hit `Validate`, and let it do i
 ## Features
 
 ### Simple, intuitive design
-> ![Hammer's main window](assets/images/hammer-main-window.webp)
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/hammer-main-window.webp" width="500">
+<br/><br/><br/><br/>
 
 ### Dual-validation by the best FHIR validators
-> ![Dual Java and .NET validation](assets/images/dual-validation.webp)
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/dual-validation.webp" width="500">
+<br/><br/><br/><br/>
+
 
 ### Both JSON and XML supported
-> ![JSON and XML supported](assets/images/json-xml-example.webp)
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/json-xml-example.webp" width="500">
+<br/><br/><br/><br/>
 
 ### STU3 and R4 supported
-> ![STU3 and R4 supported](assets/images/stu3-and-r4-supported.webp)
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/stu3-and-r4-supported.webp" width="500">
+<br/><br/><br/><br/>
 
 ### Copy validation report as CSV
 
 ### Filter by errors/warnings/info
-> ![Filter errors and warnings](assets/images/filter-errors.webp)
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/filter-errors.webp" width="500">
+<br/><br/><br/><br/>
 
-Open-source and Free
+### Open-source and Free
+> <img src="https://raw.githubusercontent.com/health-validator/Hammer/get-firefox-to-show-video/assets/images/free-to-download.webp" width="500">
+<br/><br/><br/><br/>
 
-Cross platform
-Windows, macOS, and Linux.
+### Windows, macOS, and Linux
 
 ## Download
 
