@@ -21,12 +21,15 @@ jobs:
           files: README.md
       
       - name: Install github-to-readme-html
+        if: steps.readme-updated.outputs.any_changed == 'true'
         run: npm install github-readme-to-html
       
       - name: Generate HTML
+        if: steps.readme-updated.outputs.any_changed == 'true'
         run: npx github-readme-to-html --title "Hammer - simple, reliable FHIR validator"
         
       - name: Publish to GitHub Pages
+        if: steps.readme-updated.outputs.any_changed == 'true'
         uses: rayluo/github-pages-overwriter@v1.2
         with:
           source-directory: dist
