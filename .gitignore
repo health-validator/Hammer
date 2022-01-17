@@ -2,6 +2,7 @@
 nupkg/
 qt-runtime-*/
 qt-runtime-*.tar.gz
+dist/
 
 # Standard template
 
