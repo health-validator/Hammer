@@ -2,7 +2,8 @@ name: Build Hammer
 
 on:
   push:
-    branches: [main]
+  # REMOVEME: debug
+  #  branches: [main]
   pull_request_target:
   workflow_dispatch:
 
@@ -55,7 +56,7 @@ jobs:
           ${{ runner.os }}-maven-
 
     - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v1.9.0
+      uses: actions/setup-dotnet@v1.8.2
       with:
         dotnet-version: 5.0.x
 
@@ -129,6 +130,11 @@ jobs:
       run: |
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 15
+      if: runner.os == 'Windows' && env.WINDOWS_CODE_SIGNING != null
 
     - name: (Windows) Sign executables
       shell: powershell
