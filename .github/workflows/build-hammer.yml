@@ -134,6 +134,9 @@ jobs:
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 15
+      env:
+        WINDOWS_CODE_SIGNING: ${{secrets.WINDOWS_CODE_SIGNING}}
+        WORKSPACEGIT: ${{runner.workspace}}\Hammer
       if: runner.os == 'Windows' && env.WINDOWS_CODE_SIGNING != null
 
     - name: (Windows) Sign executables
