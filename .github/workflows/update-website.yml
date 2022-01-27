@@ -16,7 +16,7 @@ jobs:
 
       - name: Check if metadata or schema have changed
         id: readme-updated
-        uses: tj-actions/changed-files@v13
+        uses: tj-actions/changed-files@v14.1
         with:
           files: README.md
       
