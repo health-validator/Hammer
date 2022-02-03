@@ -772,7 +772,8 @@ class Program
 
         private stu3.Hl7.Fhir.Validation.Validator CreateValidatorStu3(stu3.Hl7.Fhir.Rest.FhirClient fhirClient = null)
         {
-            var localTerminology = new stu3.Hl7.Fhir.Specification.Terminology.LocalTerminologyService(_combinedSource.AsAsync() ?? _coreSourceStu3.AsAsync());
+            var resolver = _combinedSource ?? _coreSourceStu3;
+            var localTerminology = new stu3.Hl7.Fhir.Specification.Terminology.LocalTerminologyService(resolver.AsAsync());
 
             var externalTerminology = (fhirClient != null) ? new stu3.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService(fhirClient) : null;
 
@@ -793,7 +794,8 @@ class Program
 
         private r4.Hl7.Fhir.Validation.Validator CreateValidatorR4(r4.Hl7.Fhir.Rest.FhirClient fhirClient = null)
         {
-            var localTerminology = new r4.Hl7.Fhir.Specification.Terminology.LocalTerminologyService(_combinedSource.AsAsync() ?? _coreSourceR4.AsAsync());
+            var resolver = _combinedSource ?? _coreSourceR4;
+            var localTerminology = new r4.Hl7.Fhir.Specification.Terminology.LocalTerminologyService(resolver.AsAsync());
 
             var externalTerminology = (fhirClient != null) ? new r4.Hl7.Fhir.Specification.Terminology.ExternalTerminologyService(fhirClient) : null;
 
