@@ -171,7 +171,7 @@ jobs:
         sed -i -r 's|<Version>(.+?)<\/Version>|<Version>\1-rc${{github.run_number}}</Version>|g' Hammer.csproj
         sed -i 's|<PackageId>Hammer</PackageId>|<PackageId>Hammer.TestVersion</PackageId>|g' Hammer.csproj
         dotnet pack
-        dotnet nuget push nupkg/Hammer.*.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+        dotnet nuget push nupkg/Hammer.*.nupkg --skip-duplicate --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
 
   upload_artifacts:
