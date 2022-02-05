@@ -126,48 +126,6 @@ jobs:
         rm -rf *
         cp -r /tmp/Hammer.app .
 
-    - name: (macOS) Sign the app
-      shell: bash
-      if: runner.os == 'macOS'
-      env:
-        MACOS_SIGNING_PASS: ${{secrets.MACOS_SIGNING_PASS}}
-        AC_USERNAME: ${{secrets.APPLE_USERNAME}}
-        AC_PASSWORD: ${{secrets.APPLE_PASSWORD}}
-      run: |
-        brew tap mitchellh/gon
-        brew install mitchellh/gon/gon
-
-        KEYCHAIN=build.keychain
-        security create-keychain -p travis $KEYCHAIN
-        security default-keychain -s $KEYCHAIN
-        security unlock-keychain -p travis $KEYCHAIN
-        security set-keychain-settings -t 3600 -u $KEYCHAIN
-        security import assets/code-signing-certificate-macos.p12 -k $KEYCHAIN -P "$MACOS_SIGNING_PASS" -T /usr/bin/codesign
-        security set-key-partition-list -S apple-tool:,apple: -s -k travis $KEYCHAIN
-        export IDENTITY="Developer ID Application"
-        echo "Imported identity:"
-        security find-identity
-        echo "----"
-
-        cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
-
-        codesign --deep -o runtime -s "$IDENTITY" "Hammer.app"
-        echo "Signed final .dmg"
-
-        cat << EOF > gon.json
-        {
-          "notarize": [{
-            "path": "./Hammer.app/Contents/macOS/Hammer",
-            "bundle_id": "hammer",
-            "staple": true
-          }]
-        }
-        EOF
-
-        gon gon.json
-
-        security delete-keychain $KEYCHAIN
-
     - name: (Windows/Linux) Extract runtime
       shell: bash
       if: runner.os == 'Windows' || runner.os == 'Linux'
