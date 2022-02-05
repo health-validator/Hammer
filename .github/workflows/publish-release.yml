@@ -173,6 +173,7 @@ jobs:
 
         cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
 
+        python3 $GITHUB_WORKSPACE/assets/fix_app_qt_folder_names_for_codesign.py "Hammer.app"
         codesign --deep -o runtime -s "$IDENTITY" "Hammer.app"
         echo "Signed final .dmg"
 
