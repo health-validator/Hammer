@@ -257,7 +257,7 @@ jobs:
 
       - name: Check if metadata or schema have changed
         id: changed-files-specific
-        uses: tj-actions/changed-files@v13
+        uses: tj-actions/changed-files@v14.5
         with:
           files: |
             assets/examples/.metadata.schema.json
