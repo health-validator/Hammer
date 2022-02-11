@@ -184,6 +184,8 @@ jobs:
         MACOS_SIGNING_PASS: ${{secrets.MACOS_SIGNING_PASS}}
         AC_USERNAME: ${{secrets.APPLE_USERNAME}}
         AC_PASSWORD: ${{secrets.APPLE_PASSWORD}}
+      with:
+        limit-access-to-actor: true
 
     - name: (Windows) Sign executables
       shell: powershell
