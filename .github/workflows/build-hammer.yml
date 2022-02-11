@@ -141,7 +141,6 @@ jobs:
         AC_USERNAME: ${{secrets.APPLE_USERNAME}}
         AC_PASSWORD: ${{secrets.APPLE_PASSWORD}}
       run: |
-        brew tap mitchellh/gon
         brew install mitchellh/gon/gon
 
         KEYCHAIN=build.keychain
