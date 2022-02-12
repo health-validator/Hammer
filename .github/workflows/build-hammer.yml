@@ -133,6 +133,22 @@ jobs:
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
 
+    - name: (macOS) Generate dmg
+      shell: bash
+      if: runner.os == 'macOS'
+      run: |
+        npm install -g appdmg
+
+        cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
+        cp -r $GITHUB_WORKSPACE/assets/hammer-appdmg.json .
+        cp -r $GITHUB_WORKSPACE/assets/hammer-logo.icns .
+
+        # Fix up QmlModel.2 folder which codesign does not like
+        pip3 install macholib
+        python3 $GITHUB_WORKSPACE/assets/fix_app_qt_folder_names_for_codesign.py "Hammer.app"
+
+        appdmg hammer-appdmg.json Hammer.dmg
+
     - name: (macOS) Sign the app
       shell: bash
       if: runner.os == 'macOS'
@@ -157,16 +173,14 @@ jobs:
 
         cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
 
-        pip3 install macholib
-        python3 $GITHUB_WORKSPACE/assets/fix_app_qt_folder_names_for_codesign.py "Hammer.app"
-        codesign --deep -o runtime -s "$IDENTITY" "Hammer.app"
+        codesign --deep -o runtime -s "$IDENTITY" "Hammer.dmg"
         echo "Signed final .dmg"
 
         cat << EOF > gon.json
         {
           "notarize": [{
-            "path": "./Hammer.app/Contents/macOS/Hammer",
-            "bundle_id": "hammer",
+            "path": "./Hammer.dmg",
+            "bundle_id": "healthcare.hammer",
             "staple": true
           }]
         }
