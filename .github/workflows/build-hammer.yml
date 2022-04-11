@@ -188,16 +188,6 @@ jobs:
 
         # security delete-keychain $KEYCHAIN
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      if: runner.os == 'macOS'
-      env:
-        MACOS_SIGNING_PASS: ${{secrets.MACOS_SIGNING_PASS}}
-        AC_USERNAME: ${{secrets.APPLE_USERNAME}}
-        AC_PASSWORD: ${{secrets.APPLE_PASSWORD}}
-      with:
-        limit-access-to-actor: true
-
     - name: (Windows) Sign executables
       shell: powershell
       if: runner.os == 'Windows' && env.WINDOWS_CODE_SIGNING != null
@@ -286,7 +276,7 @@ jobs:
 
       - name: Set up npm
         if: steps.changed-files-specific.outputs.any_changed == 'true'
-        uses: actions/setup-node@v2.5.1
+        uses: actions/setup-node@v3.1.1
         with:
           node-version: 12
 
