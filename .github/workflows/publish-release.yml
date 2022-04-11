@@ -57,7 +57,7 @@ jobs:
       uses: actions/checkout@v2.4.0
 
     - name: Restore maven cache
-      uses: actions/cache@v2.1.7
+      uses: actions/cache@v3.0.2
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -150,7 +150,7 @@ jobs:
 
     - name: (macOS) Sign the app
       shell: bash
-      if: runner.os == 'macOS'
+      if: runner.os == 'macOS' && false
       env:
         MACOS_SIGNING_PASS: ${{secrets.MACOS_SIGNING_PASS}}
         AC_USERNAME: ${{secrets.APPLE_USERNAME}}
@@ -281,16 +281,19 @@ jobs:
         asset_path: ${{github.workspace}}/publish/Hammer-${{matrix.deployment-platform}}.zip
         asset_content_type: application/zip
 
-    # - name: (Windows) Publish to nuget
-    #   # publish only once for all three builds. This update will still work for macOS and Linux
-    #   if: runner.os == 'windows'
-    #   env:
-    #     NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
-    #   shell: bash
-    #   run:
-    #     ./create-package.sh
-    #     dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --skip-duplicate --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+    - name: (Windows) Publish to nuget
+      # publish only once for all three builds. This update will still work for macOS and Linux
+      if: runner.os == 'windows'
+      env:
+        NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
+      shell: bash
+      run:
+        ./create-package.sh
+        dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --skip-duplicate --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
     - name: Setup tmate session should the build fail
       if: ${{ failure() }}
       uses: mxschmitt/action-tmate@v3
+      with:
+        timeout-minutes: 15
+        limit-access-to-actor: true
