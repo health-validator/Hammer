@@ -86,7 +86,7 @@
     <PackageReference Include="Hl7.Fhir.R4" Version="3.8.0" />
     <PackageReference Include="Hl7.Fhir.Support" Version="3.8.0" />
     <PackageReference Include="Hl7.FhirPath" Version="3.8.0" />
-    <PackageReference Include="Hl7.Fhir.Support.Poco" Version="3.8.0" />
+    <PackageReference Include="Hl7.Fhir.Support.Poco" Version="3.8.2" />
 
     <PackageReference Include="CsvHelper" Version="27.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -95,7 +95,7 @@
     <PackageReference Include="Qml.Net.OSXBinaries" Version="0.11.0" />
     <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.11.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="TextCopy" Version="5.0.2" />
+    <PackageReference Include="TextCopy" Version="6.1.0" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="ToMarkdownTable" Version="0.2.1-alpha0003" />
     <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
