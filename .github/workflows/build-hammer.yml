@@ -117,6 +117,9 @@ jobs:
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime
 
+        # trim unnecessary Tools folder (containing only Conan support)
+        rm -rf bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/Hammer.app/Contents/MacOS/qt-runtime/Tools
+
         # clean up the publish folder, leaving the .app only
         cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
         mv Hammer.app /tmp/Hammer.app
@@ -129,6 +132,61 @@ jobs:
       run: |
         mkdir -p bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
         tar -xf qt-runtime.tar.gz -C bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/qt-runtime
+
+    - name: (macOS) Generate dmg & sign the app
+      shell: bash
+      if: runner.os == 'macOS'
+      env:
+        MACOS_SIGNING_PASS: ${{secrets.MACOS_SIGNING_PASS}}
+        AC_USERNAME: ${{secrets.APPLE_USERNAME}}
+        AC_PASSWORD: ${{secrets.APPLE_PASSWORD}}
+      run: |
+        brew install mitchellh/gon/gon
+
+        KEYCHAIN=build.keychain
+        security create-keychain -p travis $KEYCHAIN
+        security default-keychain -s $KEYCHAIN
+        security unlock-keychain -p travis $KEYCHAIN
+        security set-keychain-settings -t 3600 -u $KEYCHAIN
+        security import assets/code-signing-certificate-macos.p12 -k $KEYCHAIN -P "$MACOS_SIGNING_PASS" -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple: -s -k travis $KEYCHAIN
+        export IDENTITY="Developer ID Application"
+        echo "Imported identity:"
+        security find-identity
+        echo "----"
+        npm install -g appdmg
+
+        cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish
+
+        cp -r $GITHUB_WORKSPACE/assets/hammer-appdmg.json .
+        cp -r $GITHUB_WORKSPACE/assets/hammer-logo.icns .
+
+        # Fix up QmlModel.2 folder which codesign does not like
+        pip3 install macholib
+        # python3 $GITHUB_WORKSPACE/assets/fix_app_qt_folder_names_for_codesign.py "Hammer.app"
+
+        # codesign --deep --force -o runtime --sign "$IDENTITY" "Hammer.app"
+        # deep isn't really deep; sign everything inside as well
+        # find Hammer.app | parallel 'codesign --deep --force -o runtime --sign "$IDENTITY" {}'
+
+        # appdmg hammer-appdmg.json Hammer.dmg
+
+        # codesign --deep --force -o runtime --sign "$IDENTITY" "Hammer.dmg"
+        # echo "Signed final .dmg"
+
+        cat << EOF > gon.json
+        {
+          "notarize": [{
+            "path": "./Hammer.dmg",
+            "bundle_id": "healthcare.hammer",
+            "staple": true
+          }]
+        }
+        EOF
+
+        # gon gon.json
+
+        # security delete-keychain $KEYCHAIN
 
     - name: (Windows) Sign executables
       shell: powershell
@@ -171,7 +229,7 @@ jobs:
         sed -i -r 's|<Version>(.+?)<\/Version>|<Version>\1-rc${{github.run_number}}</Version>|g' Hammer.csproj
         sed -i 's|<PackageId>Hammer</PackageId>|<PackageId>Hammer.TestVersion</PackageId>|g' Hammer.csproj
         dotnet pack
-        dotnet nuget push nupkg/Hammer.*.nupkg --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+        dotnet nuget push nupkg/Hammer.*.nupkg --skip-duplicate --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
 
   upload_artifacts:

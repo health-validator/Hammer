@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <PackageId>Hammer</PackageId>
-    <Version>0.0.3</Version>
+    <Version>1.0.0</Version>
     <Authors>Vadim Peretokin</Authors>
     <Description>A modern, cross-platform validator for FHIR® resources.</Description>
     <PackageProjectUrl>https://github.com/health-validator/Hammer</PackageProjectUrl>
