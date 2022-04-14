@@ -214,7 +214,7 @@ jobs:
       run: cd bin/Release/${{matrix.dotnet-version}}/${{matrix.dotnet-platform}}/publish/ && 7z a -tzip $GITHUB_WORKSPACE/publish/Hammer-${{matrix.deployment-platform}}.zip
 
     - name: Upload as a Github artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: hammer-${{matrix.buildname}}
         path: publish/*
