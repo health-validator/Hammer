@@ -54,7 +54,7 @@ jobs:
         dotnet-version: 5.0.x
 
     - name: Checkout source code
-      uses: actions/checkout@v3.0.0
+      uses: actions/checkout@v3.0.1
 
     - name: Restore maven cache
       uses: actions/cache@v3.0.2
