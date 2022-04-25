@@ -288,7 +288,7 @@ jobs:
       env:
         NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
       shell: bash
-      run:
+      run: |
         ./create-package.sh
         dotnet nuget push nupkg/Hammer.${{env.SHORT_TAG_NAME}}.nupkg --skip-duplicate --api-key ${{env.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
