@@ -3,7 +3,6 @@ name: Publish release
 on:
   release:
     types: [created]
-  workflow_dispatch:
 
 jobs:
   build:
@@ -273,6 +272,7 @@ jobs:
         asset_content_type: application/vnd.microsoft.portable-executable
 
     - name: (macOS) Upload installer .app
+      if: runner.os == 'macOS'
       uses: actions/upload-release-asset@v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
