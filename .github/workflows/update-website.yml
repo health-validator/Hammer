@@ -21,15 +21,15 @@ jobs:
           files: README.md
 
       - name: Install github-to-readme-html
-        if: steps.readme-updated.outputs.any_changed == 'true'
+        if: steps.readme-updated.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: npm install github-readme-to-html
 
       - name: Generate HTML
-        if: steps.readme-updated.outputs.any_changed == 'true'
+        if: steps.readme-updated.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: npx github-readme-to-html --title "Hammer - simple, reliable FHIR validator"
 
       - name: Publish to GitHub Pages
-        if: steps.readme-updated.outputs.any_changed == 'true'
+        if: steps.readme-updated.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
