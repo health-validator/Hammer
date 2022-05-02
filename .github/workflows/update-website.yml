@@ -30,6 +30,7 @@ jobs:
 
       - name: Publish to GitHub Pages
         if: steps.readme-updated.outputs.any_changed == 'true'
-        uses: rayluo/github-pages-overwriter@v1.2
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          source-directory: dist
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
