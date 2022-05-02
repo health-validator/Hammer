@@ -82,7 +82,7 @@ Use Hammer. Drag & drop a resource into the app, hit `Validate`, and let it do i
 
 ## Download
 
-Recommended: Windows [installer](https://github.com/health-validator/Hammer/releases/download/Hammer-0.0.3/Hammer-0.0.3-installer.exe) or [zip](https://github.com/health-validator/Hammer/releases/download/Hammer-0.0.3/Hammer-0.0.3-installerfree.zip) | [macOS](https://github.com/health-validator/Hammer/releases/download/Hammer-0.0.3/hammer-macos.zip) | [Linux](https://github.com/health-validator/Hammer/releases/download/Hammer-0.0.3/hammer-linux.zip)
+Recommended: Windows [installer](https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/Hammer-1.0.0-installer.exe) or [zip](https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/Hammer-1.0.0-installerfree.zip) | [macOS](https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/hammer-macos.zip) | [Linux](https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/hammer-linux.zip)
 
 Alternatively, you can also install it as .NET tool:
 
