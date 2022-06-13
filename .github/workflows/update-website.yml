@@ -16,7 +16,7 @@ jobs:
 
       - name: Check if README was changed
         id: readme-updated
-        uses: tj-actions/changed-files@v18.7
+        uses: tj-actions/changed-files@v23
         with:
           files: README.md
 
