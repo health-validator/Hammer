@@ -83,7 +83,7 @@
     <PackageReference Include="Hl7.Fhir.Specification.STU3" Version="4.0.1" GeneratePathProperty="true" ExcludeAssets="contentFiles" />
     <PackageReference Include="Hl7.Fhir.Specification.R4" Version="4.0.1" GeneratePathProperty="true" ExcludeAssets="contentFiles" />
     <PackageReference Include="Hl7.Fhir.STU3" Version="4.0.1" />
-    <PackageReference Include="Hl7.Fhir.R4" Version="4.0.1" />
+    <PackageReference Include="Hl7.Fhir.R4" Version="4.1.0" />
     <PackageReference Include="Hl7.Fhir.Support" Version="4.0.1" />
     <PackageReference Include="Hl7.FhirPath" Version="4.0.1" />
     <PackageReference Include="Hl7.Fhir.Support.Poco" Version="4.0.1" />
