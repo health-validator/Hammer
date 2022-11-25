@@ -1,12 +1,12 @@
 
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Hammer - simple, reliable FHIR validator</title>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <style>
-          body {
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Hammer - simple, reliable FHIR validator</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+            body {
   font: 400 16px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #111;
   background-color: #fdfdfd;
@@ -187,7 +187,7 @@ li + li {
   margin-top: 0.25em;
 }
 
-* {
+body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial,
     sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   color: #24292e;
@@ -205,11 +205,23 @@ h3 {
   /* Darker */
 }
 
-          </style>
-        </head>
-        <body>
-          <main>
-      <h1 align="center">
+            </style>
+            <style>
+            pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}/*!
+  Theme: GitHub
+  Description: Light theme as seen on github.com
+  Author: github.com
+  Maintainer: @Hirse
+  Updated: 2021-05-15
+
+  Outdated base version: https://github.com/primer/github-syntax-light
+  Current colors taken from GitHub's CSS
+*/.hljs{color:#24292e;background:#fff}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#d73a49}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#6f42c1}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id,.hljs-variable{color:#005cc5}.hljs-meta .hljs-string,.hljs-regexp,.hljs-string{color:#032f62}.hljs-built_in,.hljs-symbol{color:#e36209}.hljs-code,.hljs-comment,.hljs-formula{color:#6a737d}.hljs-name,.hljs-quote,.hljs-selector-pseudo,.hljs-selector-tag{color:#22863a}.hljs-subst{color:#24292e}.hljs-section{color:#005cc5;font-weight:700}.hljs-bullet{color:#735c0f}.hljs-emphasis{color:#24292e;font-style:italic}.hljs-strong{color:#24292e;font-weight:700}.hljs-addition{color:#22863a;background-color:#f0fff4}.hljs-deletion{color:#b31d28;background-color:#ffeef0}
+            </style>
+          </head>
+          <body>
+            <main>
+        <h1 align="center">
   <br>
   <a href="https://github.com/health-validator/Hammer"><img src="https://raw.githubusercontent.com/health-validator/Hammer/master/assets/hammer-logo.png" alt="Hammer" width="200"></a>
   <br>
@@ -286,9 +298,9 @@ h3 {
 <h3 id="open-source-and-free">Open-source and Free</h3>
 <h3 id="windows-macos-and-linux">Windows, macOS, and Linux</h3>
 <h2 id="download">Download</h2>
-<p>Recommended: Windows <a href="https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/Hammer-1.0.0-installer.exe">installer</a> or <a href="https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/Hammer-1.0.0-installerfree.zip">zip</a> | <a href="https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/hammer-macos.zip">macOS</a> | <a href="https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/hammer-linux.zip">Linux</a></p>
+<p>Recommended: Windows <a href="https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/Hammer-1.0.0-installer.exe">installer</a> or <a href="https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/Hammer-1.0.0-windows-installerfree.zip">zip</a> | <a href="https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/Hammer-1.0.0-macos.zip">macOS</a> | <a href="https://github.com/health-validator/Hammer/releases/download/Hammer-1.0.0/hammer-linux.zip">Linux</a></p>
 <p>Alternatively, you can also install it as .NET tool:</p>
-<pre><code class="sh language-sh">dotnet tool install --global Hammer</code></pre>
+<pre><code class="hljs sh language-sh">dotnet tool install --global Hammer</code></pre>
 <h2 id="credits">Credits</h2>
 <p>Author: <a href="https://www.linkedin.com/in/vadimperetokin">Vadim Peretokin</a>. Join in, contributions are welcome!</p>
 <p>This software wouldnt've been possible without these open source packages:</p>
@@ -309,6 +321,6 @@ h3 {
   <p>LinkedIn <a href="https://www.linkedin.com/in/vadimperetokin">@vadimperetokin</a> &nbsp;&middot;&nbsp;<br />
   FHIR Zulip <a href="https://chat.fhir.org/#narrow/search/user.20vadim.20peretokin">@Vadim Peretokin</a></p>
 </blockquote>
-          </main>
-        </body>
-      </html>
+            </main>
+          </body>
+        </html>
